@@ -1,0 +1,85 @@
+name: Ghana39 auto update
+
+on:
+  schedule:
+    # 17:31 Taiwan time, after the daily draw.
+    - cron: "31 9 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force rebuild with the latest available official draw"
+        required: false
+        default: "true"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ghana39-auto-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Poll official draw and rebuild report
+        working-directory: system
+        run: |
+          EXTRA_ARGS=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.force }}" = "true" ]; then
+            EXTRA_ARGS="--force"
+          fi
+          python sync_after_draw.py --timeout-minutes 240 --interval-seconds 300 --rounds 120 $EXTRA_ARGS
+
+      - name: Publish generated mobile report to Pages root
+        shell: bash
+        run: |
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='system' \
+            --exclude='.nojekyll' \
+            system/site/ ./
+          cp system/reports/latest_battle_report.html ./desktop_battle_report.html
+          touch .nojekyll
+
+      - name: Verify public report
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          html = Path("full-report.html").read_text(encoding="utf-8")
+          analysis = json.loads(Path("latest_analysis.json").read_text(encoding="utf-8"))
+          latest_numbers = " ".join(f"{n:02d}" for n in analysis["latest_draw"]["numbers"])
+          assert analysis["latest_draw"]["draw_date"] in html
+          assert latest_numbers in html
+          assert html.count("<h2") == 37
+          assert "\u5929\u5929\u6a02" not in html
+          print("latest_draw_date", analysis["latest_draw"]["draw_date"])
+          print("latest_numbers", latest_numbers)
+          print("h2_count", html.count("<h2"))
+          PY
+
+      - name: Commit and push if changed
+        shell: bash
+        run: |
+          git config user.name "Ghana39 Auto Update"
+          git config user.email "ghana39-auto-update@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+          else
+            git commit -m "Auto update Ghana39 report $(TZ=Asia/Taipei date +%F-%H%M)"
+            git push
+          fi

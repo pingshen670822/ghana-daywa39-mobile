@@ -1,0 +1,8 @@
+{
+  "name": "迦納彩39雲端手機版",
+  "short_name": "迦納39",
+  "start_url": "home.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#111827"
+}
