@@ -271,6 +271,6 @@
       "status": "ok"
     }
   ],
-  "updated_at_taiwan": "2026-07-22T10:26:53+08:00",
+  "updated_at_taiwan": "2026-07-22T10:34:33+08:00",
   "note": "The official public winning-numbers interface exposes 5/39 Direct rows only from 2024-04-10 in the current scan. Earlier draw numbers exist by official draw_number sequence, but the current public interface did not return their winning numbers."
 }

@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'ghana39-mobile-20260722102723';
+const CACHE_NAME = 'ghana39-mobile-20260722103449';
 self.addEventListener('install', event => {
   self.skipWaiting();
 });
