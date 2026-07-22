@@ -1,22 +1,22 @@
 {
   "status": "synced",
   "attempt": 1,
-  "previous_latest_draw_date": "2026-07-17",
-  "official_latest_draw_date": "2026-07-19",
-  "analysis_latest_draw_date": "2026-07-19",
+  "previous_latest_draw_date": "2026-07-16",
+  "official_latest_draw_date": "2026-07-16",
+  "analysis_latest_draw_date": "2026-07-16",
   "top9": [
-    18,
-    27,
-    6,
-    20,
-    38,
-    26,
+    30,
     34,
-    16,
-    14
+    19,
+    37,
+    18,
+    22,
+    9,
+    5,
+    12
   ],
-  "desktop_report": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/reports/latest_battle_report.html",
-  "mobile_report": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/site/index.html",
-  "cloud_source_synced": false,
-  "updated_at_taiwan": "2026-07-20T20:01:10+08:00"
+  "desktop_report": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\reports\\latest_battle_report.html",
+  "mobile_report": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\site\\index.html",
+  "cloud_source_synced": true,
+  "updated_at_taiwan": "2026-07-17T07:31:49+08:00"
 }

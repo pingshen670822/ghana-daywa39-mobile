@@ -94,6 +94,8 @@ BASE_WEIGHTS = {
     "date_cycle": 0.06,
 }
 
+ROLLING_REVIEW_WINDOWS = (12, 30, 90)
+
 
 def setup_dirs() -> None:
     for path in (DATA_DIR, REPORT_DIR, LOG_DIR, SITE_DIR):
@@ -350,6 +352,10 @@ def normalize_any(values: dict) -> dict:
     if math.isclose(high, low):
         return {key: 0.0 for key in values}
     return {key: (float(value) - low) / (high - low) for key, value in values.items()}
+
+
+def clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
 
 
 def rank_values(values: dict[int, float]) -> list[int]:
@@ -609,6 +615,111 @@ def model_backtest_weights(draws: list[dict], rounds: int = 90) -> tuple[dict[st
     return weights, {"rounds": count, "random_top9_expectation": round(random_avg, 4), "models": metrics}
 
 
+def rolling_error_adjusted_weights(draws: list[dict], base_weights: dict[str, float], rounds: int) -> tuple[dict[str, float], dict]:
+    if len(draws) < 80:
+        return dict(base_weights), {
+            "status": "history_too_short",
+            "rule": "資料不足時不做錯誤模組懲罰，避免假調整。",
+            "models": {},
+        }
+    test_rounds = max(max(ROLLING_REVIEW_WINDOWS), min(rounds, 180))
+    start = max(50, len(draws) - test_rounds - 1)
+    model_results = {name: [] for name in BASE_WEIGHTS}
+    for index in range(start, len(draws) - 1):
+        train = draws[: index + 1]
+        actual = set(draws[index + 1]["numbers"])
+        target_date = draws[index + 1]["draw_date"]
+        models = model_suite(train, target_date)
+        for name, scores in models.items():
+            ranked = rank_values(scores)
+            top5_hits = len(set(ranked[:5]) & actual)
+            top9_hits = len(set(ranked[:9]) & actual)
+            model_results[name].append(
+                {
+                    "top1_hit": 1 if ranked[0] in actual else 0,
+                    "top5_hits": top5_hits,
+                    "top9_hits": top9_hits,
+                    "zero_top9": 1 if top9_hits == 0 else 0,
+                }
+            )
+
+    expected_single = SPEC.draw_size / SPEC.number_max
+    expected_top5 = SPEC.draw_size * 5 / SPEC.number_max
+    expected_top9 = RANDOM_TOP9
+    adjusted = {}
+    audit_models = {}
+    for name, weight in base_weights.items():
+        rows = model_results.get(name, [])
+        window_audits = {}
+        corrections = []
+        for window in ROLLING_REVIEW_WINDOWS:
+            sample = rows[-window:]
+            if not sample:
+                continue
+            top1_rate = sum(row["top1_hit"] for row in sample) / len(sample)
+            top5_avg = sum(row["top5_hits"] for row in sample) / len(sample)
+            top9_avg = sum(row["top9_hits"] for row in sample) / len(sample)
+            zero_top9_rate = sum(row["zero_top9"] for row in sample) / len(sample)
+            miss_streak = 0
+            for row in reversed(sample):
+                if row["top9_hits"] > 0:
+                    break
+                miss_streak += 1
+            health = (
+                clamp(top9_avg / expected_top9, 0.0, 1.8) * 0.42
+                + clamp(top5_avg / expected_top5, 0.0, 1.8) * 0.26
+                + clamp(top1_rate / expected_single, 0.0, 1.8) * 0.22
+                + (1.0 - zero_top9_rate) * 0.10
+            )
+            correction = clamp(0.52 + health * 0.48, 0.45, 1.65)
+            correction *= 0.94 ** min(miss_streak, 6)
+            correction = clamp(correction, 0.40, 1.65)
+            corrections.append(correction)
+            window_audits[str(window)] = {
+                "top1_hit_rate": round(top1_rate, 4),
+                "top5_avg_hits": round(top5_avg, 4),
+                "top9_avg_hits": round(top9_avg, 4),
+                "zero_top9_rate": round(zero_top9_rate, 4),
+                "miss_streak": miss_streak,
+                "correction": round(correction, 4),
+            }
+        if corrections:
+            weights_for_windows = [0.5, 0.3, 0.2][: len(corrections)]
+            correction = sum(value * w for value, w in zip(corrections, weights_for_windows)) / sum(weights_for_windows)
+        else:
+            correction = 1.0
+        adjusted[name] = max(0.015, weight * correction)
+        if correction < 0.92:
+            action = "錯誤模組降權後重算"
+        elif correction > 1.08:
+            action = "有效模組升權後重算"
+        else:
+            action = "維持權重但重新運算"
+        audit_models[name] = {
+            "label": MODEL_LABELS.get(name, name),
+            "input_weight": round(weight, 6),
+            "correction": round(correction, 4),
+            "output_weight_before_normalize": round(adjusted[name], 6),
+            "action": action,
+            "windows": window_audits,
+        }
+    total = sum(adjusted.values()) or 1.0
+    final_weights = {name: round(value / total, 6) for name, value in adjusted.items()}
+    for name, value in final_weights.items():
+        audit_models[name]["final_weight"] = value
+    failed = [name for name, item in audit_models.items() if item["correction"] < 0.92]
+    boosted = [name for name, item in audit_models.items() if item["correction"] > 1.08]
+    return final_weights, {
+        "status": "applied",
+        "review_rounds": len(next(iter(model_results.values()), [])),
+        "windows": list(ROLLING_REVIEW_WINDOWS),
+        "failed_models_reweighted": failed,
+        "boosted_models_reweighted": boosted,
+        "rule": "每期結算後依12/30/90期滾動命中、零命中與獨隻命中率重新調整所有模型權重。",
+        "models": audit_models,
+    }
+
+
 def candidate_reasons(number: int, models: dict[str, dict[int, float]], limit: int = 5) -> list[str]:
     support = []
     for name, scores in models.items():
@@ -631,7 +742,7 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) ->
 
     guarded = dict(ensemble)
     for number in latest_numbers:
-        guarded[number] = max(0.0, guarded[number] - 0.10)
+        guarded[number] = max(0.0, guarded[number] - 0.18)
     guarded = normalize(guarded)
 
     rows = []
@@ -639,8 +750,9 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) ->
         confidence = 50 + guarded[number] * 49
         support_count = sum(1 for scores in models.values() if scores.get(number, 0.0) >= 0.62)
         reasons = candidate_reasons(number, models)
-        if number in latest_numbers:
-            reasons.append("上期開出保守降權")
+        last_draw_repeat = number in latest_numbers
+        if last_draw_repeat:
+            reasons.append("最新開獎號降權；禁止作為本期獨隻")
         rows.append(
             {
                 "number": number,
@@ -651,6 +763,9 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) ->
                 "zone": zone_label(number),
                 "support_models": support_count,
                 "reasons": reasons,
+                "last_draw_repeat": last_draw_repeat,
+                "strong_single_eligible": not last_draw_repeat,
+                "strict_guard": "最新開獎號不得直接作為本期獨隻" if last_draw_repeat else "通過非最新開獎號獨隻守門",
                 "model_scores": {name: round(scores.get(number, 0.0), 4) for name, scores in models.items()},
             }
         )
@@ -711,10 +826,26 @@ def best_pack(candidates: list[dict], size: int) -> list[int]:
     return sorted(best)
 
 
+def select_strong_single(candidates: list[dict]) -> tuple[list[int], dict]:
+    eligible = [item for item in candidates if item.get("strong_single_eligible", True)]
+    selected = eligible[0] if eligible else (candidates[0] if candidates else None)
+    if not selected:
+        return [], {"status": "blocked", "reason": "沒有候選號可選"}
+    return [int(selected["number"])], {
+        "status": "passed" if selected in eligible else "fallback",
+        "selected_rank": selected.get("rank"),
+        "selected_score": selected.get("score"),
+        "selected_confidence": selected.get("confidence_index"),
+        "last_draw_repeat": bool(selected.get("last_draw_repeat")),
+        "rule": "獨隻1中1優先排除最新開獎號，禁止用上期開獎號混充。",
+    }
+
+
 def build_packs(candidates: list[dict]) -> dict:
     nums = [item["number"] for item in candidates]
+    single_numbers, single_audit = select_strong_single(candidates)
     specs = [
-        ("strong_single", "最強單支", nums[:1], 1),
+        ("strong_single", "最強獨隻1中1", single_numbers, 1),
         ("two_hit_one", "最強2中1", nums[:2], 1),
         ("three_hit_one", "最強3中1", nums[:3], 1),
         ("five_hit_two", "最強5中2", best_pack(candidates, 5), 2),
@@ -729,6 +860,8 @@ def build_packs(candidates: list[dict]) -> dict:
             "theoretical_probability": theoretical_probability(len(numbers), goal),
             "coverage_score": round(coverage_score(sorted(numbers)), 4) if numbers else 0,
         }
+        if key == "strong_single":
+            packs[key]["selection_audit"] = single_audit
     return packs
 
 
@@ -838,6 +971,42 @@ def history_completeness(draw_count: int, metadata: dict | None = None) -> dict:
         "minimum_missing_before_public_range": missing_before,
         "gap_audit_json": str(HISTORY_GAP_AUDIT_JSON),
         "note": note,
+    }
+
+
+def data_integrity_gate(draws: list[dict], metadata: dict | None = None) -> dict:
+    issues = []
+    seen_dates = set()
+    previous = None
+    official_source_count = 0
+    for draw in draws:
+        draw_date = str(draw.get("draw_date", ""))
+        numbers = draw.get("numbers", [])
+        source = str(draw.get("source", ""))
+        if draw_date in seen_dates:
+            issues.append(f"duplicate_date:{draw_date}")
+        seen_dates.add(draw_date)
+        if previous and draw_date <= previous:
+            issues.append(f"date_order:{draw_date}")
+        previous = draw_date
+        if not valid_numbers(numbers):
+            issues.append(f"invalid_numbers:{draw_date}")
+        if not source:
+            issues.append(f"missing_source:{draw_date}")
+        if "NLA official" in source or "winning-numbers" in source:
+            official_source_count += 1
+    metadata = metadata or {}
+    fetch_summary = metadata.get("fetch_summary") if isinstance(metadata.get("fetch_summary"), dict) else {}
+    official_latest = fetch_summary.get("latest_draw_date")
+    if official_latest and draws and official_latest != draws[-1]["draw_date"]:
+        issues.append(f"latest_mismatch:{official_latest}!={draws[-1]['draw_date']}")
+    status = "passed" if not issues else "blocked"
+    return {
+        "status": status,
+        "draw_count": len(draws),
+        "official_source_count": official_source_count,
+        "issues": issues[:30],
+        "rule": "禁止假資料、空來源、重複日期、錯誤號碼與官方最新日期不一致時產生正式高信心。",
     }
 
 
@@ -1032,7 +1201,8 @@ def analyze(draws: list[dict], rounds: int) -> dict:
         raise RuntimeError("No draw data is available.")
     latest = draws[-1]
     target_date = next_draw_date(latest["draw_date"])
-    weights, model_backtest = model_backtest_weights(draws, rounds=min(rounds, 120))
+    base_weights, model_backtest = model_backtest_weights(draws, rounds=min(rounds, 120))
+    weights, rolling_adjustment = rolling_error_adjusted_weights(draws, base_weights, rounds=rounds)
     scored = score_numbers(draws, weights)
     candidates = scored["candidates"]
     packs = build_packs(candidates)
@@ -1040,14 +1210,21 @@ def analyze(draws: list[dict], rounds: int) -> dict:
     metadata = history_metadata()
     completeness = history_completeness(len(draws), metadata)
     fresh = freshness(latest["draw_date"], target_date)
+    integrity = data_integrity_gate(draws, metadata)
     gate = release_gate(backtest_result, completeness, fresh)
+    if integrity["status"] != "passed":
+        gate = {
+            "status": "data_blocked",
+            "reason": "資料完整性稽核未通過，禁止包裝成高信心。",
+            "rule": integrity["rule"],
+        }
     high_confidence = [
         item
         for item in candidates[:9]
         if item["confidence_index"] >= 86 and item["support_models"] >= 3
     ]
     analysis = {
-        "engine_version": "ghana_daywa39_precision_spec_v1_20260714",
+        "engine_version": "ghana_daywa39_precision_spec_v2_rolling_error_20260722",
         "generated_at_taiwan": stamp(now_taiwan()),
         "generated_at_draw_timezone": stamp(now_draw_timezone()),
         "game_spec": asdict(SPEC),
@@ -1059,7 +1236,10 @@ def analyze(draws: list[dict], rounds: int) -> dict:
         "freshness": fresh,
         "release_gate": gate,
         "model_weights": weights,
+        "base_model_weights": base_weights,
         "model_backtest": model_backtest,
+        "rolling_error_adjustment": rolling_adjustment,
+        "data_integrity_gate": integrity,
         "backtest": backtest_result,
         "candidates": candidates,
         "strong_packs": packs,
@@ -1071,6 +1251,8 @@ def analyze(draws: list[dict], rounds: int) -> dict:
             "strong_pack_layers": "單支、2中1、3中1、5中2、9中3。",
             "settlement": "下一期開出後結算Top5/Top9/Top10/Top15與強牌。",
             "cross_validation": "多模型權重由滾動回測仲裁。",
+            "rolling_error_rebuild": "每期開獎結算後，以12/30/90期錯誤檢討重新調整全部模型權重。",
+            "strong_single_guard": "最強獨隻1中1不得直接使用最新開獎號，必須通過獨立守門。",
             "transparent_report": "輸出JSON、Markdown與HTML戰報。",
             "no_single_model": "至少8個模型來源合成，不讓單一條件主導。",
             "freshness_label": "標示迦納官方最新資料日期與台灣開獎更新時間。",
@@ -1107,6 +1289,12 @@ def num_text(value, digits: int = 4) -> str:
 
 def top_numbers(analysis: dict, count: int) -> list[int]:
     return [int(item["number"]) for item in analysis.get("candidates", [])[:count]]
+
+
+def strong_single_numbers(analysis: dict) -> list[int]:
+    pack = ((analysis.get("strong_packs") or {}).get("strong_single") or {})
+    numbers = pack.get("numbers") or []
+    return [int(number) for number in numbers[:1]] if numbers else top_numbers(analysis, 1)
 
 
 def precision_status(analysis: dict) -> str:
@@ -1224,17 +1412,22 @@ def precision_backtest_rows(analysis: dict) -> list[list]:
 def precision_model_rows(analysis: dict) -> list[list]:
     model_backtest = analysis.get("model_backtest") or {}
     weights = analysis.get("model_weights") or {}
+    rolling = (analysis.get("rolling_error_adjustment") or {}).get("models") or {}
     rows = []
     for key, metrics in (model_backtest.get("models") or {}).items():
         edge = metrics.get("edge_vs_random")
-        action = "加權採用" if float(weights.get(key, 0) or 0) >= 0.08 else "低權重保留"
+        rolling_item = rolling.get(key) or {}
+        action = rolling_item.get("action") or ("加權採用" if float(weights.get(key, 0) or 0) >= 0.08 else "低權重保留")
+        weight_text = weights.get(key, "-")
+        if rolling_item:
+            weight_text = f"{weight_text} / x{rolling_item.get('correction', '-')}"
         rows.append(
             [
                 metrics.get("label", MODEL_LABELS.get(key, key)),
                 model_backtest.get("rounds", 0),
                 metrics.get("top9_avg_hits", "-"),
                 edge if edge is not None else "-",
-                weights.get(key, "-"),
+                weight_text,
                 action,
             ]
         )
@@ -1248,6 +1441,8 @@ def precision_guard_rows(analysis: dict) -> list[list]:
     return [
         ["資料庫", f"{analysis.get('draw_count', 0)} 筆", f"{completeness.get('status', '-')}；{completeness.get('note', '')}"],
         ["新鮮度", fresh.get("status", "-"), f"最新 {fresh.get('latest_draw_date', '-')}，落後 {fresh.get('age_days', '-')} 天"],
+        ["資料真實性", (analysis.get("data_integrity_gate") or {}).get("status", "-"), (analysis.get("data_integrity_gate") or {}).get("rule", "-")],
+        ["錯誤模組重算", (analysis.get("rolling_error_adjustment") or {}).get("status", "-"), (analysis.get("rolling_error_adjustment") or {}).get("rule", "-")],
         ["官方來源", SPEC.official_reference, "NLA winning-numbers 官方接口"],
         ["發布關卡", gate.get("status", "-"), gate.get("reason", "-")],
         ["風險標示", "必要", analysis.get("risk_notice", "-")],
@@ -1303,7 +1498,7 @@ def build_markdown(analysis: dict, settled: dict) -> str:
         "## 核心決策",
         "",
         f"- 發布等級：{precision_status(analysis)}",
-        f"- 獨支：{fmt_numbers(top_numbers(analysis, 1))}",
+        f"- 獨隻：{fmt_numbers(strong_single_numbers(analysis))}",
         f"- 前九核心：{fmt_numbers(top9)}",
         f"- 前十五觀察：{fmt_numbers(top15)}",
         f"- Top9 回測：平均 {bt.get('top9_avg_hits', '-')} / 隨機 {(bt.get('random_expectation') or {}).get('top9', '-')} / 差值 {bt.get('top9_edge_vs_random', '-')}",
@@ -1433,7 +1628,7 @@ def build_html(analysis: dict, settled: dict) -> str:
       <div class="band">
         <h2>核心決策</h2>
         <div class="grid">
-          <div class="metric"><div class="label">獨支</div><div class="value big numbers">{html.escape(fmt_numbers(top_numbers(analysis, 1)))}</div></div>
+          <div class="metric"><div class="label">獨隻</div><div class="value big numbers">{html.escape(fmt_numbers(strong_single_numbers(analysis)))}</div></div>
           <div class="metric"><div class="label">九碼核心</div><div class="value numbers">{html.escape(fmt_numbers(top9))}</div></div>
           <div class="metric"><div class="label">十五碼觀察</div><div class="value numbers">{html.escape(fmt_numbers(top15))}</div></div>
           <div class="metric"><div class="label">高信心守門</div><div class="value">{html.escape(high_watch)}</div></div>
@@ -1516,7 +1711,7 @@ def build_mobile_html(analysis: dict, settled: dict) -> str:
     updated = analysis.get("generated_at_taiwan", "-")
     high_watch = fmt_numbers([item["number"] for item in analysis.get("high_confidence_watch", [])]) or "未過高信心守門"
     core_cards = [
-        ["獨支", fmt_numbers(top_numbers(analysis, 1)), "本期最高綜合分"],
+        ["獨隻", fmt_numbers(strong_single_numbers(analysis)), "獨立守門；禁止直接用最新開獎號"],
         ["前九核心", fmt_numbers(top9), "核心候選"],
         ["前十五觀察", fmt_numbers(top15), "備選與版路觀察"],
         ["發布等級", precision_label, (analysis.get("release_gate") or {}).get("reason", "-")],

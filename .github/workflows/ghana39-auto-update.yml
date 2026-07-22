@@ -40,6 +40,11 @@ jobs:
           fi
           python sync_after_draw.py --timeout-minutes 240 --interval-seconds 300 --rounds 120 $EXTRA_ARGS
 
+      - name: Verify strict rolling rules
+        working-directory: system
+        run: |
+          python verify_strict_rules.py
+
       - name: Publish generated mobile report to Pages root
         shell: bash
         run: |

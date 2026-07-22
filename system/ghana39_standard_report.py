@@ -137,6 +137,22 @@ def top_numbers(analysis: dict, count: int) -> list[int]:
     return [int(item["number"]) for item in (analysis.get("candidates") or [])[:count]]
 
 
+def strong_single_numbers(analysis: dict) -> list[int]:
+    pack = ((analysis.get("strong_packs") or {}).get("strong_single") or {})
+    numbers = pack.get("numbers") or []
+    return [int(number) for number in numbers[:1]] if numbers else top_numbers(analysis, 1)
+
+
+def strong_single_candidate(analysis: dict) -> dict:
+    single = strong_single_numbers(analysis)
+    if single:
+        target = int(single[0])
+        for item in analysis.get("candidates") or []:
+            if int(item.get("number", 0)) == target:
+                return item
+    return (analysis.get("candidates") or [{}])[0]
+
+
 def latest_label(analysis: dict) -> str:
     fresh = analysis.get("freshness") or {}
     latest = (analysis.get("latest_draw") or {}).get("draw_date", "-")
@@ -627,7 +643,7 @@ def core_decision_html(analysis: dict) -> str:
         ["資料狀態", compact_status((analysis.get("freshness") or {}).get("status"))],
         ["檢查", "已重算"],
         ["下期預測台灣時間", target_label(analysis)],
-        ["獨隻", fmt_numbers(top_numbers(analysis, 1)) or "-"],
+        ["獨隻", fmt_numbers(strong_single_numbers(analysis)) or "-"],
         ["九碼核心", fmt_numbers(top_numbers(analysis, 9)) or "-"],
         ["高機率信心牌", fmt_numbers(high_numbers) or "本期未過正式高信心守門"],
     ]
@@ -851,7 +867,15 @@ def prediction_rebuild_standard_html(analysis: dict, settled: dict) -> str:
         ]
     else:
         rows = [["上期結算", "尚無已結算資料", "等待官方開獎", "-"]]
-    rows.extend([["修正動作", "最近已結算資料納入滾動檢討", "已回灌", "下期重新排序"], ["修正動作", "未命中來源分流修正", "已回灌", "下期重新排序"]])
+    rolling = analysis.get("rolling_error_adjustment") or {}
+    failed_models = rolling.get("failed_models_reweighted") or []
+    boosted_models = rolling.get("boosted_models_reweighted") or []
+    rows.extend([
+        ["修正動作", "最近已結算資料納入滾動檢討", "已回灌", "下期重新排序"],
+        ["修正動作", "未命中來源分流修正", "已回灌", "下期重新排序"],
+        ["錯誤模組", "、".join(MODEL_LABELS.get(name, name) for name in failed_models) or "本期無硬降權", "已重新加權", "12/30/90期滾動"],
+        ["有效模組", "、".join(MODEL_LABELS.get(name, name) for name in boosted_models) or "本期無升權", "已重新加權", "全部模型重算"],
+    ])
     return '<div class="band warn"><h2>實戰失準回灌重排</h2><p>本區只處理上一期失準、落空、漏抓與降權，不混入本期主推號碼。</p>' + table(["類別", "內容", "處理", "狀態"], rows) + "</div>"
 
 
@@ -958,6 +982,16 @@ def model_rows(analysis: dict) -> list[list]:
     model_bt = analysis.get("model_backtest") or {}
     for key, item in (model_bt.get("models") or {}).items():
         rows.append([item.get("label", MODEL_LABELS.get(key, key)), f"{model_bt.get('rounds', 0)} 期", "-", item.get("top9_avg_hits", "-"), "-", item.get("edge_vs_random", "-")])
+    rolling = analysis.get("rolling_error_adjustment") or {}
+    for key, item in (rolling.get("models") or {}).items():
+        rows.append([
+            f"{item.get('label', MODEL_LABELS.get(key, key))} 滾動修正",
+            f"{rolling.get('review_rounds', 0)} 期",
+            item.get("action", "-"),
+            f"x{item.get('correction', '-')}",
+            item.get("final_weight", "-"),
+            "已套用",
+        ])
     return rows
 
 
@@ -972,8 +1006,12 @@ def lifecycle_rows(analysis: dict, history: list[dict]) -> list[list]:
         for item in (analysis.get("candidates") or [])[:15]:
             if int(item["number"]) not in actual_seen:
                 failed.append(int(item["number"]))
+    rolling = analysis.get("rolling_error_adjustment") or {}
+    failed_models = rolling.get("failed_models_reweighted") or []
+    boosted_models = rolling.get("boosted_models_reweighted") or []
     return [
-        ["滾動式修正", "已啟用", avg10, f"{analysis.get('draw_count', '-')} 筆", "每期開獎後重新調整權重"],
+        ["滾動式修正", "已啟用", avg10, f"{analysis.get('draw_count', '-')} 筆", rolling.get("rule", "每期開獎後重新調整權重")],
+        ["錯誤模組重算", "已套用", f"{len(failed_models)} 組降權", f"{len(boosted_models)} 組升權", "全部模型經12/30/90期檢討後重新加權"],
         ["低命中降權", "已啟用", "警示", str(analysis.get("target_draw_date", "-"))[:7], f"落空號自動降權：{fmt_numbers(failed[:10]) or '-'}"],
         ["高信心守門", "已啟用", "僅供觀察，禁止正式主推", "-", "未過守門不列正式保證"],
         ["檢討修正", "已納入", "-", "-", "最近5期已納入滾動檢討"],
@@ -1036,6 +1074,7 @@ def hard_iron_html(analysis: dict) -> str:
         ["重新運算", "已重新運算", "本期依最新開獎資料重新運算、重新回測、重新檢討；禁止沿用上期預測。"],
         ["依據開獎", latest.get("draw_date", "-"), fmt_numbers(latest.get("numbers", []))],
         ["下期目標", analysis.get("target_draw_date", "-"), target_label(analysis)],
+        ["資料真實性", (analysis.get("data_integrity_gate") or {}).get("status", "-"), (analysis.get("data_integrity_gate") or {}).get("rule", "-")],
         ["重算指紋", signature, "每期會因最新開獎與預測結果改變"],
     ]
     guard = analysis.get("industrial_engine", {}).get("previous_prediction_guard", {})
@@ -1048,9 +1087,14 @@ def hard_iron_html(analysis: dict) -> str:
 
 
 def stability_governor_html(analysis: dict, settled: dict) -> str:
-    rows = [["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"], ["已套用修正", "重複預測但未通過守門者自動降權"], ["已套用修正", "第10到15名補中能力獨立追蹤"]]
+    rolling = analysis.get("rolling_error_adjustment") or {}
+    failed_models = rolling.get("failed_models_reweighted") or []
+    rows = [["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"], ["已套用修正", "重複預測但未通過守門者自動降權"], ["已套用修正", "第10到15名補中能力獨立追蹤"], ["已套用修正", f"錯誤模組滾動重算：{', '.join(failed_models) if failed_models else '本期無硬降權'}"]]
     strict = analysis.get("industrial_engine", {}).get("strict_validation_gate", {})
-    blocked = [["-", "目前沒有硬降權號碼", strict.get("validated_count", "-"), strict.get("policy", "-")]]
+    blocked_numbers = [item for item in (analysis.get("candidates") or []) if item.get("last_draw_repeat")]
+    blocked = [[f"{int(item['number']):02d}", "最新開獎號", item.get("support_models", "-"), item.get("strict_guard", "-")] for item in blocked_numbers[:8]]
+    if not blocked:
+        blocked = [["-", "目前沒有硬降權號碼", strict.get("validated_count", "-"), strict.get("policy", "-")]]
     watch = []
     for item in (analysis.get("candidates") or [])[:8]:
         watch.append([f"{int(item['number']):02d}", item.get("rank", "-"), item.get("stability_count", "-"), (item.get("previous_prediction_guard") or {}).get("message", "-")])
@@ -1100,21 +1144,24 @@ def monthly_breakthrough_html(analysis: dict, history: list[dict]) -> str:
 
 
 def super_single_html(analysis: dict) -> str:
-    single = top_numbers(analysis, 1)
-    item = (analysis.get("candidates") or [{}])[0]
+    single = strong_single_numbers(analysis)
+    item = strong_single_candidate(analysis)
+    pack = ((analysis.get("strong_packs") or {}).get("strong_single") or {})
+    audit = pack.get("selection_audit") or {}
     support = f"{item.get('support_models', '-')}/{item.get('verification_denominator', len(MODEL_LABELS))}"
     return f"""
     <div class="band singlebox">
       <h2>最強獨隻1中1</h2>
       <div class="grid">
         <div class="card hot-card"><div class="label">獨隻號碼</div><div class="value num">{esc(fmt_numbers(single) or "-")}</div></div>
-        <div class="card"><div class="label">判定</div><div class="value">本期最高分獨隻</div></div>
+        <div class="card"><div class="label">判定</div><div class="value">獨立守門獨隻</div></div>
         <div class="card"><div class="label">獨隻總分</div><div class="value">{esc(score_percent(item))}</div></div>
         <div class="card"><div class="label">模型機率</div><div class="value">{esc(probability_percent(item))}</div></div>
         <div class="card"><div class="label">交叉層數</div><div class="value">{esc(support)}</div></div>
       </div>
-      <p><strong>運算邏輯：</strong>官方歷史資料庫、多模型交叉驗算、前九名核心壓縮。</p>
+      <p><strong>運算邏輯：</strong>官方歷史資料庫、多模型交叉驗算、前九名核心壓縮、12/30/90期錯誤模組滾動修正。</p>
       <p><strong>來源模型：</strong>{esc("、".join((item.get("reasons") or [])[:8]))}</p>
+      <p><strong>獨隻守門：</strong>{esc(audit.get("rule", "禁止直接用最新開獎號混充"))}；狀態 {esc(audit.get("status", "-"))}；候選排名 {esc(audit.get("selected_rank", "-"))}</p>
       <p><strong>風控：</strong>未過正式門檻時只列觀察，不包裝成保證。</p>
     </div>
     """
@@ -1222,7 +1269,7 @@ def build_desktop_html(analysis: dict, settled: dict, history: list[dict]) -> st
         <div class="card"><div class="label">資料狀態</div><div class="value">{esc(compact_status((analysis.get('freshness') or {}).get('status')))}</div></div>
         <div class="card"><div class="label">檢查</div><div class="value">已重算</div></div>
         <div class="card"><div class="label">下期預測台灣時間</div><div class="value">{esc(target_tw)}</div></div>
-        <div class="card hot-card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(top_numbers(analysis, 1)) or "-")}</div></div>
+        <div class="card hot-card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(strong_single_numbers(analysis)) or "-")}</div></div>
         <div class="card"><div class="label">九碼核心</div><div class="value">{esc(fmt_numbers(top9) or "-")}</div></div>
       </div>
       <p>運算原則：只顯示完成運算後的精準資訊；依官方歷史資料庫、多模型交叉驗算與滾動回測輸出。</p>
@@ -1306,7 +1353,7 @@ def build_markdown(analysis: dict, settled: dict, history: list[dict]) -> str:
         "## 核心決策",
         f"- 資料狀態：{compact_status((analysis.get('freshness') or {}).get('status'))}",
         "- 檢查：已重算",
-        f"- 獨隻：{fmt_numbers(top_numbers(analysis, 1))}",
+        f"- 獨隻：{fmt_numbers(strong_single_numbers(analysis))}",
         f"- 九碼核心：{fmt_numbers(top_numbers(analysis, 9))}",
         f"- 高機率信心牌：{fmt_numbers([item.get('number') for item in (analysis.get('latest_ironlaw') or {}).get('high_confidence_numbers', [])]) or '本期未過正式高信心守門'}",
         "",
@@ -1510,7 +1557,7 @@ def mobile_prediction_body(analysis: dict, history: list[dict]) -> str:
     <section class="band">
       <h2>核心決策</h2>
       <div class="grid">
-        <div class="card hot-card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(top_numbers(analysis, 1)))}</div></div>
+        <div class="card hot-card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(strong_single_numbers(analysis)))}</div></div>
         <div class="card"><div class="label">九碼核心</div><div class="value">{esc(fmt_numbers(top_numbers(analysis, 9)))}</div></div>
         <div class="card"><div class="label">資料依據台灣時間</div><div class="value">{esc(latest_tw)}</div></div>
         <div class="card"><div class="label">預測台灣時間</div><div class="value">{esc(target_tw)}</div></div>
