@@ -2,8 +2,9 @@ name: Ghana39 auto update
 
 on:
   schedule:
-    # 17:31 Taiwan time, after the daily draw.
-    - cron: "31 9 * * *"
+    # 17:31, 18:31, 19:31, 20:31, 21:31, 22:31 Taiwan time after the daily draw.
+    # NLA sometimes publishes later than 17:31, so retry instead of failing the whole day.
+    - cron: "31 9-14 * * *"
   workflow_dispatch:
     inputs:
       force:
@@ -38,14 +39,25 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.force }}" = "true" ]; then
             EXTRA_ARGS="--force"
           fi
-          python sync_after_draw.py --timeout-minutes 240 --interval-seconds 300 --rounds 120 $EXTRA_ARGS
+          set +e
+          python sync_after_draw.py --timeout-minutes 50 --interval-seconds 180 --rounds 120 $EXTRA_ARGS
+          code=$?
+          set -e
+          if [ "$code" = "2" ]; then
+            echo "OFFICIAL_NOT_READY=1" >> "$GITHUB_ENV"
+            echo "Official draw is not published yet; next scheduled retry will continue."
+            exit 0
+          fi
+          exit "$code"
 
       - name: Verify strict rolling rules
+        if: env.OFFICIAL_NOT_READY != '1'
         working-directory: system
         run: |
           python verify_strict_rules.py
 
       - name: Publish generated mobile report to Pages root
+        if: env.OFFICIAL_NOT_READY != '1'
         shell: bash
         run: |
           rsync -a --delete \
@@ -54,10 +66,10 @@ jobs:
             --exclude='system' \
             --exclude='.nojekyll' \
             system/site/ ./
-          cp system/reports/latest_battle_report.html ./desktop_battle_report.html
           touch .nojekyll
 
       - name: Verify public report
+        if: env.OFFICIAL_NOT_READY != '1'
         shell: bash
         run: |
           python - <<'PY'
@@ -67,16 +79,23 @@ jobs:
           html = Path("full-report.html").read_text(encoding="utf-8")
           analysis = json.loads(Path("latest_analysis.json").read_text(encoding="utf-8"))
           latest_numbers = " ".join(f"{n:02d}" for n in analysis["latest_draw"]["numbers"])
+          top9 = " ".join(f"{int(item['number']):02d}" for item in analysis["candidates"][:9])
           assert analysis["latest_draw"]["draw_date"] in html
           assert latest_numbers in html
-          assert html.count("<h2") == 37
+          assert top9 in html
+          assert ("低命中" in html) and (("漏抓回補" in html) or ("權重轉換" in html))
+          assert "資料真實性" in html
+          assert "獨隻守門" in html
+          assert html.count("<h2") >= 37
           assert "\u5929\u5929\u6a02" not in html
           print("latest_draw_date", analysis["latest_draw"]["draw_date"])
           print("latest_numbers", latest_numbers)
+          print("top9", top9)
           print("h2_count", html.count("<h2"))
           PY
 
       - name: Commit and push if changed
+        if: env.OFFICIAL_NOT_READY != '1'
         shell: bash
         run: |
           git config user.name "Ghana39 Auto Update"
