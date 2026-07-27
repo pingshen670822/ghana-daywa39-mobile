@@ -1476,9 +1476,16 @@ def mobile_script(version: str, home: str = "home.html") -> str:
     return f"""
     <script>
     window.GHANA39_BUILD_VERSION = '{esc(version)}';
+    window.GHANA39_HOME_PAGE = '{esc(home)}';
     function setMobileStatus(text) {{
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
+    }}
+    function currentMobilePage() {{
+      var path = window.location.pathname || '';
+      var page = path.split('/').pop() || '';
+      if (!page || page === 'home') page = 'full-report.html';
+      return page;
     }}
     async function clearMobileCaches() {{
       if ('serviceWorker' in navigator) {{
@@ -1499,7 +1506,7 @@ def mobile_script(version: str, home: str = "home.html") -> str:
     async function forceRefresh() {{
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace('{esc(home)}?v={esc(version)}&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v={esc(version)}&force=' + Date.now());
     }}
     async function autoRefreshIfStale() {{
       try {{
@@ -1510,7 +1517,7 @@ def mobile_script(version: str, home: str = "home.html") -> str:
         if (stamp && stamp !== window.GHANA39_BUILD_VERSION && !sessionStorage.getItem('ghana39_refreshed_' + stamp)) {{
           sessionStorage.setItem('ghana39_refreshed_' + stamp, '1');
           await clearMobileCaches();
-          location.replace('{esc(home)}?v=' + stamp + '&auto=' + Date.now());
+          location.replace(currentMobilePage() + '?v=' + stamp + '&auto=' + Date.now());
         }}
       }} catch (err) {{}}
     }}

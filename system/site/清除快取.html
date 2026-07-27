@@ -45,12 +45,19 @@
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
-    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20260727122911</p></section></main>
+    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20260727123734</p></section></main>
     <script>
-    window.GHANA39_BUILD_VERSION = '20260727122911';
+    window.GHANA39_BUILD_VERSION = '20260727123734';
+    window.GHANA39_HOME_PAGE = 'home.html';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
+    }
+    function currentMobilePage() {
+      var path = window.location.pathname || '';
+      var page = path.split('/').pop() || '';
+      if (!page || page === 'home') page = 'full-report.html';
+      return page;
     }
     async function clearMobileCaches() {
       if ('serviceWorker' in navigator) {
@@ -71,7 +78,7 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace('home.html?v=20260727122911&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20260727123734&force=' + Date.now());
     }
     async function autoRefreshIfStale() {
       try {
@@ -82,13 +89,13 @@
         if (stamp && stamp !== window.GHANA39_BUILD_VERSION && !sessionStorage.getItem('ghana39_refreshed_' + stamp)) {
           sessionStorage.setItem('ghana39_refreshed_' + stamp, '1');
           await clearMobileCaches();
-          location.replace('home.html?v=' + stamp + '&auto=' + Date.now());
+          location.replace(currentMobilePage() + '?v=' + stamp + '&auto=' + Date.now());
         }
       } catch (err) {}
     }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20260727122911', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20260727123734', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });
