@@ -1,7 +1,7 @@
 {
   "engine_version": "ghana_daywa39_precision_spec_v3_low_hit_regime_20260727",
-  "generated_at_taiwan": "2026-07-27T12:12:18+08:00",
-  "generated_at_draw_timezone": "2026-07-27T12:12:18+08:00",
+  "generated_at_taiwan": "2026-07-27T12:29:11+08:00",
+  "generated_at_draw_timezone": "2026-07-27T12:29:11+08:00",
   "game_spec": {
     "code": "GH_DAYWA39",
     "display_name": "非洲迦納彩 Daywa 5/39 Direct",
@@ -50,7 +50,7 @@
         "draw_number": "256"
       },
       "coverage_note": "Official-interface scan from 2000-01-01 through 2024-03-31 returned zero Daywa 5/39 Direct rows.",
-      "history_gap_audit_json": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\data\\ghana_daywa39_history_gap_audit.json",
+      "history_gap_audit_json": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history_gap_audit.json",
       "history_gap_audit": {
         "status": "official_public_partial",
         "official_public_range": "2024-04-10..2026-07-26",
@@ -319,8 +319,8 @@
           "status": "ok"
         }
       ],
-      "output_csv": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\data\\ghana_daywa39_history.csv",
-      "updated_at_taiwan": "2026-07-27T12:09:40+08:00"
+      "output_csv": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history.csv",
+      "updated_at_taiwan": "2026-07-27T12:28:56+08:00"
     },
     "gap_audit": {
       "status": "official_public_partial",
@@ -595,7 +595,7 @@
           "status": "ok"
         }
       ],
-      "updated_at_taiwan": "2026-07-27T12:09:40+08:00",
+      "updated_at_taiwan": "2026-07-27T12:28:56+08:00",
       "note": "The official public winning-numbers interface exposes 5/39 Direct rows only from 2024-04-10 in the current scan. Earlier draw numbers exist by official draw_number sequence, but the current public interface did not return their winning numbers."
     }
   },
@@ -611,7 +611,7 @@
     "prehistory_status": "no_official_rows_returned",
     "prehistory_direct_rows": 0,
     "minimum_missing_before_public_range": 1082,
-    "gap_audit_json": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\data\\ghana_daywa39_history_gap_audit.json",
+    "gap_audit_json": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history_gap_audit.json",
     "note": "NLA官方公開接口目前可驗證範圍：2024-04-10..2026-07-26；2000-01-01..2024-03-31 掃描狀態：no_official_rows_returned；依官方期號序列推估公開起點前至少缺 1082 期。"
   },
   "freshness": {
@@ -714,7 +714,7 @@
   },
   "rolling_error_adjustment": {
     "status": "applied",
-    "review_rounds": 180,
+    "review_rounds": 120,
     "windows": [
       12,
       30,
@@ -1427,11 +1427,11 @@
     "rule": "禁止假資料、空來源、重複日期、錯誤號碼與官方最新日期不一致時產生正式高信心。"
   },
   "backtest": {
-    "rounds": 240,
-    "top5_avg_hits": 0.6083,
-    "top9_avg_hits": 1.0917,
-    "top10_avg_hits": 1.3,
-    "top15_avg_hits": 1.8625,
+    "rounds": 120,
+    "top5_avg_hits": 0.6917,
+    "top9_avg_hits": 1.1833,
+    "top10_avg_hits": 1.375,
+    "top15_avg_hits": 1.9417,
     "random_expectation": {
       "top5": 0.641,
       "top9": 1.1538,
@@ -1440,39 +1440,39 @@
     },
     "pack_summary": {
       "strong_single": {
-        "avg_hits": 0.1083,
-        "pass_rate": 0.1083,
-        "zero_rate": 0.8917,
+        "avg_hits": 0.1333,
+        "pass_rate": 0.1333,
+        "zero_rate": 0.8667,
         "hit_goal": 1
       },
       "two_hit_one": {
-        "avg_hits": 0.2125,
-        "pass_rate": 0.2083,
-        "zero_rate": 0.7917,
+        "avg_hits": 0.25,
+        "pass_rate": 0.2417,
+        "zero_rate": 0.7583,
         "hit_goal": 1
       },
       "three_hit_one": {
-        "avg_hits": 0.3375,
-        "pass_rate": 0.3042,
-        "zero_rate": 0.6958,
+        "avg_hits": 0.375,
+        "pass_rate": 0.325,
+        "zero_rate": 0.675,
         "hit_goal": 1
       },
       "five_hit_two": {
-        "avg_hits": 0.5958,
-        "pass_rate": 0.1042,
-        "zero_rate": 0.5208,
+        "avg_hits": 0.675,
+        "pass_rate": 0.1417,
+        "zero_rate": 0.4833,
         "hit_goal": 2
       },
       "nine_hit_three": {
-        "avg_hits": 1.1292,
-        "pass_rate": 0.0625,
-        "zero_rate": 0.2417,
+        "avg_hits": 1.2,
+        "pass_rate": 0.0667,
+        "zero_rate": 0.2333,
         "hit_goal": 3
       }
     },
-    "top9_edge_vs_random": -0.0621,
-    "top10_edge_vs_random": 0.0179,
-    "status": "research_watch"
+    "top9_edge_vs_random": 0.0295,
+    "top10_edge_vs_random": 0.0929,
+    "status": "research_positive"
   },
   "candidates": [
     {
@@ -3476,7 +3476,7 @@
   "industrial_engine": {
     "release_gate": {
       "status": "research_only",
-      "actual_backtest_edge": -0.0621,
+      "actual_backtest_edge": 0.0295,
       "message": "歷史資料不足，僅列研究觀察。"
     },
     "previous_prediction_guard": {
