@@ -95,6 +95,7 @@ BASE_WEIGHTS = {
 }
 
 ROLLING_REVIEW_WINDOWS = (12, 30, 90)
+LOW_HIT_REVIEW_WINDOWS = (5, 10, 20)
 
 
 def setup_dirs() -> None:
@@ -720,6 +721,165 @@ def rolling_error_adjusted_weights(draws: list[dict], base_weights: dict[str, fl
     }
 
 
+def low_hit_regime_review(history: list[dict] | None) -> dict:
+    rows = list(history or [])
+    window_metrics = {}
+    for window in LOW_HIT_REVIEW_WINDOWS:
+        sample = rows[:window]
+        if not sample:
+            window_metrics[str(window)] = {
+                "status": "no_settled_history",
+                "sample_size": 0,
+                "top9_avg_hits": None,
+                "top15_avg_hits": None,
+                "zero_top9_rate": None,
+                "strong_single_hit_rate": None,
+            }
+            continue
+        top9_values = [int(item.get("top9_hits") or 0) for item in sample]
+        top15_values = [int(item.get("top15_hits") or 0) for item in sample]
+        single_values = []
+        for item in sample:
+            pack_hits = item.get("strong_pack_hits") or {}
+            single = pack_hits.get("strong_single") or {}
+            single_values.append(1 if int(single.get("hits") or 0) >= 1 else 0)
+        window_metrics[str(window)] = {
+            "status": "reviewed",
+            "sample_size": len(sample),
+            "top9_avg_hits": round(sum(top9_values) / len(sample), 4),
+            "top15_avg_hits": round(sum(top15_values) / len(sample), 4),
+            "zero_top9_rate": round(sum(1 for value in top9_values if value == 0) / len(sample), 4),
+            "strong_single_hit_rate": round(sum(single_values) / len(sample), 4),
+        }
+
+    basis = next((window_metrics[str(window)] for window in LOW_HIT_REVIEW_WINDOWS if window_metrics[str(window)]["sample_size"]), None)
+    if not basis:
+        return {
+            "status": "no_settled_history",
+            "mode": "standard",
+            "severity": 0.0,
+            "windows": window_metrics,
+            "rule": "尚無足夠已結算預測，不啟動低命中權重轉換。",
+        }
+    top9_avg = float(basis.get("top9_avg_hits") or 0.0)
+    zero_rate = float(basis.get("zero_top9_rate") or 0.0)
+    single_rate = float(basis.get("strong_single_hit_rate") or 0.0)
+    top9_deficit = clamp((RANDOM_TOP9 - top9_avg) / max(RANDOM_TOP9, 1e-9), 0.0, 1.0)
+    zero_pressure = clamp((zero_rate - 0.18) / 0.62, 0.0, 1.0)
+    single_pressure = clamp((0.18 - single_rate) / 0.18, 0.0, 1.0)
+    severity = round(clamp(top9_deficit * 0.52 + zero_pressure * 0.30 + single_pressure * 0.18, 0.0, 1.0), 4)
+    if severity >= 0.62:
+        mode = "low_hit_recovery"
+        status = "critical_shift"
+    elif severity >= 0.34:
+        mode = "guarded_recovery"
+        status = "watch_shift"
+    else:
+        mode = "standard"
+        status = "normal"
+    return {
+        "status": status,
+        "mode": mode,
+        "severity": severity,
+        "basis_window": basis.get("sample_size", 0),
+        "random_top9_expectation": round(RANDOM_TOP9, 4),
+        "windows": window_metrics,
+        "rule": "最近命中低於隨機基準或零命中率偏高時，切換為低命中回復模式：降權近期落空來源，升權漏抓回補、拖牌轉折與牌型跟隨。",
+    }
+
+
+def failure_memory_from_settled(history: list[dict] | None, limit: int = 20) -> dict:
+    rows = list(history or [])[:limit]
+    if not rows:
+        return {"status": "inactive", "sample_size": 0, "numbers": {}, "rule": "無已結算資料可回灌。"}
+    selected = Counter()
+    missed = Counter()
+    hit = Counter()
+    leak = Counter()
+    second_layer_hit = Counter()
+    single_miss = Counter()
+    for item in rows:
+        actual = set(int(n) for n in item.get("actual_numbers", []))
+        candidates = [int(row["number"]) for row in item.get("candidates", [])]
+        top9 = candidates[:9]
+        top15 = candidates[:15]
+        for number in top9:
+            selected[number] += 1
+            if number in actual:
+                hit[number] += 1
+            else:
+                missed[number] += 1
+        for number in sorted(actual - set(top9)):
+            leak[number] += 1
+        for number in sorted(set(top15[9:15]) & actual):
+            second_layer_hit[number] += 1
+        strong_single = (((item.get("strong_packs") or {}).get("strong_single") or {}).get("numbers") or [])[:1]
+        for number in strong_single:
+            number = int(number)
+            if number not in actual:
+                single_miss[number] += 1
+
+    recovery_raw = {
+        number: leak.get(number, 0) * 1.0 + second_layer_hit.get(number, 0) * 0.72 + hit.get(number, 0) * 0.18
+        for number in NUMBERS
+    }
+    penalty_raw = {
+        number: missed.get(number, 0) * 0.72 + single_miss.get(number, 0) * 0.55 - hit.get(number, 0) * 0.28
+        for number in NUMBERS
+    }
+    recovery_norm = normalize_any(recovery_raw)
+    penalty_norm = normalize_any({number: max(0.0, value) for number, value in penalty_raw.items()})
+    numbers = {}
+    for number in NUMBERS:
+        numbers[number] = {
+            "recovery_score": round(float(recovery_norm.get(number, 0.0)), 4),
+            "miss_penalty": round(float(penalty_norm.get(number, 0.0)), 4),
+            "leak_count": int(leak.get(number, 0)),
+            "top9_miss_count": int(missed.get(number, 0)),
+            "top9_hit_count": int(hit.get(number, 0)),
+            "second_layer_hit_count": int(second_layer_hit.get(number, 0)),
+        }
+    return {
+        "status": "active",
+        "sample_size": len(rows),
+        "top_leak_numbers": [number for number, _ in leak.most_common(10)],
+        "top_penalty_numbers": [number for number, _ in missed.most_common(10)],
+        "second_layer_hit_numbers": [number for number, _ in second_layer_hit.most_common(10)],
+        "numbers": numbers,
+        "rule": "以已結算預測建立實戰記憶：前九漏抓的實開號加回補分，前九多次落空與獨隻落空號降權。",
+    }
+
+
+def apply_low_hit_regime_shift(weights: dict[str, float], review: dict) -> tuple[dict[str, float], dict]:
+    severity = float(review.get("severity") or 0.0)
+    if severity <= 0:
+        review["weight_transform"] = {"status": "not_applied", "model_multipliers": {}}
+        return dict(weights), review
+    multipliers = {name: 1.0 for name in weights}
+    multipliers["multi_window_frequency"] *= 1.0 - 0.22 * severity
+    multipliers["date_cycle"] *= 1.0 - 0.20 * severity
+    multipliers["tail_zone_balance"] *= 1.0 - 0.10 * severity
+    multipliers["omission_phase"] *= 1.0 + 0.18 * severity
+    multipliers["pair_lift"] *= 1.0 + 0.22 * severity
+    multipliers["shape_follow"] *= 1.0 + 0.20 * severity
+    multipliers["trend_break"] *= 1.0 + 0.16 * severity
+    adjusted = {
+        name: max(0.01, float(value) * multipliers.get(name, 1.0))
+        for name, value in weights.items()
+    }
+    total = sum(adjusted.values()) or 1.0
+    final = {name: round(value / total, 6) for name, value in adjusted.items()}
+    review["weight_transform"] = {
+        "status": "applied",
+        "severity": round(severity, 4),
+        "model_multipliers": {name: round(value, 4) for name, value in multipliers.items()},
+        "before_weights": {name: round(float(value), 6) for name, value in weights.items()},
+        "after_weights": final,
+        "rule": "低命中時降低純頻率與日期輔助，提升拖牌、牌型、遺漏與趨勢轉折，避免同一批失準來源繼續主導。",
+    }
+    return final, review
+
+
 def candidate_reasons(number: int, models: dict[str, dict[int, float]], limit: int = 5) -> list[str]:
     support = []
     for name, scores in models.items():
@@ -732,7 +892,7 @@ def candidate_reasons(number: int, models: dict[str, dict[int, float]], limit: i
     return [label for _, _, label in support[:limit]] or ["綜合模型"]
 
 
-def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) -> dict:
+def score_numbers(draws: list[dict], weights: dict[str, float] | None = None, failure_memory: dict | None = None) -> dict:
     target_date = next_draw_date(draws[-1]["draw_date"])
     models = model_suite(draws, target_date)
     active_weights = weights or dict(BASE_WEIGHTS)
@@ -741,8 +901,16 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) ->
     gaps = current_gaps(draws)
 
     guarded = dict(ensemble)
+    memory_numbers = (failure_memory or {}).get("numbers") or {}
+    memory_active = (failure_memory or {}).get("status") == "active"
     for number in latest_numbers:
         guarded[number] = max(0.0, guarded[number] - 0.18)
+    if memory_active:
+        for number in NUMBERS:
+            memory = memory_numbers.get(number) or {}
+            recovery = float(memory.get("recovery_score") or 0.0)
+            penalty = float(memory.get("miss_penalty") or 0.0)
+            guarded[number] = max(0.0, guarded[number] * (1.0 + recovery * 0.22 - penalty * 0.18) + recovery * 0.035)
     guarded = normalize(guarded)
 
     rows = []
@@ -751,6 +919,13 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) ->
         support_count = sum(1 for scores in models.values() if scores.get(number, 0.0) >= 0.62)
         reasons = candidate_reasons(number, models)
         last_draw_repeat = number in latest_numbers
+        memory = memory_numbers.get(number) or {}
+        recovery_score = float(memory.get("recovery_score") or 0.0)
+        miss_penalty = float(memory.get("miss_penalty") or 0.0)
+        if recovery_score >= 0.55:
+            reasons.append("低命中漏抓回補")
+        if miss_penalty >= 0.65:
+            reasons.append("近期多次落空降權後仍保留觀察")
         if last_draw_repeat:
             reasons.append("最新開獎號降權；禁止作為本期獨隻")
         rows.append(
@@ -764,6 +939,8 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None) ->
                 "support_models": support_count,
                 "reasons": reasons,
                 "last_draw_repeat": last_draw_repeat,
+                "low_hit_recovery_score": round(recovery_score, 4),
+                "recent_miss_penalty": round(miss_penalty, 4),
                 "strong_single_eligible": not last_draw_repeat,
                 "strict_guard": "最新開獎號不得直接作為本期獨隻" if last_draw_repeat else "通過非最新開獎號獨隻守門",
                 "model_scores": {name: round(scores.get(number, 0.0), 4) for name, scores in models.items()},
@@ -1196,14 +1373,18 @@ def store_prediction(conn: sqlite3.Connection, analysis: dict) -> str:
     return "inserted"
 
 
-def analyze(draws: list[dict], rounds: int) -> dict:
+def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | None = None) -> dict:
     if not draws:
         raise RuntimeError("No draw data is available.")
     latest = draws[-1]
     target_date = next_draw_date(latest["draw_date"])
     base_weights, model_backtest = model_backtest_weights(draws, rounds=min(rounds, 120))
+    low_hit_review = low_hit_regime_review(settled_history_rows)
+    failure_memory = failure_memory_from_settled(settled_history_rows)
     weights, rolling_adjustment = rolling_error_adjusted_weights(draws, base_weights, rounds=rounds)
-    scored = score_numbers(draws, weights)
+    weights, low_hit_review = apply_low_hit_regime_shift(weights, low_hit_review)
+    low_hit_review["failure_memory"] = failure_memory
+    scored = score_numbers(draws, weights, failure_memory)
     candidates = scored["candidates"]
     packs = build_packs(candidates)
     backtest_result = backtest(draws, rounds=rounds, weights=weights)
@@ -1224,7 +1405,7 @@ def analyze(draws: list[dict], rounds: int) -> dict:
         if item["confidence_index"] >= 86 and item["support_models"] >= 3
     ]
     analysis = {
-        "engine_version": "ghana_daywa39_precision_spec_v2_rolling_error_20260722",
+        "engine_version": "ghana_daywa39_precision_spec_v3_low_hit_regime_20260727",
         "generated_at_taiwan": stamp(now_taiwan()),
         "generated_at_draw_timezone": stamp(now_draw_timezone()),
         "game_spec": asdict(SPEC),
@@ -1239,6 +1420,7 @@ def analyze(draws: list[dict], rounds: int) -> dict:
         "base_model_weights": base_weights,
         "model_backtest": model_backtest,
         "rolling_error_adjustment": rolling_adjustment,
+        "low_hit_regime_shift": low_hit_review,
         "data_integrity_gate": integrity,
         "backtest": backtest_result,
         "candidates": candidates,
@@ -1252,6 +1434,7 @@ def analyze(draws: list[dict], rounds: int) -> dict:
             "settlement": "下一期開出後結算Top5/Top9/Top10/Top15與強牌。",
             "cross_validation": "多模型權重由滾動回測仲裁。",
             "rolling_error_rebuild": "每期開獎結算後，以12/30/90期錯誤檢討重新調整全部模型權重。",
+            "low_hit_regime_shift": "近期實戰命中低於隨機基準或零命中偏高時，啟動漏抓回補、落空降權與模型權重轉換。",
             "strong_single_guard": "最強獨隻1中1不得直接使用最新開獎號，必須通過獨立守門。",
             "transparent_report": "輸出JSON、Markdown與HTML戰報。",
             "no_single_model": "至少8個模型來源合成，不讓單一條件主導。",
@@ -1438,11 +1621,15 @@ def precision_guard_rows(analysis: dict) -> list[list]:
     fresh = analysis.get("freshness") or {}
     completeness = analysis.get("history_completeness") or {}
     gate = analysis.get("release_gate") or {}
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    memory = low_hit.get("failure_memory") or {}
     return [
         ["資料庫", f"{analysis.get('draw_count', 0)} 筆", f"{completeness.get('status', '-')}；{completeness.get('note', '')}"],
         ["新鮮度", fresh.get("status", "-"), f"最新 {fresh.get('latest_draw_date', '-')}，落後 {fresh.get('age_days', '-')} 天"],
         ["資料真實性", (analysis.get("data_integrity_gate") or {}).get("status", "-"), (analysis.get("data_integrity_gate") or {}).get("rule", "-")],
         ["錯誤模組重算", (analysis.get("rolling_error_adjustment") or {}).get("status", "-"), (analysis.get("rolling_error_adjustment") or {}).get("rule", "-")],
+        ["低命中權重轉換", low_hit.get("status", "-"), f"{low_hit.get('mode', '-')}；嚴重度 {low_hit.get('severity', '-')}；樣本 {low_hit.get('basis_window', '-')} 期"],
+        ["漏抓回補記憶", memory.get("status", "-"), memory.get("rule", "-")],
         ["官方來源", SPEC.official_reference, "NLA winning-numbers 官方接口"],
         ["發布關卡", gate.get("status", "-"), gate.get("reason", "-")],
         ["風險標示", "必要", analysis.get("risk_notice", "-")],
@@ -1927,12 +2114,13 @@ def run(csv_path: Path, rounds: int, import_only: bool = False) -> dict:
         settled_count = settle_predictions(conn)
         export_clean_csv(conn)
         draws = fetch_draws(conn)
+        history_before_analysis = settled_history(conn)
         if import_only:
             message = json.dumps({"import": import_result, "settled": settled_count, "draw_count": len(draws)}, ensure_ascii=False)
             conn.execute("UPDATE update_runs SET finished_at=?,status=?,message=? WHERE id=?", (stamp(), "success", message[:1000], run_id))
             conn.commit()
             return {"import": import_result, "settled": settled_count, "draw_count": len(draws)}
-        analysis = analyze(draws, rounds=rounds)
+        analysis = analyze(draws, rounds=rounds, settled_history_rows=history_before_analysis)
         prediction_status = store_prediction(conn, analysis)
         settled = latest_settled(conn)
         history = settled_history(conn)

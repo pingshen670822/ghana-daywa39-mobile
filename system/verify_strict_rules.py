@@ -23,6 +23,8 @@ def main() -> int:
     latest_numbers = [int(number) for number in analysis["latest_draw"]["numbers"]]
     latest_date = analysis["latest_draw"]["draw_date"]
     top9 = [int(item["number"]) for item in analysis["candidates"][:9]]
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    failure_memory = low_hit.get("failure_memory") or {}
     rows = list(csv.DictReader((ROOT / "data" / "ghana_daywa39_history.csv").open(encoding="utf-8-sig")))
 
     checks = {
@@ -33,11 +35,16 @@ def main() -> int:
         "SingleInLatest": single in latest_numbers,
         "Top9": fmt(top9),
         "RollingStatus": analysis["rolling_error_adjustment"]["status"],
+        "LowHitStatus": low_hit.get("status"),
+        "LowHitMode": low_hit.get("mode"),
+        "LowHitSeverity": low_hit.get("severity"),
+        "FailureMemory": failure_memory.get("status"),
         "DataGate": analysis["data_integrity_gate"]["status"],
         "Engine": analysis["engine_version"],
         "HasLatestDate": latest_date in html,
         "HasTop9": fmt(top9) in html,
         "HasRolling": ("錯誤模組" in html) or ("滾動修正" in html),
+        "HasLowHit": ("低命中" in html) and (("漏抓回補" in html) or ("權重轉換" in html)),
         "HasDataGate": "資料真實性" in html,
         "HasSingleGuard": "獨隻守門" in html,
         "H2Count": len(re.findall("<h2", html)),
@@ -55,8 +62,11 @@ def main() -> int:
     assert latest_date == summary.get("latest_draw_date")
     assert single not in latest_numbers
     assert analysis["rolling_error_adjustment"]["status"] == "applied"
+    assert low_hit.get("status") in {"critical_shift", "watch_shift", "normal", "no_settled_history"}
+    assert failure_memory.get("status") in {"active", "inactive"}
     assert analysis["data_integrity_gate"]["status"] == "passed"
     assert checks["HasRolling"]
+    assert checks["HasLowHit"]
     assert checks["HasDataGate"]
     assert checks["HasSingleGuard"]
     assert not checks["HasOldText"]

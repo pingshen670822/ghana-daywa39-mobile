@@ -876,6 +876,15 @@ def prediction_rebuild_standard_html(analysis: dict, settled: dict) -> str:
         ["錯誤模組", "、".join(MODEL_LABELS.get(name, name) for name in failed_models) or "本期無硬降權", "已重新加權", "12/30/90期滾動"],
         ["有效模組", "、".join(MODEL_LABELS.get(name, name) for name in boosted_models) or "本期無升權", "已重新加權", "全部模型重算"],
     ])
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    memory = low_hit.get("failure_memory") or {}
+    transform = low_hit.get("weight_transform") or {}
+    rows.extend([
+        ["低命中模式", f"{low_hit.get('status', '-')} / {low_hit.get('mode', '-')}", f"嚴重度 {low_hit.get('severity', '-')}", low_hit.get("rule", "-")],
+        ["新權重轉換", transform.get("status", "-"), f"樣本 {low_hit.get('basis_window', '-')} 期", transform.get("rule", "-")],
+        ["漏抓回補", fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", "已加回補分", memory.get("rule", "-")],
+        ["落空降權", fmt_numbers(memory.get("top_penalty_numbers", [])[:8]) or "-", "已納入降權", "近期前九多次落空者不再無條件保留"],
+    ])
     return '<div class="band warn"><h2>實戰失準回灌重排</h2><p>本區只處理上一期失準、落空、漏抓與降權，不混入本期主推號碼。</p>' + table(["類別", "內容", "處理", "狀態"], rows) + "</div>"
 
 
@@ -992,6 +1001,21 @@ def model_rows(analysis: dict) -> list[list]:
             item.get("final_weight", "-"),
             "已套用",
         ])
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    transform = low_hit.get("weight_transform") or {}
+    multipliers = transform.get("model_multipliers") or {}
+    after_weights = transform.get("after_weights") or {}
+    for key, multiplier in multipliers.items():
+        if round(float(multiplier), 4) == 1.0:
+            continue
+        rows.append([
+            f"{MODEL_LABELS.get(key, key)} 低命中轉換",
+            f"{low_hit.get('basis_window', 0)} 期",
+            low_hit.get("mode", "-"),
+            f"x{multiplier}",
+            after_weights.get(key, "-"),
+            transform.get("status", "-"),
+        ])
     return rows
 
 
@@ -1009,10 +1033,14 @@ def lifecycle_rows(analysis: dict, history: list[dict]) -> list[list]:
     rolling = analysis.get("rolling_error_adjustment") or {}
     failed_models = rolling.get("failed_models_reweighted") or []
     boosted_models = rolling.get("boosted_models_reweighted") or []
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    memory = low_hit.get("failure_memory") or {}
     return [
         ["滾動式修正", "已啟用", avg10, f"{analysis.get('draw_count', '-')} 筆", rolling.get("rule", "每期開獎後重新調整權重")],
         ["錯誤模組重算", "已套用", f"{len(failed_models)} 組降權", f"{len(boosted_models)} 組升權", "全部模型經12/30/90期檢討後重新加權"],
         ["低命中降權", "已啟用", "警示", str(analysis.get("target_draw_date", "-"))[:7], f"落空號自動降權：{fmt_numbers(failed[:10]) or '-'}"],
+        ["低命中模式", low_hit.get("status", "-"), f"{low_hit.get('mode', '-')} / {low_hit.get('severity', '-')}", f"{low_hit.get('basis_window', '-')} 期", low_hit.get("rule", "-")],
+        ["漏抓回補記憶", memory.get("status", "-"), fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", f"{memory.get('sample_size', '-')} 期", memory.get("rule", "-")],
         ["高信心守門", "已啟用", "僅供觀察，禁止正式主推", "-", "未過守門不列正式保證"],
         ["檢討修正", "已納入", "-", "-", "最近5期已納入滾動檢討"],
     ]
@@ -1035,11 +1063,16 @@ def prediction_rebuild_html(analysis: dict, settled: dict) -> str:
         actual = set(int(n) for n in settled.get("actual_numbers", []))
         candidates = [int(item["number"]) for item in settled.get("candidates", [])]
         rows.append(["上期前九命中", fmt_numbers(sorted(set(candidates[:9]) & actual)) or "-", "已回灌", "下期重新排序"])
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    memory = low_hit.get("failure_memory") or {}
     rows.extend(
         [
             ["檢討嚴重度", "研究觀察", "每期重算", "已啟用"],
             ["修正動作", "未命中來源降權", "已回灌", "下期重新排序"],
             ["修正動作", "第二層備查池獨立列出", "已回灌", "不混入前九核心"],
+            ["低命中模式", f"{low_hit.get('status', '-')} / {low_hit.get('mode', '-')}", f"嚴重度 {low_hit.get('severity', '-')}", "已轉換權重"],
+            ["漏抓回補", fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", "已加回補分", "參與本期排序"],
+            ["落空降權", fmt_numbers(memory.get("top_penalty_numbers", [])[:8]) or "-", "已納入降權", "避免連續失準來源主導"],
         ]
     )
     return '<div class="band warn"><h2>上期檢討回灌與下期重建</h2>' + table(["項目", "內容", "管制", "狀態"], rows) + "</div>"
@@ -1089,7 +1122,17 @@ def hard_iron_html(analysis: dict) -> str:
 def stability_governor_html(analysis: dict, settled: dict) -> str:
     rolling = analysis.get("rolling_error_adjustment") or {}
     failed_models = rolling.get("failed_models_reweighted") or []
-    rows = [["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"], ["已套用修正", "重複預測但未通過守門者自動降權"], ["已套用修正", "第10到15名補中能力獨立追蹤"], ["已套用修正", f"錯誤模組滾動重算：{', '.join(failed_models) if failed_models else '本期無硬降權'}"]]
+    low_hit = analysis.get("low_hit_regime_shift") or {}
+    memory = low_hit.get("failure_memory") or {}
+    rows = [
+        ["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"],
+        ["已套用修正", "重複預測但未通過守門者自動降權"],
+        ["已套用修正", "第10到15名補中能力獨立追蹤"],
+        ["已套用修正", f"錯誤模組滾動重算：{', '.join(failed_models) if failed_models else '本期無硬降權'}"],
+        ["已套用修正", f"低命中權重轉換：{low_hit.get('mode', '-')} / 嚴重度 {low_hit.get('severity', '-')}"],
+        ["已套用修正", f"漏抓回補：{fmt_numbers(memory.get('top_leak_numbers', [])[:8]) or '-'}"],
+        ["已套用修正", f"落空降權：{fmt_numbers(memory.get('top_penalty_numbers', [])[:8]) or '-'}"],
+    ]
     strict = analysis.get("industrial_engine", {}).get("strict_validation_gate", {})
     blocked_numbers = [item for item in (analysis.get("candidates") or []) if item.get("last_draw_repeat")]
     blocked = [[f"{int(item['number']):02d}", "最新開獎號", item.get("support_models", "-"), item.get("strict_guard", "-")] for item in blocked_numbers[:8]]

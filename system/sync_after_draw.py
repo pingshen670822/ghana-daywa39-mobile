@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import sys
 import time
@@ -29,6 +30,7 @@ TAIWAN_TZ = ZoneInfo("Asia/Taipei")
 SYNC_STATUS = ROOT / "data" / "sync_status.json"
 CLOUD_SITE_DIR = ROOT / "cloud_mobile_site"
 CLOUD_PUBLIC_DIR = CLOUD_SITE_DIR / "public"
+LIVE_BASE = "https://pingshen670822.github.io/ghana-daywa39-mobile"
 
 
 def read_latest_analysis_date() -> str | None:
@@ -66,6 +68,14 @@ def sync_cloud_source() -> None:
     if not CLOUD_SITE_DIR.exists():
         return
     CLOUD_PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
+    source_names = {source.name for source in system.SITE_DIR.iterdir()}
+    for target in CLOUD_PUBLIC_DIR.iterdir():
+        keep_asset = target.suffix.lower() in {".svg", ".ico", ".png", ".jpg", ".jpeg", ".webp"}
+        if target.name not in source_names and not keep_asset:
+            if target.is_dir():
+                shutil.rmtree(target)
+            else:
+                target.unlink()
     for source in system.SITE_DIR.iterdir():
         target = CLOUD_PUBLIC_DIR / source.name
         if source.is_dir():
@@ -74,7 +84,40 @@ def sync_cloud_source() -> None:
             shutil.copytree(source, target)
         else:
             shutil.copy2(source, target)
-    shutil.copy2(system.BATTLE_HTML, CLOUD_PUBLIC_DIR / "desktop_battle_report.html")
+    loader = f"""
+<script id="ghana-live-sync">
+(function () {{
+  if (window.__ghanaLiveSyncDone) return;
+  window.__ghanaLiveSyncDone = true;
+  var liveBase = "{LIVE_BASE}";
+  var path = window.location.pathname || "/full-report.html";
+  if (path === "/" || path === "") path = "/full-report.html";
+  var liveUrl = liveBase + path + "?v=" + Date.now();
+  fetch(liveUrl, {{ cache: "no-store", mode: "cors" }})
+    .then(function (response) {{
+      if (!response.ok) throw new Error("live fetch failed");
+      return response.text();
+    }})
+    .then(function (html) {{
+      if (html.indexOf("<html") === -1 || html.indexOf("Daywa") === -1) return;
+      if (document.documentElement.dataset.liveSynced === "true") return;
+      document.documentElement.dataset.liveSynced = "true";
+      document.open();
+      document.write(html);
+      document.close();
+    }})
+    .catch(function () {{}});
+}})();
+</script>
+"""
+    for page in CLOUD_PUBLIC_DIR.glob("*.html"):
+        html = page.read_text(encoding="utf-8")
+        html = re.sub(r'(?s)<script id="ghana-live-sync">.*?</script>\s*', "", html)
+        if "</body>" in html:
+            html = html.replace("</body>", f"{loader}\n</body>")
+        else:
+            html = f"{html}\n{loader}\n"
+        page.write_text(html, encoding="utf-8")
 
 
 def write_status(payload: dict) -> None:
