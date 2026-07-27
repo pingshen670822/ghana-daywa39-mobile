@@ -50,7 +50,7 @@
         "draw_number": "256"
       },
       "coverage_note": "Official-interface scan from 2000-01-01 through 2024-03-31 returned zero Daywa 5/39 Direct rows.",
-      "history_gap_audit_json": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\data\\ghana_daywa39_history_gap_audit.json",
+      "history_gap_audit_json": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history_gap_audit.json",
       "history_gap_audit": {
         "status": "official_public_partial",
         "official_public_range": "2024-04-10..2026-07-26",
@@ -705,10 +705,10 @@
       },
       "date_cycle": {
         "label": "日期循環",
-        "top9_avg_hits": 1.0917,
-        "edge_vs_random": -0.0622,
+        "top9_avg_hits": 1.0833,
+        "edge_vs_random": -0.0705,
         "base_weight": 0.06,
-        "adjusted_weight": 0.05677
+        "adjusted_weight": 0.05633
       }
     }
   },
@@ -1484,6 +1484,7 @@
       "zone": "31-39",
       "support_models": 2,
       "reasons": [
+        "趨勢轉折",
         "日期循環",
         "遺漏相位",
         "低命中漏抓回補"
@@ -2328,8 +2329,8 @@
       },
       "rank": 21,
       "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "尾數版路、遺漏補償、趨勢轉折",
+      "stability_count": 1,
+      "route_class": "遺漏補償",
       "practical_maturity": {
         "score": 65.1,
         "tier": "研究觀察"
@@ -2883,7 +2884,7 @@
         "trend_break": 0.0583,
         "date_cycle": 0.0
       },
-      "rank": 35,
+      "rank": 32,
       "verification_denominator": 8,
       "stability_count": 1,
       "route_class": "牌型相似跟隨",
@@ -3009,7 +3010,7 @@
       "stability_count": 1,
       "route_class": "全歷史排序",
       "practical_maturity": {
-        "score": 35.2,
+        "score": 38.2,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3022,7 +3023,7 @@
       "score": 0.0,
       "confidence_index": 50.0,
       "model_probability_index": 1.0,
-      "omission": 2,
+      "omission": 1,
       "zone": "21-30",
       "support_models": 0,
       "reasons": [
@@ -3200,9 +3201,9 @@
       "zone": "11-20",
       "support_models": 3,
       "reasons": [
+        "牌型跟隨",
         "多窗口頻率",
-        "和值鄰近",
-        "遺漏相位"
+        "和值鄰近"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.2093,
@@ -3222,7 +3223,7 @@
       "rank": 3,
       "verification_denominator": 8,
       "stability_count": 4,
-      "route_class": "遺漏補償、全歷史排序、牌型相似跟隨",
+      "route_class": "全歷史排序、牌型相似跟隨",
       "practical_maturity": {
         "score": 89.1,
         "tier": "成熟通過"
