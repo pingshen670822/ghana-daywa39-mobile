@@ -92,6 +92,9 @@ def sync_cloud_source() -> None:
   var liveBase = "{LIVE_BASE}";
   var path = window.location.pathname || "/full-report.html";
   if (path === "/" || path === "") path = "/full-report.html";
+  var last = path.split("/").pop() || "";
+  if (last && last.indexOf(".") === -1) path = path + ".html";
+  if (path === "/home.html" || path === "/index.html" || path === "/首頁.html") path = "/full-report.html";
   var liveUrl = liveBase + path + "?v=" + Date.now();
   fetch(liveUrl, {{ cache: "no-store", mode: "cors" }})
     .then(function (response) {{

@@ -1481,12 +1481,27 @@ def mobile_script(version: str, home: str = "home.html") -> str:
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
     }}
+    function normalizeMobilePage(page) {{
+      if (!page || page === 'home' || page === 'index') return 'full-report.html';
+      if (page.indexOf('.') === -1) return page + '.html';
+      if (page === 'home.html' || page === 'index.html') return 'full-report.html';
+      return page;
+    }}
     function currentMobilePage() {{
       var path = window.location.pathname || '';
       var page = path.split('/').pop() || '';
-      if (!page || page === 'home') page = 'full-report.html';
-      return page;
+      return normalizeMobilePage(page);
     }}
+    function normalizeCurrentMobileUrl() {{
+      var path = window.location.pathname || '';
+      var page = path.split('/').pop() || '';
+      var fixed = normalizeMobilePage(page);
+      if (page !== fixed && window.history && window.history.replaceState) {{
+        var base = path.slice(0, Math.max(0, path.length - page.length));
+        window.history.replaceState(null, document.title, base + fixed + window.location.search + window.location.hash);
+      }}
+    }}
+    normalizeCurrentMobileUrl();
     async function clearMobileCaches() {{
       if ('serviceWorker' in navigator) {{
         const regs = await navigator.serviceWorker.getRegistrations();
