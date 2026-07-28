@@ -25,6 +25,7 @@ def main() -> int:
     top9 = [int(item["number"]) for item in analysis["candidates"][:9]]
     low_hit = analysis.get("low_hit_regime_shift") or {}
     failure_memory = low_hit.get("failure_memory") or {}
+    front9 = analysis.get("front9_escape_correction") or {}
     rows = list(csv.DictReader((ROOT / "data" / "ghana_daywa39_history.csv").open(encoding="utf-8-sig")))
 
     checks = {
@@ -39,12 +40,16 @@ def main() -> int:
         "LowHitMode": low_hit.get("mode"),
         "LowHitSeverity": low_hit.get("severity"),
         "FailureMemory": failure_memory.get("status"),
+        "Front9EscapeStatus": front9.get("status"),
+        "Front9Promoted": fmt(front9.get("promoted_numbers", [])),
+        "Front9Demoted": fmt(front9.get("demoted_numbers", [])),
         "DataGate": analysis["data_integrity_gate"]["status"],
         "Engine": analysis["engine_version"],
         "HasLatestDate": latest_date in html,
         "HasTop9": fmt(top9) in html,
         "HasRolling": ("錯誤模組" in html) or ("滾動修正" in html),
         "HasLowHit": ("低命中" in html) and (("漏抓回補" in html) or ("權重轉換" in html)),
+        "HasFront9Escape": (("9名後" in html) or ("第10到15" in html)) and (("外溢" in html) or ("拉回前九" in html)),
         "HasDataGate": "資料真實性" in html,
         "HasSingleGuard": "獨隻守門" in html,
         "H2Count": len(re.findall("<h2", html)),
@@ -64,9 +69,11 @@ def main() -> int:
     assert analysis["rolling_error_adjustment"]["status"] == "applied"
     assert low_hit.get("status") in {"critical_shift", "watch_shift", "normal", "no_settled_history"}
     assert failure_memory.get("status") in {"active", "inactive"}
+    assert front9.get("status") in {"applied", "reviewed_no_swap", "inactive"}
     assert analysis["data_integrity_gate"]["status"] == "passed"
     assert checks["HasRolling"]
     assert checks["HasLowHit"]
+    assert checks["HasFront9Escape"]
     assert checks["HasDataGate"]
     assert checks["HasSingleGuard"]
     assert not checks["HasOldText"]

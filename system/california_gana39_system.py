@@ -96,6 +96,7 @@ BASE_WEIGHTS = {
 
 ROLLING_REVIEW_WINDOWS = (12, 30, 90)
 LOW_HIT_REVIEW_WINDOWS = (5, 10, 20)
+FRONT9_ESCAPE_REVIEW_LIMIT = 24
 
 
 def setup_dirs() -> None:
@@ -850,6 +851,292 @@ def failure_memory_from_settled(history: list[dict] | None, limit: int = 20) -> 
     }
 
 
+def front9_escape_review(history: list[dict] | None, limit: int = FRONT9_ESCAPE_REVIEW_LIMIT) -> dict:
+    rows = [item for item in list(history or [])[:limit] if item.get("actual_numbers") and item.get("candidates")]
+    if not rows:
+        return {
+            "status": "inactive",
+            "sample_size": 0,
+            "numbers": {},
+            "rule": "尚無已結算資料，暫不啟動第10到15名外溢校正。",
+        }
+
+    top9_total = 0
+    top15_total = 0
+    second_layer_extra_total = 0
+    second_layer_escape_periods = 0
+    second_layer_hit = Counter()
+    second_layer_selected = Counter()
+    leak = Counter()
+    top9_hit = Counter()
+    top9_miss = Counter()
+    escape_period_rows = []
+
+    for item in rows:
+        actual = set(int(n) for n in item.get("actual_numbers", []))
+        candidates = [int(row["number"]) for row in item.get("candidates", [])]
+        top9 = candidates[:9]
+        second_layer = candidates[9:15]
+        top15 = candidates[:15]
+        top9_hits = sorted(set(top9) & actual)
+        second_hits = sorted(set(second_layer) & actual)
+        top9_total += len(top9_hits)
+        top15_total += len(set(top15) & actual)
+        second_layer_extra_total += len(second_hits)
+        if second_hits:
+            second_layer_escape_periods += 1
+            escape_period_rows.append(
+                {
+                    "actual_date": item.get("actual_date"),
+                    "second_layer_hits": second_hits,
+                    "top9_hits": top9_hits,
+                }
+            )
+        for number in top9:
+            if number in actual:
+                top9_hit[number] += 1
+            else:
+                top9_miss[number] += 1
+        for number in second_layer:
+            second_layer_selected[number] += 1
+        for number in second_hits:
+            second_layer_hit[number] += 1
+        for number in sorted(actual - set(top9)):
+            leak[number] += 1
+
+    raw_scores = {}
+    for number in NUMBERS:
+        raw_scores[number] = max(
+            0.0,
+            second_layer_hit.get(number, 0) * 1.45
+            + leak.get(number, 0) * 0.88
+            + second_layer_selected.get(number, 0) * 0.12
+            + top9_hit.get(number, 0) * 0.16
+            - top9_miss.get(number, 0) * 0.20,
+        )
+    normalized = normalize_any(raw_scores)
+    numbers = {
+        number: {
+            "rank_escape_score": round(float(normalized.get(number, 0.0)), 4),
+            "second_layer_hit_count": int(second_layer_hit.get(number, 0)),
+            "second_layer_selected_count": int(second_layer_selected.get(number, 0)),
+            "leak_count": int(leak.get(number, 0)),
+            "top9_hit_count": int(top9_hit.get(number, 0)),
+            "top9_miss_count": int(top9_miss.get(number, 0)),
+        }
+        for number in NUMBERS
+    }
+    top_escape_numbers = [
+        number
+        for number, _ in sorted(
+            raw_scores.items(),
+            key=lambda item: (item[1], second_layer_hit.get(item[0], 0), leak.get(item[0], 0), -item[0]),
+            reverse=True,
+        )[:12]
+        if raw_scores.get(number, 0.0) > 0
+    ]
+    return {
+        "status": "active",
+        "sample_size": len(rows),
+        "top9_avg_hits": round(top9_total / len(rows), 4),
+        "top15_avg_hits": round(top15_total / len(rows), 4),
+        "second_layer_extra_hits_total": int(second_layer_extra_total),
+        "second_layer_escape_periods": int(second_layer_escape_periods),
+        "second_layer_escape_rate": round(second_layer_escape_periods / len(rows), 4),
+        "top_escape_numbers": top_escape_numbers,
+        "recent_escape_periods": escape_period_rows[:8],
+        "numbers": numbers,
+        "rule": "每期檢查命中是否掉到第10到15名；若有外溢，下一期前九尾端弱號必須與外溢強訊號重排。",
+    }
+
+
+def apply_front9_escape_correction(
+    candidates: list[dict],
+    failure_memory: dict | None,
+    settled_history_rows: list[dict] | None,
+) -> tuple[list[dict], dict]:
+    review = front9_escape_review(settled_history_rows)
+    memory_numbers = (failure_memory or {}).get("numbers") or {}
+    rows = []
+    for item in candidates:
+        cloned = dict(item)
+        cloned["reasons"] = list(item.get("reasons") or [])
+        rows.append(cloned)
+
+    original_top9 = [int(item["number"]) for item in rows[:9]]
+    original_second_layer = [int(item["number"]) for item in rows[9:15]]
+
+    def safe_score(item: dict) -> float:
+        try:
+            return float(item.get("score") or 0.0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    if review.get("status") != "active" or len(rows) < 10:
+        for rank, item in enumerate(rows, 1):
+            item["rank"] = rank
+            item["front9_escape_score"] = 0.0
+            item["front9_escape_status"] = "尚無外溢校正"
+            item["front9_original_rank"] = rank
+        audit = {
+            "status": "inactive",
+            "review": review,
+            "previous_top9": original_top9,
+            "current_second_layer_before": original_second_layer,
+            "corrected_top9": original_top9,
+            "promoted_numbers": [],
+            "demoted_numbers": [],
+            "swaps": [],
+            "rule": review.get("rule"),
+        }
+        return rows, audit
+
+    review_numbers = review.get("numbers") or {}
+    escape_pressure = float(review.get("second_layer_escape_rate") or 0.0)
+    extra_total = int(review.get("second_layer_extra_hits_total") or 0)
+    pressure_factor = clamp(0.35 + escape_pressure, 0.0, 1.0)
+
+    for rank, item in enumerate(rows, 1):
+        number = int(item["number"])
+        memory = memory_numbers.get(number) or {}
+        rank_memory = review_numbers.get(number) or {}
+        recovery_score = float(memory.get("recovery_score") or 0.0)
+        rank_escape_score = float(rank_memory.get("rank_escape_score") or 0.0)
+        repeated_second_hit = float(memory.get("second_layer_hit_count") or 0.0)
+        leak_count = float(memory.get("leak_count") or 0.0)
+        band_pressure = 0.0
+        if 10 <= rank <= 15 and extra_total:
+            band_pressure = clamp((16 - rank) / 6.0, 0.0, 1.0) * 0.38 * pressure_factor
+        escape_score = max(
+            rank_escape_score,
+            recovery_score * 0.72 + min(0.30, repeated_second_hit * 0.12) + min(0.18, leak_count * 0.06),
+            band_pressure,
+        )
+        item["front9_original_rank"] = rank
+        item["front9_escape_score"] = round(float(escape_score), 4)
+        item["front9_escape_status"] = (
+            "前九守門"
+            if rank <= 9
+            else ("第10到15名外溢候選" if rank <= 15 and escape_score > 0 else "後段候選")
+        )
+        item["second_layer_hit_count"] = int(memory.get("second_layer_hit_count") or rank_memory.get("second_layer_hit_count") or 0)
+        item["leak_count"] = int(memory.get("leak_count") or rank_memory.get("leak_count") or 0)
+        item["top9_miss_count"] = int(memory.get("top9_miss_count") or rank_memory.get("top9_miss_count") or 0)
+        item["top9_hit_count"] = int(memory.get("top9_hit_count") or rank_memory.get("top9_hit_count") or 0)
+
+    def holder_weakness(item: dict) -> float:
+        number = int(item["number"])
+        memory = memory_numbers.get(number) or {}
+        rank_memory = review_numbers.get(number) or {}
+        original_rank = int(item.get("front9_original_rank") or item.get("rank") or 9)
+        miss_penalty = float(memory.get("miss_penalty") or 0.0)
+        top9_miss = float(memory.get("top9_miss_count") or rank_memory.get("top9_miss_count") or 0.0)
+        top9_hit = float(memory.get("top9_hit_count") or rank_memory.get("top9_hit_count") or 0.0)
+        tail_pressure = clamp((original_rank - 5) / 4.0, 0.0, 1.0) * 0.24
+        return clamp((1.0 - safe_score(item)) * 0.18 + miss_penalty * 0.55 + min(0.32, top9_miss * 0.08) - min(0.18, top9_hit * 0.06) + tail_pressure, 0.0, 1.0)
+
+    def challenger_strength(item: dict) -> float:
+        number = int(item["number"])
+        memory = memory_numbers.get(number) or {}
+        rank_memory = review_numbers.get(number) or {}
+        recovery = float(memory.get("recovery_score") or 0.0)
+        second_hits = float(memory.get("second_layer_hit_count") or rank_memory.get("second_layer_hit_count") or 0.0)
+        support = float(item.get("support_models") or 0.0)
+        return safe_score(item) + float(item.get("front9_escape_score") or 0.0) * 0.16 + recovery * 0.05 + min(0.06, second_hits * 0.025) + support * 0.003
+
+    top_pool = rows[:9]
+    second_pool = rows[9:15]
+    tail_pool = rows[15:]
+    max_swaps = 3 if extra_total >= 3 or escape_pressure >= 0.34 else (2 if extra_total else 1)
+    challenger_pool = [
+        item
+        for item in second_pool
+        if float(item.get("front9_escape_score") or 0.0) >= 0.20 or extra_total
+    ]
+    challenger_pool.sort(
+        key=lambda item: (challenger_strength(item), float(item.get("front9_escape_score") or 0.0), safe_score(item), -int(item["number"])),
+        reverse=True,
+    )
+    swaps = []
+    for challenger in challenger_pool:
+        if len(swaps) >= max_swaps or challenger not in second_pool:
+            continue
+        holder_candidates = [item for item in top_pool if item.get("front9_escape_status") != "已拉回前九"] or top_pool
+        holder = max(
+            holder_candidates,
+            key=lambda item: (holder_weakness(item), -safe_score(item), int(item.get("front9_original_rank") or 0)),
+        )
+        ch_adjusted = challenger_strength(challenger)
+        holder_weakness_value = holder_weakness(holder)
+        holder_adjusted = safe_score(holder) - holder_weakness_value * 0.07
+        force_due_to_escape = extra_total > 0 and float(challenger.get("front9_escape_score") or 0.0) >= 0.24
+        if not force_due_to_escape and ch_adjusted < holder_adjusted * 0.985:
+            continue
+
+        challenger_old_score = safe_score(challenger)
+        top_pool.remove(holder)
+        second_pool.remove(challenger)
+        top_pool.append(challenger)
+        second_pool.append(holder)
+        challenger["front9_escape_status"] = "已拉回前九"
+        holder["front9_escape_status"] = "前九尾端降到備查"
+        challenger["reasons"].append("第10到15名外溢校正拉回前九")
+        holder["reasons"].append("前九外溢檢討後降到備查")
+        challenger["score"] = round(min(1.0, safe_score(challenger) + float(challenger.get("front9_escape_score") or 0.0) * 0.025 + 0.012), 6)
+        holder["score"] = round(
+            max(
+                0.0,
+                min(
+                    safe_score(holder) - 0.09 - holder_weakness_value * 0.035,
+                    challenger_old_score - 0.008,
+                ),
+            ),
+            6,
+        )
+        swaps.append(
+            {
+                "promoted": int(challenger["number"]),
+                "demoted": int(holder["number"]),
+                "promoted_original_rank": int(challenger.get("front9_original_rank") or 0),
+                "demoted_original_rank": int(holder.get("front9_original_rank") or 0),
+                "escape_score": round(float(challenger.get("front9_escape_score") or 0.0), 4),
+                "holder_weakness": round(holder_weakness_value, 4),
+                "rule": "第10到15名外溢訊號高於前九尾端保留強度，執行交換。",
+            }
+        )
+
+    top_pool.sort(
+        key=lambda item: (safe_score(item), float(item.get("front9_escape_score") or 0.0), float(item.get("confidence_index") or 0.0), -int(item["number"])),
+        reverse=True,
+    )
+    rest_pool = second_pool + tail_pool
+    rest_pool.sort(
+        key=lambda item: (safe_score(item), float(item.get("front9_escape_score") or 0.0), float(item.get("confidence_index") or 0.0), -int(item["number"])),
+        reverse=True,
+    )
+    corrected = top_pool + rest_pool
+    for rank, item in enumerate(corrected, 1):
+        item["rank"] = rank
+        item["front9_final_layer"] = "前九核心" if rank <= 9 else ("第10到15名備查" if rank <= 15 else "後段觀察")
+    corrected_top9 = [int(item["number"]) for item in corrected[:9]]
+    net_promoted = [number for number in corrected_top9 if number in set(original_second_layer)]
+    net_demoted = [number for number in original_top9 if number not in set(corrected_top9)]
+
+    audit = {
+        "status": "applied" if swaps else "reviewed_no_swap",
+        "review": {key: value for key, value in review.items() if key != "numbers"},
+        "previous_top9": original_top9,
+        "current_second_layer_before": original_second_layer,
+        "corrected_top9": corrected_top9,
+        "promoted_numbers": net_promoted,
+        "demoted_numbers": net_demoted,
+        "swap_count": len(net_promoted),
+        "swaps": swaps,
+        "rule": "第10到15名補中造成前九失準時，下一期立即壓縮到前九內，目標把主要候選鎖在9顆內。",
+    }
+    return corrected, audit
+
+
 def apply_low_hit_regime_shift(weights: dict[str, float], review: dict) -> tuple[dict[str, float], dict]:
     severity = float(review.get("severity") or 0.0)
     if severity <= 0:
@@ -941,6 +1228,12 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None, fa
                 "last_draw_repeat": last_draw_repeat,
                 "low_hit_recovery_score": round(recovery_score, 4),
                 "recent_miss_penalty": round(miss_penalty, 4),
+                "front9_escape_score": 0.0,
+                "front9_escape_status": "待外溢檢查",
+                "second_layer_hit_count": int(memory.get("second_layer_hit_count") or 0),
+                "leak_count": int(memory.get("leak_count") or 0),
+                "top9_miss_count": int(memory.get("top9_miss_count") or 0),
+                "top9_hit_count": int(memory.get("top9_hit_count") or 0),
                 "strong_single_eligible": not last_draw_repeat,
                 "strict_guard": "最新開獎號不得直接作為本期獨隻" if last_draw_repeat else "通過非最新開獎號獨隻守門",
                 "model_scores": {name: round(scores.get(number, 0.0), 4) for name, scores in models.items()},
@@ -1385,7 +1678,12 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     weights, low_hit_review = apply_low_hit_regime_shift(weights, low_hit_review)
     low_hit_review["failure_memory"] = failure_memory
     scored = score_numbers(draws, weights, failure_memory)
-    candidates = scored["candidates"]
+    candidates, front9_escape_correction = apply_front9_escape_correction(
+        scored["candidates"],
+        failure_memory,
+        settled_history_rows,
+    )
+    scored["candidates"] = candidates
     packs = build_packs(candidates)
     backtest_result = backtest(draws, rounds=rounds, weights=weights)
     metadata = history_metadata()
@@ -1405,7 +1703,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         if item["confidence_index"] >= 86 and item["support_models"] >= 3
     ]
     analysis = {
-        "engine_version": "ghana_daywa39_precision_spec_v3_low_hit_regime_20260727",
+        "engine_version": "ghana_daywa39_precision_spec_v4_front9_escape_20260728",
         "generated_at_taiwan": stamp(now_taiwan()),
         "generated_at_draw_timezone": stamp(now_draw_timezone()),
         "game_spec": asdict(SPEC),
@@ -1421,6 +1719,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         "model_backtest": model_backtest,
         "rolling_error_adjustment": rolling_adjustment,
         "low_hit_regime_shift": low_hit_review,
+        "front9_escape_correction": front9_escape_correction,
         "data_integrity_gate": integrity,
         "backtest": backtest_result,
         "candidates": candidates,
@@ -1435,6 +1734,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
             "cross_validation": "多模型權重由滾動回測仲裁。",
             "rolling_error_rebuild": "每期開獎結算後，以12/30/90期錯誤檢討重新調整全部模型權重。",
             "low_hit_regime_shift": "近期實戰命中低於隨機基準或零命中偏高時，啟動漏抓回補、落空降權與模型權重轉換。",
+            "front9_escape_correction": "每期檢測命中是否掉到第10到15名；若有外溢，立即將第二層強訊號壓回前九。",
             "strong_single_guard": "最強獨隻1中1不得直接使用最新開獎號，必須通過獨立守門。",
             "transparent_report": "輸出JSON、Markdown與HTML戰報。",
             "no_single_model": "至少8個模型來源合成，不讓單一條件主導。",

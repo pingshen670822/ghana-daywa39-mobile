@@ -885,14 +885,24 @@ def prediction_rebuild_standard_html(analysis: dict, settled: dict) -> str:
         ["漏抓回補", fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", "已加回補分", memory.get("rule", "-")],
         ["落空降權", fmt_numbers(memory.get("top_penalty_numbers", [])[:8]) or "-", "已納入降權", "近期前九多次落空者不再無條件保留"],
     ])
+    front9 = analysis.get("front9_escape_correction") or {}
+    review = front9.get("review") or {}
+    rows.extend([
+        ["9名後命中檢討", f"{front9.get('status', '-')} / 樣本 {review.get('sample_size', '-')}", f"外溢 {review.get('second_layer_escape_periods', 0)} 期 / 補中 {review.get('second_layer_extra_hits_total', 0)} 顆", front9.get("rule", "-")],
+        ["拉回前九", fmt_numbers(front9.get("promoted_numbers", [])) or "-", "已交換" if front9.get("promoted_numbers") else "本期無交換", f"原第10到15名：{fmt_numbers(front9.get('current_second_layer_before', [])) or '-'}"],
+        ["降到備查", fmt_numbers(front9.get("demoted_numbers", [])) or "-", "尾端弱號降權" if front9.get("demoted_numbers") else "-", f"校正後前九：{fmt_numbers(front9.get('corrected_top9', [])) or fmt_numbers(top_numbers(analysis, 9))}"],
+    ])
     return '<div class="band warn"><h2>實戰失準回灌重排</h2><p>本區只處理上一期失準、落空、漏抓與降權，不混入本期主推號碼。</p>' + table(["類別", "內容", "處理", "狀態"], rows) + "</div>"
 
 
 def dual_track_standard_html(analysis: dict, history: list[dict]) -> str:
+    front9 = analysis.get("front9_escape_correction") or {}
     rows = [
-        ["原始前九", fmt_numbers(top_numbers(analysis, 9)), "原始排序", "與滾動調整互相比對"],
-        ["第10到15名", fmt_numbers(top_numbers(analysis, 15)[9:15]), "第二層備查", "補中能力獨立追蹤"],
-        ["滾動調整", fmt_numbers(top_numbers(analysis, 9)), "正式顯示", "已套用守門與降權"],
+        ["外溢前前九", fmt_numbers(front9.get("previous_top9", [])) or fmt_numbers(top_numbers(analysis, 9)), "原始排序", "與外溢校正互相比對"],
+        ["原第10到15名", fmt_numbers(front9.get("current_second_layer_before", [])) or fmt_numbers(top_numbers(analysis, 15)[9:15]), "第二層備查", "補中能力獨立追蹤"],
+        ["外溢拉回", fmt_numbers(front9.get("promoted_numbers", [])) or "-", "前九壓縮", "第10到15名補中訊號不得只留備查"],
+        ["外溢降權", fmt_numbers(front9.get("demoted_numbers", [])) or "-", "第二層重排", "前九尾端弱號降到備查"],
+        ["校正後前九", fmt_numbers(front9.get("corrected_top9", [])) or fmt_numbers(top_numbers(analysis, 9)), "正式顯示", "已套用守門、降權與9名後檢討"],
     ]
     return '<div class="band"><h2>雙軌模型對照（原始未調整對照滾動調整）</h2>' + table(["類型", "號碼", "層級", "規則"], rows) + "</div>"
 
@@ -1035,12 +1045,14 @@ def lifecycle_rows(analysis: dict, history: list[dict]) -> list[list]:
     boosted_models = rolling.get("boosted_models_reweighted") or []
     low_hit = analysis.get("low_hit_regime_shift") or {}
     memory = low_hit.get("failure_memory") or {}
+    front9 = analysis.get("front9_escape_correction") or {}
     return [
         ["滾動式修正", "已啟用", avg10, f"{analysis.get('draw_count', '-')} 筆", rolling.get("rule", "每期開獎後重新調整權重")],
         ["錯誤模組重算", "已套用", f"{len(failed_models)} 組降權", f"{len(boosted_models)} 組升權", "全部模型經12/30/90期檢討後重新加權"],
         ["低命中降權", "已啟用", "警示", str(analysis.get("target_draw_date", "-"))[:7], f"落空號自動降權：{fmt_numbers(failed[:10]) or '-'}"],
         ["低命中模式", low_hit.get("status", "-"), f"{low_hit.get('mode', '-')} / {low_hit.get('severity', '-')}", f"{low_hit.get('basis_window', '-')} 期", low_hit.get("rule", "-")],
         ["漏抓回補記憶", memory.get("status", "-"), fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", f"{memory.get('sample_size', '-')} 期", memory.get("rule", "-")],
+        ["9名後外溢校正", front9.get("status", "-"), f"拉回 {fmt_numbers(front9.get('promoted_numbers', [])) or '-'}", f"降下 {fmt_numbers(front9.get('demoted_numbers', [])) or '-'}", front9.get("rule", "-")],
         ["高信心守門", "已啟用", "僅供觀察，禁止正式主推", "-", "未過守門不列正式保證"],
         ["檢討修正", "已納入", "-", "-", "最近5期已納入滾動檢討"],
     ]
@@ -1065,23 +1077,27 @@ def prediction_rebuild_html(analysis: dict, settled: dict) -> str:
         rows.append(["上期前九命中", fmt_numbers(sorted(set(candidates[:9]) & actual)) or "-", "已回灌", "下期重新排序"])
     low_hit = analysis.get("low_hit_regime_shift") or {}
     memory = low_hit.get("failure_memory") or {}
+    front9 = analysis.get("front9_escape_correction") or {}
     rows.extend(
         [
             ["檢討嚴重度", "研究觀察", "每期重算", "已啟用"],
             ["修正動作", "未命中來源降權", "已回灌", "下期重新排序"],
-            ["修正動作", "第二層備查池獨立列出", "已回灌", "不混入前九核心"],
+            ["修正動作", "第二層外溢壓回前九", "已回灌", "不再只停留備查"],
             ["低命中模式", f"{low_hit.get('status', '-')} / {low_hit.get('mode', '-')}", f"嚴重度 {low_hit.get('severity', '-')}", "已轉換權重"],
             ["漏抓回補", fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", "已加回補分", "參與本期排序"],
             ["落空降權", fmt_numbers(memory.get("top_penalty_numbers", [])[:8]) or "-", "已納入降權", "避免連續失準來源主導"],
+            ["9名後外溢", f"拉回 {fmt_numbers(front9.get('promoted_numbers', [])) or '-'}", f"降下 {fmt_numbers(front9.get('demoted_numbers', [])) or '-'}", front9.get("status", "-")],
         ]
     )
     return '<div class="band warn"><h2>上期檢討回灌與下期重建</h2>' + table(["項目", "內容", "管制", "狀態"], rows) + "</div>"
 
 
 def dual_track_html(analysis: dict, history: list[dict]) -> str:
+    front9 = analysis.get("front9_escape_correction") or {}
     rows = [
-        ["前九核心", fmt_numbers(top_numbers(analysis, 9)), "主層", "需通過交叉驗算"],
-        ["第10到15名", fmt_numbers(top_numbers(analysis, 15)[9:15]), "第二層備查", "補中能力獨立追蹤"],
+        ["前九核心", fmt_numbers(front9.get("corrected_top9", [])) or fmt_numbers(top_numbers(analysis, 9)), "主層", "已套用9名後外溢校正"],
+        ["第10到15名", fmt_numbers(top_numbers(analysis, 15)[9:15]), "第二層備查", "補中能力獨立追蹤並可拉回前九"],
+        ["本期拉回", fmt_numbers(front9.get("promoted_numbers", [])) or "-", "前九壓縮", "外溢強訊號交換尾端弱號"],
         ["低機率暫避", fmt_numbers((analysis.get("low_probability") or {}).get("avoid_5", [])), "風控層", "不等於絕對不開"],
     ]
     return '<div class="band"><h2>雙軌候選與備查池</h2>' + table(["類型", "號碼", "層級", "規則"], rows) + "</div>"
@@ -1124,12 +1140,14 @@ def stability_governor_html(analysis: dict, settled: dict) -> str:
     failed_models = rolling.get("failed_models_reweighted") or []
     low_hit = analysis.get("low_hit_regime_shift") or {}
     memory = low_hit.get("failure_memory") or {}
+    front9 = analysis.get("front9_escape_correction") or {}
     rows = [
         ["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"],
         ["已套用修正", "重複預測但未通過守門者自動降權"],
-        ["已套用修正", "第10到15名補中能力獨立追蹤"],
+        ["已套用修正", "第10到15名補中能力獨立追蹤並壓回前九"],
         ["已套用修正", f"錯誤模組滾動重算：{', '.join(failed_models) if failed_models else '本期無硬降權'}"],
         ["已套用修正", f"低命中權重轉換：{low_hit.get('mode', '-')} / 嚴重度 {low_hit.get('severity', '-')}"],
+        ["已套用修正", f"9名後外溢校正：拉回 {fmt_numbers(front9.get('promoted_numbers', [])) or '-'}；降下 {fmt_numbers(front9.get('demoted_numbers', [])) or '-'}"],
         ["已套用修正", f"漏抓回補：{fmt_numbers(memory.get('top_leak_numbers', [])[:8]) or '-'}"],
         ["已套用修正", f"落空降權：{fmt_numbers(memory.get('top_penalty_numbers', [])[:8]) or '-'}"],
     ]

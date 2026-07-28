@@ -1,15 +1,15 @@
 {
-  "version": "20260727124142",
-  "generated_at_taiwan": "2026-07-27T12:41:42+08:00",
-  "latest_draw_date": "2026-07-26",
+  "version": "20260728153031",
+  "generated_at_taiwan": "2026-07-28T15:30:31+08:00",
+  "latest_draw_date": "2026-07-28",
   "latest_numbers": [
     9,
-    19,
-    25,
+    28,
+    36,
     37,
-    39
+    38
   ],
-  "target_draw_date": "2026-07-27",
+  "target_draw_date": "2026-07-29",
   "independent_mobile": true,
   "standard": "ghana39"
 }
