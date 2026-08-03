@@ -97,6 +97,8 @@ BASE_WEIGHTS = {
 ROLLING_REVIEW_WINDOWS = (12, 30, 90)
 LOW_HIT_REVIEW_WINDOWS = (5, 10, 20)
 FRONT9_ESCAPE_REVIEW_LIMIT = 24
+HIT_RATE_PORTFOLIO_POOL = 16
+HIT_RATE_PORTFOLIO_SIZE = 9
 
 
 def setup_dirs() -> None:
@@ -1167,6 +1169,61 @@ def apply_low_hit_regime_shift(weights: dict[str, float], review: dict) -> tuple
     return final, review
 
 
+def apply_external_method_weight_shift(
+    weights: dict[str, float],
+    model_backtest: dict,
+    rolling_adjustment: dict,
+) -> tuple[dict[str, float], dict]:
+    models = (model_backtest or {}).get("models") or {}
+    pair_avg = float((models.get("pair_lift") or {}).get("top9_avg_hits") or 0.0)
+    shape_avg = float((models.get("shape_follow") or {}).get("top9_avg_hits") or 0.0)
+    best_model = max(models.items(), key=lambda item: float((item[1] or {}).get("top9_avg_hits") or 0.0))[0] if models else ""
+    rolling_pair = (((rolling_adjustment or {}).get("models") or {}).get("pair_lift") or {})
+    pair_recent = float((((rolling_pair.get("windows") or {}).get("12") or {}).get("top9_avg_hits")) or 0.0)
+    template = {
+        "multi_window_frequency": 0.02,
+        "omission_phase": 0.05,
+        "pair_lift": 0.45,
+        "shape_follow": 0.19,
+        "tail_zone_balance": 0.04,
+        "sum_band_neighbor": 0.12,
+        "trend_break": 0.11,
+        "date_cycle": 0.02,
+    }
+    should_shift = pair_avg >= RANDOM_TOP9 and (best_model == "pair_lift" or pair_recent >= RANDOM_TOP9)
+    if not should_shift:
+        return dict(weights), {
+            "status": "not_applied",
+            "best_model": best_model,
+            "pair_lift_top9_avg": round(pair_avg, 4),
+            "shape_follow_top9_avg": round(shape_avg, 4),
+            "pair_lift_recent12_top9_avg": round(pair_recent, 4),
+            "rule": "只有拖牌/配對模型在回測或近期窗口勝出時，才啟動外部 companion/pair-heavy 權重。",
+        }
+    edge = pair_avg - RANDOM_TOP9
+    intensity = 0.82 if edge >= 0.04 else 0.66
+    if pair_recent >= RANDOM_TOP9 + 0.25:
+        intensity = max(intensity, 0.90)
+    adjusted = {
+        name: max(0.005, float(weights.get(name, 0.0)) * (1.0 - intensity) + template.get(name, 0.0) * intensity)
+        for name in BASE_WEIGHTS
+    }
+    total = sum(adjusted.values()) or 1.0
+    final = {name: round(value / total, 6) for name, value in adjusted.items()}
+    return final, {
+        "status": "applied",
+        "mode": "companion_pair_heavy",
+        "best_model": best_model,
+        "intensity": round(intensity, 4),
+        "pair_lift_top9_avg": round(pair_avg, 4),
+        "shape_follow_top9_avg": round(shape_avg, 4),
+        "pair_lift_recent12_top9_avg": round(pair_recent, 4),
+        "before_weights": {name: round(float(weights.get(name, 0.0)), 6) for name in BASE_WEIGHTS},
+        "after_weights": final,
+        "rule": "參考外部預測系統的 companion/pair 模式；當拖牌關聯回測勝出時，強制升權配對共現、牌型跟隨與趨勢，降權失效頻率堆疊。",
+    }
+
+
 def candidate_reasons(number: int, models: dict[str, dict[int, float]], limit: int = 5) -> list[str]:
     support = []
     for name, scores in models.items():
@@ -1203,6 +1260,7 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None, fa
     rows = []
     for number in NUMBERS:
         confidence = 50 + guarded[number] * 49
+        calibrated_probability = SPEC.draw_size / SPEC.number_max * (0.70 + guarded[number] * 0.62)
         support_count = sum(1 for scores in models.values() if scores.get(number, 0.0) >= 0.62)
         reasons = candidate_reasons(number, models)
         last_draw_repeat = number in latest_numbers
@@ -1220,7 +1278,8 @@ def score_numbers(draws: list[dict], weights: dict[str, float] | None = None, fa
                 "number": number,
                 "score": round(guarded[number], 6),
                 "confidence_index": round(confidence, 1),
-                "model_probability_index": round(max(1.0, min(28.0, (confidence - 50) / 49 * 25)), 2),
+                "model_probability_index": round(clamp(calibrated_probability * 100, 1.0, 18.5), 2),
+                "probability_label": "校準單號命中強度",
                 "omission": gaps[number],
                 "zone": zone_label(number),
                 "support_models": support_count,
@@ -1274,6 +1333,192 @@ def coverage_score(numbers: list[int]) -> float:
     span = max(numbers) - min(numbers) if numbers else 0
     span_score = min(1.0, span / 28)
     return max(0.0, 0.72 + span_score * 0.18 - zone_collision * 0.08 - tail_collision * 0.035)
+
+
+def companion_pair_matrix(draws: list[dict], window: int = 420) -> dict[tuple[int, int], float]:
+    subset = draws[-window:] if len(draws) > window else draws
+    if not subset:
+        return {}
+    counts = Counter()
+    for draw in subset:
+        for left, right in combinations(sorted(int(number) for number in draw["numbers"]), 2):
+            counts[(left, right)] += 1
+    expected = len(subset) * combinations_count(SPEC.draw_size, 2) / max(combinations_count(SPEC.number_max, 2), 1)
+    raw = {
+        pair: max(0.0, (count - expected) / max(expected, 1e-9))
+        for pair, count in counts.items()
+        if count >= 2
+    }
+    return {pair: round(value, 6) for pair, value in normalize_any(raw).items()}
+
+
+def group_pair_score(numbers: list[int], pair_matrix: dict[tuple[int, int], float]) -> float:
+    pairs = list(combinations(sorted(numbers), 2))
+    if not pairs:
+        return 0.0
+    return round(sum(pair_matrix.get(tuple(pair), 0.0) for pair in pairs) / len(pairs), 6)
+
+
+def portfolio_balance_score(numbers: list[int]) -> float:
+    if not numbers:
+        return 0.0
+    ordered = sorted(numbers)
+    odd = sum(number % 2 for number in ordered)
+    high = sum(1 for number in ordered if number >= 20)
+    zones = Counter(zone_label(number) for number in ordered)
+    tails = Counter(number % 10 for number in ordered)
+    span = ordered[-1] - ordered[0]
+    score = 1.0
+    score -= abs(odd - 4.5) / 4.5 * 0.18
+    score -= abs(high - 4.5) / 4.5 * 0.16
+    score -= sum(max(0, count - 3) for count in zones.values()) * 0.075
+    score -= sum(1 for label in ("01-10", "11-20", "21-30", "31-39") if zones.get(label, 0) == 0) * 0.08
+    score -= sum(max(0, count - 1) for count in tails.values()) * 0.035
+    if span < 20:
+        score -= (20 - span) / 20 * 0.10
+    return round(clamp(score, 0.0, 1.0), 6)
+
+
+def candidate_portfolio_signal(item: dict, memory_numbers: dict | None = None) -> float:
+    memory_numbers = memory_numbers or {}
+    number = int(item["number"])
+    memory = memory_numbers.get(number) or {}
+    base = float(item.get("score") or 0.0)
+    support = min(1.0, float(item.get("support_models") or 0.0) / max(len(MODEL_LABELS), 1))
+    recovery = float(item.get("low_hit_recovery_score") or memory.get("recovery_score") or 0.0)
+    escape = float(item.get("front9_escape_score") or 0.0)
+    penalty = float(item.get("recent_miss_penalty") or memory.get("miss_penalty") or 0.0)
+    repeat_penalty = 0.10 if item.get("last_draw_repeat") else 0.0
+    return round(clamp(base * 0.66 + support * 0.16 + recovery * 0.11 + escape * 0.09 - penalty * 0.10 - repeat_penalty, 0.0, 1.0), 6)
+
+
+def portfolio_quality(numbers: list[int], candidate_map: dict[int, dict], pair_matrix: dict[tuple[int, int], float], memory_numbers: dict | None = None) -> dict:
+    signals = [candidate_portfolio_signal(candidate_map[number], memory_numbers) for number in numbers]
+    avg_signal = sum(signals) / len(signals)
+    floor_signal = min(signals)
+    pair_score = group_pair_score(numbers, pair_matrix)
+    balance = portfolio_balance_score(numbers)
+    latest_repeat_count = sum(1 for number in numbers if candidate_map[number].get("last_draw_repeat"))
+    score = (
+        avg_signal * 0.47
+        + floor_signal * 0.18
+        + pair_score * 0.18
+        + balance * 0.14
+        - latest_repeat_count * 0.025
+    )
+    return {
+        "score": round(clamp(score, 0.0, 1.0), 6),
+        "avg_signal": round(avg_signal, 6),
+        "floor_signal": round(floor_signal, 6),
+        "pair_score": round(pair_score, 6),
+        "balance_score": round(balance, 6),
+        "latest_repeat_count": latest_repeat_count,
+    }
+
+
+def optimize_hit_rate_portfolio(
+    candidates: list[dict],
+    draws: list[dict],
+    failure_memory: dict | None = None,
+    pool_size: int = HIT_RATE_PORTFOLIO_POOL,
+    target_size: int = HIT_RATE_PORTFOLIO_SIZE,
+) -> tuple[list[dict], dict]:
+    if len(candidates) <= target_size:
+        return candidates, {
+            "status": "inactive",
+            "rule": "候選數不足，不啟動整組命中率優化。",
+            "selected_numbers": [int(item["number"]) for item in candidates],
+        }
+    rows = []
+    for item in candidates:
+        cloned = dict(item)
+        cloned["reasons"] = list(item.get("reasons") or [])
+        rows.append(cloned)
+    candidate_map = {int(item["number"]): item for item in rows}
+    memory_numbers = (failure_memory or {}).get("numbers") or {}
+    pool = [int(item["number"]) for item in rows[: min(pool_size, len(rows))]]
+    original_top9 = [int(item["number"]) for item in rows[:target_size]]
+    pair_matrix = companion_pair_matrix(draws)
+    best_numbers = original_top9
+    best_detail = portfolio_quality(best_numbers, candidate_map, pair_matrix, memory_numbers)
+    original_detail = dict(best_detail)
+    for combo in combinations(pool, target_size):
+        detail = portfolio_quality(list(combo), candidate_map, pair_matrix, memory_numbers)
+        if (
+            detail["score"],
+            detail["floor_signal"],
+            detail["pair_score"],
+            sum(candidate_portfolio_signal(candidate_map[number], memory_numbers) for number in combo),
+        ) > (
+            best_detail["score"],
+            best_detail["floor_signal"],
+            best_detail["pair_score"],
+            sum(candidate_portfolio_signal(candidate_map[number], memory_numbers) for number in best_numbers),
+        ):
+            best_numbers = list(combo)
+            best_detail = detail
+    improvement = float(best_detail.get("score") or 0.0) - float(original_detail.get("score") or 0.0)
+    if improvement < 0.025:
+        best_numbers = original_top9
+        best_detail = original_detail
+    selected = set(best_numbers)
+    promoted = [number for number in best_numbers if number not in set(original_top9)]
+    demoted = [number for number in original_top9 if number not in selected]
+    for number in best_numbers:
+        item = candidate_map[number]
+        item["hit_rate_optimizer_score"] = candidate_portfolio_signal(item, memory_numbers)
+        item["hit_rate_optimizer_status"] = "整組命中率入選"
+        if "整組命中率優化入選" not in item["reasons"]:
+            item["reasons"].append("整組命中率優化入選")
+        item["score"] = round(min(1.0, float(item.get("score") or 0.0) + 0.008 + item["hit_rate_optimizer_score"] * 0.012), 6)
+    for number in demoted:
+        item = candidate_map[number]
+        item["hit_rate_optimizer_score"] = candidate_portfolio_signal(item, memory_numbers)
+        item["hit_rate_optimizer_status"] = "整組命中率降到備查"
+        if "整組命中率檢討降到備查" not in item["reasons"]:
+            item["reasons"].append("整組命中率檢討降到備查")
+        item["score"] = round(max(0.0, float(item.get("score") or 0.0) - 0.055), 6)
+    top = sorted(
+        [candidate_map[number] for number in best_numbers],
+        key=lambda item: (candidate_portfolio_signal(item, memory_numbers), float(item.get("score") or 0.0), -int(item["number"])),
+        reverse=True,
+    )
+    rest = sorted(
+        [item for item in rows if int(item["number"]) not in selected],
+        key=lambda item: (float(item.get("score") or 0.0), candidate_portfolio_signal(item, memory_numbers), -int(item["number"])),
+        reverse=True,
+    )
+    optimized = top + rest
+    for rank, item in enumerate(optimized, 1):
+        item["rank"] = rank
+    audit = {
+        "status": "applied" if promoted or demoted else "reviewed_no_change",
+        "method": "frequency_timing_recency_companion_momentum_balance_backtest",
+        "pool_size": len(pool),
+        "target_size": target_size,
+        "previous_top9": original_top9,
+        "selected_numbers": [int(item["number"]) for item in optimized[:target_size]],
+        "promoted_numbers": promoted,
+        "demoted_numbers": demoted,
+        "portfolio_score": best_detail["score"],
+        "portfolio_score_before": original_detail["score"],
+        "portfolio_improvement": round(improvement, 6),
+        "avg_signal": best_detail["avg_signal"],
+        "floor_signal": best_detail["floor_signal"],
+        "pair_score": best_detail["pair_score"],
+        "balance_score": best_detail["balance_score"],
+        "latest_repeat_count": best_detail["latest_repeat_count"],
+        "adopted_external_modes": [
+            "多窗口頻率",
+            "遺漏/跳期",
+            "近期動能",
+            "共現配對",
+            "奇偶高低與區間平衡",
+            "整組回測式選號",
+        ],
+        "rule": "前九不再只照單號分數排序，改用整組命中率分數、配對共現、區間平衡與近期錯誤回饋共同決定。",
+    }
+    return optimized, audit
 
 
 def combo_quality(numbers: list[int], candidate_map: dict[int, dict]) -> float:
@@ -1335,6 +1580,25 @@ def build_packs(candidates: list[dict]) -> dict:
     return packs
 
 
+def calibrated_high_confidence_gate(backtest_result: dict, low_hit_review: dict, optimizer_audit: dict) -> dict:
+    top9_edge = float(backtest_result.get("top9_edge_vs_random") or 0.0)
+    top9_avg = float(backtest_result.get("top9_avg_hits") or 0.0)
+    zero_rate = float(((backtest_result.get("pack_summary") or {}).get("nine_hit_three") or {}).get("zero_rate") or 1.0)
+    severity = float(low_hit_review.get("severity") or 0.0)
+    portfolio_score = float(optimizer_audit.get("portfolio_score") or 0.0)
+    passed = top9_edge >= 0.0 and top9_avg >= RANDOM_TOP9 and zero_rate <= 0.30 and severity < 0.72 and portfolio_score >= 0.52
+    return {
+        "status": "passed" if passed else "blocked",
+        "top9_edge_vs_random": round(top9_edge, 4),
+        "top9_avg_hits": round(top9_avg, 4),
+        "random_top9_expectation": round(RANDOM_TOP9, 4),
+        "nine_pack_zero_rate": round(zero_rate, 4),
+        "low_hit_severity": round(severity, 4),
+        "portfolio_score": round(portfolio_score, 4),
+        "rule": "只有回測前九高於隨機基準、零命中率低於30%且整組優化分數通過時，才允許標成高機率；未通過只列強化候選。",
+    }
+
+
 def backtest(draws: list[dict], rounds: int, weights: dict[str, float]) -> dict:
     if len(draws) < 80:
         return {"rounds": 0, "status": "history_too_short"}
@@ -1346,12 +1610,13 @@ def backtest(draws: list[dict], rounds: int, weights: dict[str, float]) -> dict:
         train = draws[: index + 1]
         actual = set(draws[index + 1]["numbers"])
         scored = score_numbers(train, weights)
-        ranked = [item["number"] for item in scored["candidates"]]
+        optimized_candidates, _ = optimize_hit_rate_portfolio(scored["candidates"], train, pool_size=14)
+        ranked = [item["number"] for item in optimized_candidates]
         totals["top5"] += len(set(ranked[:5]) & actual)
         totals["top9"] += len(set(ranked[:9]) & actual)
         totals["top10"] += len(set(ranked[:10]) & actual)
         totals["top15"] += len(set(ranked[:15]) & actual)
-        for key, pack in build_packs(scored["candidates"]).items():
+        for key, pack in build_packs(optimized_candidates).items():
             hits = len(set(pack["numbers"]) & actual)
             pack_hits[key].append(hits)
         count += 1
@@ -1676,16 +1941,19 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     failure_memory = failure_memory_from_settled(settled_history_rows)
     weights, rolling_adjustment = rolling_error_adjusted_weights(draws, base_weights, rounds=rounds)
     weights, low_hit_review = apply_low_hit_regime_shift(weights, low_hit_review)
+    weights, external_method_shift = apply_external_method_weight_shift(weights, model_backtest, rolling_adjustment)
     low_hit_review["failure_memory"] = failure_memory
     scored = score_numbers(draws, weights, failure_memory)
+    candidates, hit_rate_optimizer = optimize_hit_rate_portfolio(scored["candidates"], draws, failure_memory)
     candidates, front9_escape_correction = apply_front9_escape_correction(
-        scored["candidates"],
+        candidates,
         failure_memory,
         settled_history_rows,
     )
     scored["candidates"] = candidates
     packs = build_packs(candidates)
     backtest_result = backtest(draws, rounds=rounds, weights=weights)
+    high_confidence_gate = calibrated_high_confidence_gate(backtest_result, low_hit_review, hit_rate_optimizer)
     metadata = history_metadata()
     completeness = history_completeness(len(draws), metadata)
     fresh = freshness(latest["draw_date"], target_date)
@@ -1700,10 +1968,10 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     high_confidence = [
         item
         for item in candidates[:9]
-        if item["confidence_index"] >= 86 and item["support_models"] >= 3
+        if high_confidence_gate["status"] == "passed" and item["confidence_index"] >= 86 and item["support_models"] >= 3
     ]
     analysis = {
-        "engine_version": "ghana_daywa39_precision_spec_v4_front9_escape_20260728",
+        "engine_version": "ghana_daywa39_precision_spec_v5_hit_rate_portfolio_20260804",
         "generated_at_taiwan": stamp(now_taiwan()),
         "generated_at_draw_timezone": stamp(now_draw_timezone()),
         "game_spec": asdict(SPEC),
@@ -1718,7 +1986,10 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         "base_model_weights": base_weights,
         "model_backtest": model_backtest,
         "rolling_error_adjustment": rolling_adjustment,
+        "external_method_weight_shift": external_method_shift,
         "low_hit_regime_shift": low_hit_review,
+        "hit_rate_optimizer": hit_rate_optimizer,
+        "high_confidence_gate": high_confidence_gate,
         "front9_escape_correction": front9_escape_correction,
         "data_integrity_gate": integrity,
         "backtest": backtest_result,
@@ -1734,6 +2005,8 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
             "cross_validation": "多模型權重由滾動回測仲裁。",
             "rolling_error_rebuild": "每期開獎結算後，以12/30/90期錯誤檢討重新調整全部模型權重。",
             "low_hit_regime_shift": "近期實戰命中低於隨機基準或零命中偏高時，啟動漏抓回補、落空降權與模型權重轉換。",
+            "external_method_shift": "參考外部預測系統常用的 companion/pair、hot/cold、overdue、balance、backtest，近期勝出模型自動升權。",
+            "hit_rate_portfolio": "前九改用整組命中率優化：單號分數、共現配對、區間平衡、錯誤回饋與回測門檻共同決定。",
             "front9_escape_correction": "每期檢測命中是否掉到第10到15名；若有外溢，立即將第二層強訊號壓回前九。",
             "strong_single_guard": "最強獨隻1中1不得直接使用最新開獎號，必須通過獨立守門。",
             "transparent_report": "輸出JSON、Markdown與HTML戰報。",

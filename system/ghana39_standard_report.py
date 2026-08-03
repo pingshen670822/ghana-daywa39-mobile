@@ -234,11 +234,21 @@ def decorate_analysis(analysis: dict) -> dict:
 
     top9 = top_numbers(analysis, 9)
     top15 = top_numbers(analysis, 15)
-    high = [
-        {"number": int(item["number"]), "score": item.get("confidence_index"), "rank": item.get("rank")}
-        for item in candidates[:9]
-        if float(item.get("confidence_index", 0) or 0) >= 86 and int(item.get("support_models", 0) or 0) >= 3
-    ]
+    gate = analysis.get("high_confidence_gate") or {}
+    existing_high = analysis.get("high_confidence_watch") or []
+    if gate.get("status") == "passed" and existing_high:
+        high = [
+            {"number": int(item["number"]), "score": item.get("confidence_index"), "rank": item.get("rank")}
+            for item in existing_high
+        ]
+    elif gate.get("status") == "passed":
+        high = [
+            {"number": int(item["number"]), "score": item.get("confidence_index"), "rank": item.get("rank")}
+            for item in candidates[:9]
+            if float(item.get("confidence_index", 0) or 0) >= 86 and int(item.get("support_models", 0) or 0) >= 3
+        ]
+    else:
+        high = []
     packs = analysis.get("strong_packs") or {}
     analysis["prediction"] = {
         "top5": top_numbers(analysis, 5),
@@ -895,6 +905,26 @@ def prediction_rebuild_standard_html(analysis: dict, settled: dict) -> str:
     return '<div class="band warn"><h2>實戰失準回灌重排</h2><p>本區只處理上一期失準、落空、漏抓與降權，不混入本期主推號碼。</p>' + table(["類別", "內容", "處理", "狀態"], rows) + "</div>"
 
 
+def hit_rate_optimizer_html(analysis: dict) -> str:
+    optimizer = analysis.get("hit_rate_optimizer") or {}
+    gate = analysis.get("high_confidence_gate") or {}
+    external = analysis.get("external_method_weight_shift") or {}
+    rows = [
+        ["外部模式權重", f"{external.get('status', '-')} / {external.get('mode', '-')}", f"強度 {external.get('intensity', '-')}", external.get("rule", "-")],
+        ["配對模型回測", f"Top9 {external.get('pair_lift_top9_avg', '-')}", f"近期12期 {external.get('pair_lift_recent12_top9_avg', '-')}", "配對勝出才升權"],
+        ["整組命中率優化", optimizer.get("status", "-"), fmt_numbers(optimizer.get("selected_numbers", [])) or "-", optimizer.get("rule", "-")],
+        ["拉進前九", fmt_numbers(optimizer.get("promoted_numbers", [])) or "-", f"組合分 {optimizer.get('portfolio_score', '-')}", "從候選池挑整組，不只看單號分"],
+        ["降到備查", fmt_numbers(optimizer.get("demoted_numbers", [])) or "-", f"底部分 {optimizer.get('floor_signal', '-')}", "前九尾端若拖低整組命中率就降下"],
+        ["配對共現", f"{optimizer.get('pair_score', '-')}", "companion / pair", "採用共現配對而非單號孤立排序"],
+        ["區間平衡", f"{optimizer.get('balance_score', '-')}", "odd/even high/low zone", "避免前九集中同一尾數或同一區間"],
+        ["高機率校準門檻", gate.get("status", "-"), f"Top9 {gate.get('top9_avg_hits', '-')} / 隨機 {gate.get('random_top9_expectation', '-')}", gate.get("rule", "-")],
+    ]
+    adopted = optimizer.get("adopted_external_modes") or []
+    if adopted:
+        rows.append(["外部模式已採用", "、".join(adopted), "已進排序", "頻率、遺漏、動能、配對、平衡、回測共同使用"])
+    return '<div class="band warn"><h2>命中率強化優化</h2><p>本區檢查高機率是否真的通過回測與整組命中率門檻；未通過不再硬標高機率。</p>' + table(["項目", "內容", "數據", "處理"], rows) + "</div>"
+
+
 def dual_track_standard_html(analysis: dict, history: list[dict]) -> str:
     front9 = analysis.get("front9_escape_correction") or {}
     rows = [
@@ -968,6 +998,7 @@ def standard_full_body(analysis: dict, settled: dict, history: list[dict]) -> st
         + "</div>"
         + formula_standard_html(analysis)
         + prediction_rebuild_standard_html(analysis, settled)
+        + hit_rate_optimizer_html(analysis)
         + dual_track_standard_html(analysis, history)
         + original_rank_html(analysis)
         + recent_period_compare_html(history)
@@ -1046,9 +1077,15 @@ def lifecycle_rows(analysis: dict, history: list[dict]) -> list[list]:
     low_hit = analysis.get("low_hit_regime_shift") or {}
     memory = low_hit.get("failure_memory") or {}
     front9 = analysis.get("front9_escape_correction") or {}
+    optimizer = analysis.get("hit_rate_optimizer") or {}
+    gate = analysis.get("high_confidence_gate") or {}
+    external = analysis.get("external_method_weight_shift") or {}
     return [
         ["滾動式修正", "已啟用", avg10, f"{analysis.get('draw_count', '-')} 筆", rolling.get("rule", "每期開獎後重新調整權重")],
         ["錯誤模組重算", "已套用", f"{len(failed_models)} 組降權", f"{len(boosted_models)} 組升權", "全部模型經12/30/90期檢討後重新加權"],
+        ["外部模式升權", external.get("status", "-"), external.get("mode", "-"), f"配對Top9 {external.get('pair_lift_top9_avg', '-')}", external.get("rule", "-")],
+        ["命中率組合優化", optimizer.get("status", "-"), f"拉進 {fmt_numbers(optimizer.get('promoted_numbers', [])) or '-'}", f"降下 {fmt_numbers(optimizer.get('demoted_numbers', [])) or '-'}", optimizer.get("rule", "-")],
+        ["高機率校準", gate.get("status", "-"), f"Top9 {gate.get('top9_avg_hits', '-')}", f"隨機 {gate.get('random_top9_expectation', '-')}", gate.get("rule", "-")],
         ["低命中降權", "已啟用", "警示", str(analysis.get("target_draw_date", "-"))[:7], f"落空號自動降權：{fmt_numbers(failed[:10]) or '-'}"],
         ["低命中模式", low_hit.get("status", "-"), f"{low_hit.get('mode', '-')} / {low_hit.get('severity', '-')}", f"{low_hit.get('basis_window', '-')} 期", low_hit.get("rule", "-")],
         ["漏抓回補記憶", memory.get("status", "-"), fmt_numbers(memory.get("top_leak_numbers", [])[:8]) or "-", f"{memory.get('sample_size', '-')} 期", memory.get("rule", "-")],
@@ -1141,8 +1178,14 @@ def stability_governor_html(analysis: dict, settled: dict) -> str:
     low_hit = analysis.get("low_hit_regime_shift") or {}
     memory = low_hit.get("failure_memory") or {}
     front9 = analysis.get("front9_escape_correction") or {}
+    optimizer = analysis.get("hit_rate_optimizer") or {}
+    gate = analysis.get("high_confidence_gate") or {}
+    external = analysis.get("external_method_weight_shift") or {}
     rows = [
         ["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"],
+        ["已套用修正", f"外部模式權重：{external.get('status', '-')}；配對Top9 {external.get('pair_lift_top9_avg', '-')}"],
+        ["已套用修正", f"命中率強化：拉進 {fmt_numbers(optimizer.get('promoted_numbers', [])) or '-'}；降下 {fmt_numbers(optimizer.get('demoted_numbers', [])) or '-'}"],
+        ["已套用修正", f"高機率校準：{gate.get('status', '-')}；Top9 {gate.get('top9_avg_hits', '-')} / 隨機 {gate.get('random_top9_expectation', '-')}"],
         ["已套用修正", "重複預測但未通過守門者自動降權"],
         ["已套用修正", "第10到15名補中能力獨立追蹤並壓回前九"],
         ["已套用修正", f"錯誤模組滾動重算：{', '.join(failed_models) if failed_models else '本期無硬降權'}"],
