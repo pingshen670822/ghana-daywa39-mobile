@@ -8,6 +8,7 @@
     main{padding:12px;max-width:720px;margin:0 auto}
     .band,.card,.number-card,.pack-card{background:white;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;overflow:auto}
     .launch-panel{border:3px solid #166534;background:#f0fdf4}
+    .ultra-card{border:3px solid #b91c1c;background:#fff1f2}
     .warn{background:#fff7ed;border-color:#fed7aa}
     .grid{display:grid;gap:10px}
     .label{color:var(--muted);font-size:13px;font-weight:800}
@@ -45,9 +46,9 @@
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
-    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20260803204256</p></section></main>
+    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20260804080525</p></section></main>
     <script>
-    window.GHANA39_BUILD_VERSION = '20260803204256';
+    window.GHANA39_BUILD_VERSION = '20260804080525';
     window.GHANA39_HOME_PAGE = 'home.html';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
@@ -93,11 +94,11 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20260803204256&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20260804080525&force=' + Date.now());
     }
     async function autoRefreshIfStale() {
       try {
-        const res = await fetch('version.json?check=' + Date.now(), { cache: 'no-store' });
+        const res = await fetch('version.json?check=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
         if (!res.ok) return;
         const data = await res.json();
         const stamp = String(data.version || data.generated_at_taiwan || '').replace(/\D/g, '').slice(0, 14);
@@ -108,9 +109,11 @@
         }
       } catch (err) {}
     }
+    autoRefreshIfStale();
+    window.addEventListener('pageshow', autoRefreshIfStale);
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20260803204256', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20260804080525', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });
