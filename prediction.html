@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#111827">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ghana39">
-  <link rel="manifest" href="manifest.webmanifest?v=20260807192251">
+  <link rel="manifest" href="manifest.webmanifest?v=20260807200950">
   <title>迦納彩39 下期預測</title>
   <style>
     :root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#dbe4ef;--brand:#0f766e;--hot:#b91c1c;--soft:#f6f8fb;}
@@ -63,7 +63,7 @@
 <body>
 <header>
   <h1>迦納彩39 下期預測</h1>
-  <p>非洲迦納彩 Daywa 5/39 Direct / 版本 20260807192251</p>
+  <p>非洲迦納彩 Daywa 5/39 Direct / 版本 20260807200950</p>
   <p>最新 2026-08-07：02 07 22 26 39；預測 2026-08-08</p>
   <p>歷史資料：官方公開資料不完整 / 共 711 筆</p>
 </header>
@@ -71,16 +71,16 @@
   <section class="band launch-panel">
     <div class="launch-title">迦納彩39 手機雲端獨立版</div>
     <button class="mobile-refresh" type="button" onclick="forceRefresh()">重新讀取雲端最新頁</button>
-    <a class="cloud-update-link" href="clear-cache.html?v=20260807192251">手機沒更新點這裡清除舊快取</a>
+    <a class="cloud-update-link" href="clear-cache.html?v=20260807200950">手機沒更新點這裡清除舊快取</a>
     <div class="quick-links">
-      <a href="prediction.html?v=20260807192251">下期預測</a>
-      <a href="review.html?v=20260807192251">上期檢討</a>
-      <a href="low-probability.html?v=20260807192251" class="secondary">低機率</a>
-      <a href="full-report.html?v=20260807192251" class="secondary">完整戰報</a>
+      <a href="prediction.html?v=20260807200950">下期預測</a>
+      <a href="review.html?v=20260807200950">上期檢討</a>
+      <a href="low-probability.html?v=20260807200950" class="secondary">低機率</a>
+      <a href="full-report.html?v=20260807200950" class="secondary">完整戰報</a>
     </div>
     <p class="cloud-note">本頁為獨立雲端手機版：首頁、下期預測、上期檢討、低機率、完整戰報都在手機站內完成。</p>
     <p class="cloud-note">NLA官方公開接口目前可驗證範圍：2024-04-10..2026-08-07；2000-01-01..2024-03-31 掃描狀態：no_official_rows_returned；依官方期號序列推估公開起點前至少缺 1082 期。</p>
-    <p class="cloud-note" id="mobileUpdateStatus">版本 20260807192251</p>
+    <p class="cloud-note" id="mobileUpdateStatus">版本 20260807200950</p>
   </section>
   
     <section class="band">
@@ -118,7 +118,7 @@
 <nav class="bottom-nav"><a class="" href="home.html">首頁</a><a class="active" href="prediction.html">預測</a><a class="" href="review.html">檢討</a><a class="" href="low-probability.html">低機率</a><a class="" href="full-report.html">完整</a></nav>
 
     <script>
-    window.GHANA39_BUILD_VERSION = '20260807192251';
+    window.GHANA39_BUILD_VERSION = '20260807200950';
     window.GHANA39_HOME_PAGE = 'home.html';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
@@ -164,7 +164,7 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20260807192251&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20260807200950&force=' + Date.now());
     }
     async function autoRefreshIfStale() {
       try {
@@ -181,7 +181,7 @@
     }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20260807192251', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20260807200950', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });
