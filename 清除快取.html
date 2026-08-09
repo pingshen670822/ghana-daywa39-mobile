@@ -45,9 +45,9 @@
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
-    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20260807232638</p></section></main>
+    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20260809180547</p></section></main>
     <script>
-    window.GHANA39_BUILD_VERSION = '20260807232638';
+    window.GHANA39_BUILD_VERSION = '20260809180547';
     window.GHANA39_HOME_PAGE = 'home.html';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
@@ -93,7 +93,7 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20260807232638&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20260809180547&force=' + Date.now());
     }
     async function autoRefreshIfStale() {
       try {
@@ -110,7 +110,7 @@
     }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20260807232638', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20260809180547', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });
