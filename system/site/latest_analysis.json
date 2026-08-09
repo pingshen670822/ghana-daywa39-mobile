@@ -1,7 +1,7 @@
 {
   "engine_version": "ghana_daywa39_precision_spec_v5_hit_rate_portfolio_20260804",
-  "generated_at_taiwan": "2026-08-09T21:31:38+08:00",
-  "generated_at_draw_timezone": "2026-08-09T21:31:38+08:00",
+  "generated_at_taiwan": "2026-08-09T22:10:44+08:00",
+  "generated_at_draw_timezone": "2026-08-09T22:10:44+08:00",
   "game_spec": {
     "code": "GH_DAYWA39",
     "display_name": "非洲迦納彩 Daywa 5/39 Direct",
@@ -327,7 +327,7 @@
         }
       ],
       "output_csv": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history.csv",
-      "updated_at_taiwan": "2026-08-09T21:31:02+08:00"
+      "updated_at_taiwan": "2026-08-09T22:10:09+08:00"
     },
     "gap_audit": {
       "status": "official_public_partial",
@@ -602,7 +602,7 @@
           "status": "ok"
         }
       ],
-      "updated_at_taiwan": "2026-08-09T21:31:02+08:00",
+      "updated_at_taiwan": "2026-08-09T22:10:09+08:00",
       "note": "The official public winning-numbers interface exposes 5/39 Direct rows only from 2024-04-10 in the current scan. Earlier draw numbers exist by official draw_number sequence, but the current public interface did not return their winning numbers."
     }
   },
