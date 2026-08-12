@@ -1,7 +1,7 @@
 {
   "engine_version": "ghana_daywa39_precision_spec_v5_hit_rate_portfolio_20260804",
-  "generated_at_taiwan": "2026-08-09T23:02:08+08:00",
-  "generated_at_draw_timezone": "2026-08-09T23:02:08+08:00",
+  "generated_at_taiwan": "2026-08-12T20:11:08+08:00",
+  "generated_at_draw_timezone": "2026-08-12T20:11:08+08:00",
   "game_spec": {
     "code": "GH_DAYWA39",
     "display_name": "非洲迦納彩 Daywa 5/39 Direct",
@@ -16,45 +16,45 @@
     "official_reference": "https://www.nla.com.gh/winning-numbers"
   },
   "latest_draw": {
-    "draw_date": "2026-08-09",
+    "draw_date": "2026-08-12",
     "numbers": [
-      1,
-      12,
-      13,
-      24,
-      27
+      3,
+      9,
+      16,
+      26,
+      31
     ],
-    "source": "NLA official winning-numbers:5/39 Direct Saturday:draw#258"
+    "source": "NLA official winning-numbers:5/39 Direct Tuesday:draw#258"
   },
-  "target_draw_date": "2026-08-10",
-  "draw_count": 713,
+  "target_draw_date": "2026-08-13",
+  "draw_count": 715,
   "history_metadata": {
     "fetch_summary": {
       "source": "https://www.nla.com.gh/winning-numbers",
       "server_function": "https://www.nla.com.gh/_serverFn/a326a1cfceda0eb077997216108eb8dd18bb12e3da7300fd63de2cd7bdcbec2e",
       "start": "2024-04-01",
-      "end": "2026-08-10",
-      "draw_count": 713,
+      "end": "2026-08-13",
+      "draw_count": 715,
       "earliest_draw_date": "2024-04-10",
-      "latest_draw_date": "2026-08-09",
+      "latest_draw_date": "2026-08-12",
       "latest_draw": {
-        "draw_date": "2026-08-09",
-        "n1": 1,
-        "n2": 12,
-        "n3": 13,
-        "n4": 24,
-        "n5": 27,
-        "source": "NLA official winning-numbers:5/39 Direct Saturday:draw#258",
-        "official_datetime_utc": "2026-08-08T18:45:00Z",
-        "product_code": "5/39 Direct Saturday",
+        "draw_date": "2026-08-12",
+        "n1": 3,
+        "n2": 9,
+        "n3": 16,
+        "n4": 26,
+        "n5": 31,
+        "source": "NLA official winning-numbers:5/39 Direct Tuesday:draw#258",
+        "official_datetime_utc": "2026-08-11T18:45:00Z",
+        "product_code": "5/39 Direct Tuesday",
         "draw_number": "258"
       },
       "coverage_note": "Official-interface scan from 2000-01-01 through 2024-03-31 returned zero Daywa 5/39 Direct rows.",
       "history_gap_audit_json": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history_gap_audit.json",
       "history_gap_audit": {
         "status": "official_public_partial",
-        "official_public_range": "2024-04-10..2026-08-09",
-        "official_public_draw_count": 713,
+        "official_public_range": "2024-04-10..2026-08-12",
+        "official_public_draw_count": 715,
         "prehistory_audit_range": "2000-01-01..2024-03-31",
         "prehistory_rows": 0,
         "prehistory_direct_rows": 0,
@@ -73,11 +73,11 @@
               "missing_inside_public_range": 1
             },
             "5/39 Direct Monday": {
-              "captured_draws": 118,
+              "captured_draws": 119,
               "first_draw_date": "2024-04-16",
               "first_visible_draw_number": 401,
-              "latest_draw_date": "2026-08-04",
-              "latest_visible_draw_number": 518,
+              "latest_draw_date": "2026-08-11",
+              "latest_visible_draw_number": 519,
               "minimum_missing_before_public_range": 400,
               "missing_inside_public_range": 0
             },
@@ -100,11 +100,11 @@
               "missing_inside_public_range": 1
             },
             "5/39 Direct Tuesday": {
-              "captured_draws": 122,
+              "captured_draws": 123,
               "first_draw_date": "2024-04-10",
               "first_visible_draw_number": 136,
-              "latest_draw_date": "2026-08-05",
-              "latest_visible_draw_number": 257,
+              "latest_draw_date": "2026-08-12",
+              "latest_visible_draw_number": 258,
               "minimum_missing_before_public_range": 135,
               "missing_inside_public_range": 0
             },
@@ -320,21 +320,21 @@
         },
         {
           "start": "2026-08-01",
-          "end": "2026-08-10",
-          "rows": 29,
-          "direct_rows": 7,
+          "end": "2026-08-13",
+          "rows": 39,
+          "direct_rows": 9,
           "status": "ok"
         }
       ],
       "output_csv": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history.csv",
-      "updated_at_taiwan": "2026-08-09T23:01:33+08:00"
+      "updated_at_taiwan": "2026-08-12T20:10:33+08:00"
     },
     "gap_audit": {
       "status": "official_public_partial",
       "source": "https://www.nla.com.gh/winning-numbers",
       "server_function": "https://www.nla.com.gh/_serverFn/a326a1cfceda0eb077997216108eb8dd18bb12e3da7300fd63de2cd7bdcbec2e",
-      "official_public_range": "2024-04-10..2026-08-09",
-      "official_public_draw_count": 713,
+      "official_public_range": "2024-04-10..2026-08-12",
+      "official_public_draw_count": 715,
       "prehistory_audit_range": "2000-01-01..2024-03-31",
       "prehistory_rows": 0,
       "prehistory_direct_rows": 0,
@@ -353,11 +353,11 @@
             "missing_inside_public_range": 1
           },
           "5/39 Direct Monday": {
-            "captured_draws": 118,
+            "captured_draws": 119,
             "first_draw_date": "2024-04-16",
             "first_visible_draw_number": 401,
-            "latest_draw_date": "2026-08-04",
-            "latest_visible_draw_number": 518,
+            "latest_draw_date": "2026-08-11",
+            "latest_visible_draw_number": 519,
             "minimum_missing_before_public_range": 400,
             "missing_inside_public_range": 0
           },
@@ -380,11 +380,11 @@
             "missing_inside_public_range": 1
           },
           "5/39 Direct Tuesday": {
-            "captured_draws": 122,
+            "captured_draws": 123,
             "first_draw_date": "2024-04-10",
             "first_visible_draw_number": 136,
-            "latest_draw_date": "2026-08-05",
-            "latest_visible_draw_number": 257,
+            "latest_draw_date": "2026-08-12",
+            "latest_visible_draw_number": 258,
             "minimum_missing_before_public_range": 135,
             "missing_inside_public_range": 0
           },
@@ -602,35 +602,35 @@
           "status": "ok"
         }
       ],
-      "updated_at_taiwan": "2026-08-09T23:01:33+08:00",
+      "updated_at_taiwan": "2026-08-12T20:10:33+08:00",
       "note": "The official public winning-numbers interface exposes 5/39 Direct rows only from 2024-04-10 in the current scan. Earlier draw numbers exist by official draw_number sequence, but the current public interface did not return their winning numbers."
     }
   },
   "history_completeness": {
     "status": "official_public_partial",
     "required_minimum": 3000,
-    "current_count": 713,
-    "date_range": "2024-04-10..2026-08-09",
-    "official_public_range": "2024-04-10..2026-08-09",
+    "current_count": 715,
+    "date_range": "2024-04-10..2026-08-12",
+    "official_public_range": "2024-04-10..2026-08-12",
     "earliest_official_draw_date": "2024-04-10",
-    "latest_official_draw_date": "2026-08-09",
+    "latest_official_draw_date": "2026-08-12",
     "prehistory_audit_range": "2000-01-01..2024-03-31",
     "prehistory_status": "no_official_rows_returned",
     "prehistory_direct_rows": 0,
     "minimum_missing_before_public_range": 1082,
     "gap_audit_json": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history_gap_audit.json",
-    "note": "NLA官方公開接口目前可驗證範圍：2024-04-10..2026-08-09；2000-01-01..2024-03-31 掃描狀態：no_official_rows_returned；依官方期號序列推估公開起點前至少缺 1082 期。"
+    "note": "NLA官方公開接口目前可驗證範圍：2024-04-10..2026-08-12；2000-01-01..2024-03-31 掃描狀態：no_official_rows_returned；依官方期號序列推估公開起點前至少缺 1082 期。"
   },
   "freshness": {
     "status": "fresh",
-    "draw_timezone_today": "2026-08-09",
-    "taiwan_today": "2026-08-09",
-    "latest_draw_date": "2026-08-09",
+    "draw_timezone_today": "2026-08-12",
+    "taiwan_today": "2026-08-12",
+    "latest_draw_date": "2026-08-12",
     "age_days": 0,
-    "target_draw_date": "2026-08-10",
-    "target_taiwan_safe_update_time": "2026-08-10 17:30",
+    "target_draw_date": "2026-08-13",
+    "target_taiwan_safe_update_time": "2026-08-13 17:30",
     "daily_draw_time_taiwan": "17:30",
-    "latest_taiwan_safe_update_time": "2026-08-09 17:30"
+    "latest_taiwan_safe_update_time": "2026-08-12 17:30"
   },
   "release_gate": {
     "status": "research_only",
@@ -638,24 +638,24 @@
     "rule": "只有資料完整、新鮮度正常、且Top9回測明顯高於隨機基準時，才允許升級為正式觀察。"
   },
   "model_weights": {
-    "multi_window_frequency": 0.063856,
-    "omission_phase": 0.081137,
-    "pair_lift": 0.360312,
-    "shape_follow": 0.174254,
-    "tail_zone_balance": 0.066566,
-    "sum_band_neighbor": 0.116038,
-    "trend_break": 0.105989,
-    "date_cycle": 0.031849
+    "multi_window_frequency": 0.045281,
+    "omission_phase": 0.067115,
+    "pair_lift": 0.402511,
+    "shape_follow": 0.181788,
+    "tail_zone_balance": 0.054337,
+    "sum_band_neighbor": 0.114864,
+    "trend_break": 0.108634,
+    "date_cycle": 0.02547
   },
   "base_model_weights": {
-    "multi_window_frequency": 0.169636,
-    "omission_phase": 0.136062,
-    "pair_lift": 0.16728,
-    "shape_follow": 0.148432,
-    "tail_zone_balance": 0.12281,
-    "sum_band_neighbor": 0.097924,
-    "trend_break": 0.09866,
-    "date_cycle": 0.059196
+    "multi_window_frequency": 0.168187,
+    "omission_phase": 0.138022,
+    "pair_lift": 0.169511,
+    "shape_follow": 0.147293,
+    "tail_zone_balance": 0.121836,
+    "sum_band_neighbor": 0.09638,
+    "trend_break": 0.100059,
+    "date_cycle": 0.058711
   },
   "model_backtest": {
     "rounds": 120,
@@ -663,59 +663,59 @@
     "models": {
       "multi_window_frequency": {
         "label": "多窗口頻率",
-        "top9_avg_hits": 1.0667,
-        "edge_vs_random": -0.0872,
+        "top9_avg_hits": 1.0583,
+        "edge_vs_random": -0.0955,
         "base_weight": 0.18,
-        "adjusted_weight": 0.1664
+        "adjusted_weight": 0.1651
       },
       "omission_phase": {
         "label": "遺漏相位",
-        "top9_avg_hits": 1.1,
-        "edge_vs_random": -0.0538,
+        "top9_avg_hits": 1.1167,
+        "edge_vs_random": -0.0372,
         "base_weight": 0.14,
-        "adjusted_weight": 0.13347
+        "adjusted_weight": 0.13549
       },
       "pair_lift": {
         "label": "拖牌關聯",
-        "top9_avg_hits": 1.1833,
-        "edge_vs_random": 0.0295,
+        "top9_avg_hits": 1.2,
+        "edge_vs_random": 0.0462,
         "base_weight": 0.16,
-        "adjusted_weight": 0.16409
+        "adjusted_weight": 0.1664
       },
       "shape_follow": {
         "label": "牌型跟隨",
-        "top9_avg_hits": 1.2,
-        "edge_vs_random": 0.0462,
+        "top9_avg_hits": 1.1917,
+        "edge_vs_random": 0.0378,
         "base_weight": 0.14,
-        "adjusted_weight": 0.1456
+        "adjusted_weight": 0.14459
       },
       "tail_zone_balance": {
         "label": "尾數區間平衡",
-        "top9_avg_hits": 1.1583,
-        "edge_vs_random": 0.0045,
+        "top9_avg_hits": 1.15,
+        "edge_vs_random": -0.0038,
         "base_weight": 0.12,
-        "adjusted_weight": 0.12047
+        "adjusted_weight": 0.1196
       },
       "sum_band_neighbor": {
         "label": "和值鄰近",
-        "top9_avg_hits": 1.1083,
-        "edge_vs_random": -0.0455,
+        "top9_avg_hits": 1.0917,
+        "edge_vs_random": -0.0622,
         "base_weight": 0.1,
-        "adjusted_weight": 0.09606
+        "adjusted_weight": 0.09461
       },
       "trend_break": {
         "label": "趨勢轉折",
-        "top9_avg_hits": 1.1167,
-        "edge_vs_random": -0.0372,
+        "top9_avg_hits": 1.1333,
+        "edge_vs_random": -0.0205,
         "base_weight": 0.1,
-        "adjusted_weight": 0.09678
+        "adjusted_weight": 0.09822
       },
       "date_cycle": {
         "label": "日期循環",
-        "top9_avg_hits": 1.1167,
-        "edge_vs_random": -0.0372,
+        "top9_avg_hits": 1.1083,
+        "edge_vs_random": -0.0455,
         "base_weight": 0.06,
-        "adjusted_weight": 0.05807
+        "adjusted_weight": 0.05763
       }
     }
   },
@@ -728,388 +728,386 @@
       90
     ],
     "failed_models_reweighted": [
-      "multi_window_frequency"
+      "date_cycle"
     ],
-    "boosted_models_reweighted": [
-      "sum_band_neighbor"
-    ],
+    "boosted_models_reweighted": [],
     "rule": "每期結算後依12/30/90期滾動命中、零命中與獨隻命中率重新調整所有模型權重。",
     "models": {
       "multi_window_frequency": {
         "label": "多窗口頻率",
-        "input_weight": 0.169636,
-        "correction": 0.9105,
-        "output_weight_before_normalize": 0.154454,
-        "action": "錯誤模組降權後重算",
+        "input_weight": 0.168187,
+        "correction": 0.9838,
+        "output_weight_before_normalize": 0.165462,
+        "action": "維持權重但重新運算",
         "windows": {
           "12": {
             "top1_hit_rate": 0.1667,
-            "top5_avg_hits": 0.5,
-            "top9_avg_hits": 0.8333,
-            "zero_top9_rate": 0.4167,
-            "miss_streak": 1,
-            "correction": 0.8725
+            "top5_avg_hits": 0.6667,
+            "top9_avg_hits": 0.9167,
+            "zero_top9_rate": 0.3333,
+            "miss_streak": 0,
+            "correction": 0.9792
           },
           "30": {
-            "top1_hit_rate": 0.2,
+            "top1_hit_rate": 0.1667,
             "top5_avg_hits": 0.6,
-            "top9_avg_hits": 1.0333,
+            "top9_avg_hits": 1.0,
             "zero_top9_rate": 0.3333,
-            "miss_streak": 1,
-            "correction": 0.9532
+            "miss_streak": 0,
+            "correction": 0.9808
           },
           "90": {
             "top1_hit_rate": 0.1667,
-            "top5_avg_hits": 0.6222,
-            "top9_avg_hits": 1.0778,
+            "top5_avg_hits": 0.6333,
+            "top9_avg_hits": 1.0556,
             "zero_top9_rate": 0.2778,
-            "miss_streak": 1,
-            "correction": 0.9413
+            "miss_streak": 0,
+            "correction": 0.9997
           }
         },
-        "final_weight": 0.156942
+        "final_weight": 0.168554
       },
       "omission_phase": {
         "label": "遺漏相位",
-        "input_weight": 0.136062,
-        "correction": 0.9996,
-        "output_weight_before_normalize": 0.136005,
+        "input_weight": 0.138022,
+        "correction": 1.0084,
+        "output_weight_before_normalize": 0.139181,
         "action": "維持權重但重新運算",
         "windows": {
           "12": {
             "top1_hit_rate": 0.1667,
             "top5_avg_hits": 0.75,
-            "top9_avg_hits": 1.0,
-            "zero_top9_rate": 0.3333,
+            "top9_avg_hits": 1.1667,
+            "zero_top9_rate": 0.25,
             "miss_streak": 0,
-            "correction": 1.01
+            "correction": 1.0431
           },
           "30": {
-            "top1_hit_rate": 0.1667,
+            "top1_hit_rate": 0.1333,
             "top5_avg_hits": 0.5667,
             "top9_avg_hits": 1.0333,
             "zero_top9_rate": 0.3,
             "miss_streak": 0,
-            "correction": 0.9817
+            "correction": 0.9543
           },
           "90": {
             "top1_hit_rate": 0.1556,
             "top5_avg_hits": 0.6333,
-            "top9_avg_hits": 1.1111,
-            "zero_top9_rate": 0.2778,
+            "top9_avg_hits": 1.1222,
+            "zero_top9_rate": 0.2667,
             "miss_streak": 0,
-            "correction": 1.0002
+            "correction": 1.0027
           }
         },
-        "final_weight": 0.138196
+        "final_weight": 0.141782
       },
       "pair_lift": {
         "label": "拖牌關聯",
-        "input_weight": 0.16728,
-        "correction": 1.0616,
-        "output_weight_before_normalize": 0.177577,
+        "input_weight": 0.169511,
+        "correction": 1.0463,
+        "output_weight_before_normalize": 0.177363,
         "action": "維持權重但重新運算",
         "windows": {
           "12": {
             "top1_hit_rate": 0.1667,
-            "top5_avg_hits": 0.8333,
-            "top9_avg_hits": 1.1667,
-            "zero_top9_rate": 0.4167,
+            "top5_avg_hits": 0.75,
+            "top9_avg_hits": 1.0833,
+            "zero_top9_rate": 0.3333,
             "miss_streak": 0,
-            "correction": 1.0514
+            "correction": 1.0246
           },
           "30": {
             "top1_hit_rate": 0.1667,
-            "top5_avg_hits": 0.8667,
+            "top5_avg_hits": 0.8333,
             "top9_avg_hits": 1.4,
             "zero_top9_rate": 0.2333,
             "miss_streak": 0,
-            "correction": 1.1074
+            "correction": 1.1009
           },
           "90": {
             "top1_hit_rate": 0.1222,
             "top5_avg_hits": 0.7889,
             "top9_avg_hits": 1.1889,
-            "zero_top9_rate": 0.2444,
+            "zero_top9_rate": 0.2333,
             "miss_streak": 0,
-            "correction": 1.0182
+            "correction": 1.0188
           }
         },
-        "final_weight": 0.180438
+        "final_weight": 0.180678
       },
       "shape_follow": {
         "label": "牌型跟隨",
-        "input_weight": 0.148432,
-        "correction": 0.9265,
-        "output_weight_before_normalize": 0.137525,
+        "input_weight": 0.147293,
+        "correction": 0.9371,
+        "output_weight_before_normalize": 0.138023,
         "action": "維持權重但重新運算",
         "windows": {
           "12": {
             "top1_hit_rate": 0.0,
             "top5_avg_hits": 0.6667,
-            "top9_avg_hits": 1.0833,
-            "zero_top9_rate": 0.25,
+            "top9_avg_hits": 1.1667,
+            "zero_top9_rate": 0.1667,
             "miss_streak": 0,
-            "correction": 0.8751
+            "correction": 0.8936
           },
           "30": {
             "top1_hit_rate": 0.1333,
-            "top5_avg_hits": 0.6667,
-            "top9_avg_hits": 1.1333,
-            "zero_top9_rate": 0.2,
+            "top5_avg_hits": 0.6333,
+            "top9_avg_hits": 1.1667,
+            "zero_top9_rate": 0.1667,
             "miss_streak": 0,
-            "correction": 0.996
+            "correction": 0.997
           },
           "90": {
             "top1_hit_rate": 0.1,
             "top5_avg_hits": 0.5667,
-            "top9_avg_hits": 1.1556,
-            "zero_top9_rate": 0.2444,
+            "top9_avg_hits": 1.1778,
+            "zero_top9_rate": 0.2222,
             "miss_streak": 0,
-            "correction": 0.9509
+            "correction": 0.9558
           }
         },
-        "final_weight": 0.139741
+        "final_weight": 0.140603
       },
       "tail_zone_balance": {
         "label": "尾數區間平衡",
-        "input_weight": 0.12281,
-        "correction": 0.9741,
-        "output_weight_before_normalize": 0.119627,
+        "input_weight": 0.121836,
+        "correction": 0.9905,
+        "output_weight_before_normalize": 0.120676,
         "action": "維持權重但重新運算",
         "windows": {
           "12": {
-            "top1_hit_rate": 0.0833,
-            "top5_avg_hits": 0.8333,
-            "top9_avg_hits": 1.3333,
-            "zero_top9_rate": 0.25,
+            "top1_hit_rate": 0.1667,
+            "top5_avg_hits": 0.75,
+            "top9_avg_hits": 1.1667,
+            "zero_top9_rate": 0.3333,
             "miss_streak": 0,
-            "correction": 1.0198
+            "correction": 1.0391
           },
           "30": {
-            "top1_hit_rate": 0.0333,
-            "top5_avg_hits": 0.5667,
-            "top9_avg_hits": 1.1667,
-            "zero_top9_rate": 0.2,
+            "top1_hit_rate": 0.0667,
+            "top5_avg_hits": 0.6,
+            "top9_avg_hits": 1.1333,
+            "zero_top9_rate": 0.2333,
             "miss_streak": 0,
-            "correction": 0.9
+            "correction": 0.9265
           },
           "90": {
             "top1_hit_rate": 0.1222,
-            "top5_avg_hits": 0.5778,
-            "top9_avg_hits": 1.1556,
+            "top5_avg_hits": 0.5667,
+            "top9_avg_hits": 1.1333,
             "zero_top9_rate": 0.2556,
             "miss_streak": 0,
-            "correction": 0.9708
+            "correction": 0.9647
           }
         },
-        "final_weight": 0.121555
+        "final_weight": 0.122932
       },
       "sum_band_neighbor": {
         "label": "和值鄰近",
-        "input_weight": 0.097924,
-        "correction": 1.0992,
-        "output_weight_before_normalize": 0.107634,
-        "action": "有效模組升權後重算",
-        "windows": {
-          "12": {
-            "top1_hit_rate": 0.1667,
-            "top5_avg_hits": 0.8333,
-            "top9_avg_hits": 1.5,
-            "zero_top9_rate": 0.1667,
-            "miss_streak": 0,
-            "correction": 1.1216
-          },
-          "30": {
-            "top1_hit_rate": 0.2333,
-            "top5_avg_hits": 0.7667,
-            "top9_avg_hits": 1.4,
-            "zero_top9_rate": 0.2667,
-            "miss_streak": 0,
-            "correction": 1.1391
-          },
-          "90": {
-            "top1_hit_rate": 0.1556,
-            "top5_avg_hits": 0.5889,
-            "top9_avg_hits": 1.0778,
-            "zero_top9_rate": 0.3333,
-            "miss_streak": 0,
-            "correction": 0.9831
-          }
-        },
-        "final_weight": 0.109369
-      },
-      "trend_break": {
-        "label": "趨勢轉折",
-        "input_weight": 0.09866,
-        "correction": 0.9597,
-        "output_weight_before_normalize": 0.094684,
+        "input_weight": 0.09638,
+        "correction": 0.9399,
+        "output_weight_before_normalize": 0.09059,
         "action": "維持權重但重新運算",
         "windows": {
           "12": {
             "top1_hit_rate": 0.1667,
-            "top5_avg_hits": 0.5,
-            "top9_avg_hits": 0.8333,
-            "zero_top9_rate": 0.3333,
+            "top5_avg_hits": 0.75,
+            "top9_avg_hits": 1.4167,
+            "zero_top9_rate": 0.25,
+            "miss_streak": 2,
+            "correction": 0.9603
+          },
+          "30": {
+            "top1_hit_rate": 0.2,
+            "top5_avg_hits": 0.7333,
+            "top9_avg_hits": 1.3,
+            "zero_top9_rate": 0.3,
+            "miss_streak": 2,
+            "correction": 0.9616
+          },
+          "90": {
+            "top1_hit_rate": 0.1444,
+            "top5_avg_hits": 0.5778,
+            "top9_avg_hits": 1.0667,
+            "zero_top9_rate": 0.3444,
+            "miss_streak": 2,
+            "correction": 0.8565
+          }
+        },
+        "final_weight": 0.092283
+      },
+      "trend_break": {
+        "label": "趨勢轉折",
+        "input_weight": 0.100059,
+        "correction": 0.9853,
+        "output_weight_before_normalize": 0.098589,
+        "action": "維持權重但重新運算",
+        "windows": {
+          "12": {
+            "top1_hit_rate": 0.1667,
+            "top5_avg_hits": 0.5833,
+            "top9_avg_hits": 1.0,
+            "zero_top9_rate": 0.25,
             "miss_streak": 0,
-            "correction": 0.9322
+            "correction": 0.9816
           },
           "30": {
             "top1_hit_rate": 0.1667,
             "top5_avg_hits": 0.5667,
-            "top9_avg_hits": 1.0667,
-            "zero_top9_rate": 0.2667,
+            "top9_avg_hits": 1.1,
+            "zero_top9_rate": 0.2333,
             "miss_streak": 0,
-            "correction": 0.9892
+            "correction": 0.9966
           },
           "90": {
-            "top1_hit_rate": 0.1333,
-            "top5_avg_hits": 0.6222,
+            "top1_hit_rate": 0.1222,
+            "top5_avg_hits": 0.6333,
             "top9_avg_hits": 1.1333,
-            "zero_top9_rate": 0.2667,
+            "zero_top9_rate": 0.2556,
             "miss_streak": 0,
-            "correction": 0.9842
+            "correction": 0.9777
           }
         },
-        "final_weight": 0.096209
+        "final_weight": 0.100432
       },
       "date_cycle": {
         "label": "日期循環",
-        "input_weight": 0.059196,
-        "correction": 0.9568,
-        "output_weight_before_normalize": 0.056638,
-        "action": "維持權重但重新運算",
+        "input_weight": 0.058711,
+        "correction": 0.8818,
+        "output_weight_before_normalize": 0.051769,
+        "action": "錯誤模組降權後重算",
         "windows": {
           "12": {
             "top1_hit_rate": 0.0833,
-            "top5_avg_hits": 0.5,
-            "top9_avg_hits": 1.25,
-            "zero_top9_rate": 0.0833,
-            "miss_streak": 0,
-            "correction": 0.9484
+            "top5_avg_hits": 0.4167,
+            "top9_avg_hits": 1.0833,
+            "zero_top9_rate": 0.1667,
+            "miss_streak": 1,
+            "correction": 0.8451
           },
           "30": {
             "top1_hit_rate": 0.1333,
-            "top5_avg_hits": 0.5333,
-            "top9_avg_hits": 1.0,
-            "zero_top9_rate": 0.3,
-            "miss_streak": 0,
-            "correction": 0.942
+            "top5_avg_hits": 0.5667,
+            "top9_avg_hits": 1.0667,
+            "zero_top9_rate": 0.2667,
+            "miss_streak": 1,
+            "correction": 0.904
           },
           "90": {
             "top1_hit_rate": 0.1444,
             "top5_avg_hits": 0.6556,
             "top9_avg_hits": 1.1222,
             "zero_top9_rate": 0.2222,
-            "miss_streak": 0,
-            "correction": 1.0
+            "miss_streak": 1,
+            "correction": 0.94
           }
         },
-        "final_weight": 0.057551
+        "final_weight": 0.052736
       }
     }
   },
   "external_method_weight_shift": {
     "status": "applied",
     "mode": "companion_pair_heavy",
-    "best_model": "shape_follow",
-    "intensity": 0.66,
-    "pair_lift_top9_avg": 1.1833,
-    "shape_follow_top9_avg": 1.2,
-    "pair_lift_recent12_top9_avg": 1.1667,
+    "best_model": "pair_lift",
+    "intensity": 0.82,
+    "pair_lift_top9_avg": 1.2,
+    "shape_follow_top9_avg": 1.1917,
+    "pair_lift_recent12_top9_avg": 1.0833,
     "before_weights": {
-      "multi_window_frequency": 0.148987,
-      "omission_phase": 0.141579,
-      "pair_lift": 0.186212,
-      "shape_follow": 0.143687,
-      "tail_zone_balance": 0.118135,
-      "sum_band_neighbor": 0.108347,
-      "trend_break": 0.098203,
-      "date_cycle": 0.05485
+      "multi_window_frequency": 0.160449,
+      "omission_phase": 0.145082,
+      "pair_lift": 0.186173,
+      "shape_follow": 0.144377,
+      "tail_zone_balance": 0.119652,
+      "sum_band_neighbor": 0.091467,
+      "trend_break": 0.102411,
+      "date_cycle": 0.050388
     },
     "after_weights": {
-      "multi_window_frequency": 0.063856,
-      "omission_phase": 0.081137,
-      "pair_lift": 0.360312,
-      "shape_follow": 0.174254,
-      "tail_zone_balance": 0.066566,
-      "sum_band_neighbor": 0.116038,
-      "trend_break": 0.105989,
-      "date_cycle": 0.031849
+      "multi_window_frequency": 0.045281,
+      "omission_phase": 0.067115,
+      "pair_lift": 0.402511,
+      "shape_follow": 0.181788,
+      "tail_zone_balance": 0.054337,
+      "sum_band_neighbor": 0.114864,
+      "trend_break": 0.108634,
+      "date_cycle": 0.02547
     },
     "rule": "參考外部預測系統的 companion/pair 模式；當拖牌關聯回測勝出時，強制升權配對共現、牌型跟隨與趨勢，降權失效頻率堆疊。"
   },
   "low_hit_regime_shift": {
     "status": "normal",
     "mode": "standard",
-    "severity": 0.1897,
+    "severity": 0.18,
     "basis_window": 5,
     "random_top9_expectation": 1.1538,
     "windows": {
       "5": {
         "status": "reviewed",
         "sample_size": 5,
-        "top9_avg_hits": 1.4,
-        "top15_avg_hits": 2.4,
-        "zero_top9_rate": 0.2,
+        "top9_avg_hits": 1.8,
+        "top15_avg_hits": 2.6,
+        "zero_top9_rate": 0.0,
         "strong_single_hit_rate": 0.0
       },
       "10": {
         "status": "reviewed",
         "sample_size": 10,
-        "top9_avg_hits": 1.5,
+        "top9_avg_hits": 1.6,
         "top15_avg_hits": 2.2,
         "zero_top9_rate": 0.2,
         "strong_single_hit_rate": 0.0
       },
       "20": {
         "status": "reviewed",
-        "sample_size": 10,
-        "top9_avg_hits": 1.5,
-        "top15_avg_hits": 2.2,
-        "zero_top9_rate": 0.2,
+        "sample_size": 11,
+        "top9_avg_hits": 1.5455,
+        "top15_avg_hits": 2.1818,
+        "zero_top9_rate": 0.1818,
         "strong_single_hit_rate": 0.0
       }
     },
     "rule": "最近命中低於隨機基準或零命中率偏高時，切換為低命中回復模式：降權近期落空來源，升權漏抓回補、拖牌轉折與牌型跟隨。",
     "weight_transform": {
       "status": "applied",
-      "severity": 0.1897,
+      "severity": 0.18,
       "model_multipliers": {
-        "multi_window_frequency": 0.9583,
-        "omission_phase": 1.0341,
-        "pair_lift": 1.0417,
-        "shape_follow": 1.0379,
-        "tail_zone_balance": 0.981,
+        "multi_window_frequency": 0.9604,
+        "omission_phase": 1.0324,
+        "pair_lift": 1.0396,
+        "shape_follow": 1.036,
+        "tail_zone_balance": 0.982,
         "sum_band_neighbor": 1.0,
-        "trend_break": 1.0304,
-        "date_cycle": 0.9621
+        "trend_break": 1.0288,
+        "date_cycle": 0.964
       },
       "before_weights": {
-        "multi_window_frequency": 0.156942,
-        "omission_phase": 0.138196,
-        "pair_lift": 0.180438,
-        "shape_follow": 0.139741,
-        "tail_zone_balance": 0.121555,
-        "sum_band_neighbor": 0.109369,
-        "trend_break": 0.096209,
-        "date_cycle": 0.057551
+        "multi_window_frequency": 0.168554,
+        "omission_phase": 0.141782,
+        "pair_lift": 0.180678,
+        "shape_follow": 0.140603,
+        "tail_zone_balance": 0.122932,
+        "sum_band_neighbor": 0.092283,
+        "trend_break": 0.100432,
+        "date_cycle": 0.052736
       },
       "after_weights": {
-        "multi_window_frequency": 0.148987,
-        "omission_phase": 0.141579,
-        "pair_lift": 0.186212,
-        "shape_follow": 0.143687,
-        "tail_zone_balance": 0.118135,
-        "sum_band_neighbor": 0.108347,
-        "trend_break": 0.098203,
-        "date_cycle": 0.05485
+        "multi_window_frequency": 0.160449,
+        "omission_phase": 0.145082,
+        "pair_lift": 0.186173,
+        "shape_follow": 0.144377,
+        "tail_zone_balance": 0.119652,
+        "sum_band_neighbor": 0.091467,
+        "trend_break": 0.102411,
+        "date_cycle": 0.050388
       },
       "rule": "低命中時降低純頻率與日期輔助，提升拖牌、牌型、遺漏與趨勢轉折，避免同一批失準來源繼續主導。"
     },
     "failure_memory": {
       "status": "active",
-      "sample_size": 10,
+      "sample_size": 11,
       "top_leak_numbers": [
         22,
         17,
@@ -1118,9 +1116,9 @@
         36,
         11,
         32,
-        18,
-        2,
-        26
+        19,
+        23,
+        24
       ],
       "top_penalty_numbers": [
         31,
@@ -1129,10 +1127,10 @@
         5,
         18,
         37,
+        25,
+        35,
         11,
-        3,
-        1,
-        32
+        3
       ],
       "second_layer_hit_numbers": [
         30,
@@ -1145,7 +1143,7 @@
       "numbers": {
         "1": {
           "recovery_score": 0.4624,
-          "miss_penalty": 0.9504,
+          "miss_penalty": 0.7855,
           "leak_count": 1,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1153,15 +1151,15 @@
         },
         "2": {
           "recovery_score": 0.3172,
-          "miss_penalty": 0.0,
+          "miss_penalty": 0.106,
           "leak_count": 1,
-          "top9_miss_count": 0,
+          "top9_miss_count": 1,
           "top9_hit_count": 1,
           "second_layer_hit_count": 0
         },
         "3": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.6297,
+          "miss_penalty": 0.5205,
           "leak_count": 1,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1169,7 +1167,7 @@
         },
         "4": {
           "recovery_score": 0.0,
-          "miss_penalty": 0.6297,
+          "miss_penalty": 0.5205,
           "leak_count": 0,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1177,7 +1175,7 @@
         },
         "5": {
           "recovery_score": 0.0484,
-          "miss_penalty": 0.758,
+          "miss_penalty": 0.6265,
           "leak_count": 0,
           "top9_miss_count": 4,
           "top9_hit_count": 1,
@@ -1185,7 +1183,7 @@
         },
         "6": {
           "recovery_score": 0.0484,
-          "miss_penalty": 0.758,
+          "miss_penalty": 0.6265,
           "leak_count": 0,
           "top9_miss_count": 4,
           "top9_hit_count": 1,
@@ -1193,7 +1191,7 @@
         },
         "7": {
           "recovery_score": 0.5108,
-          "miss_penalty": 0.4985,
+          "miss_penalty": 0.412,
           "leak_count": 1,
           "top9_miss_count": 2,
           "top9_hit_count": 1,
@@ -1201,7 +1199,7 @@
         },
         "8": {
           "recovery_score": 0.0,
-          "miss_penalty": 0.5802,
+          "miss_penalty": 0.4795,
           "leak_count": 0,
           "top9_miss_count": 2,
           "top9_hit_count": 0,
@@ -1209,7 +1207,7 @@
         },
         "9": {
           "recovery_score": 0.3656,
-          "miss_penalty": 0.0466,
+          "miss_penalty": 0.0386,
           "leak_count": 1,
           "top9_miss_count": 1,
           "top9_hit_count": 2,
@@ -1217,15 +1215,15 @@
         },
         "10": {
           "recovery_score": 0.3172,
-          "miss_penalty": 0.1283,
+          "miss_penalty": 0.2795,
           "leak_count": 1,
-          "top9_miss_count": 1,
+          "top9_miss_count": 2,
           "top9_hit_count": 1,
           "second_layer_hit_count": 0
         },
         "11": {
           "recovery_score": 0.5376,
-          "miss_penalty": 0.7901,
+          "miss_penalty": 0.653,
           "leak_count": 2,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1233,7 +1231,7 @@
         },
         "12": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.4198,
+          "miss_penalty": 0.347,
           "leak_count": 1,
           "top9_miss_count": 2,
           "top9_hit_count": 0,
@@ -1249,7 +1247,7 @@
         },
         "14": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.6297,
+          "miss_penalty": 0.5205,
           "leak_count": 1,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1257,7 +1255,7 @@
         },
         "15": {
           "recovery_score": 0.0,
-          "miss_penalty": 0.4198,
+          "miss_penalty": 0.347,
           "leak_count": 0,
           "top9_miss_count": 2,
           "top9_hit_count": 0,
@@ -1265,7 +1263,7 @@
         },
         "16": {
           "recovery_score": 0.0,
-          "miss_penalty": 0.3703,
+          "miss_penalty": 0.306,
           "leak_count": 0,
           "top9_miss_count": 1,
           "top9_hit_count": 0,
@@ -1273,7 +1271,7 @@
         },
         "17": {
           "recovery_score": 0.8065,
-          "miss_penalty": 0.2099,
+          "miss_penalty": 0.1735,
           "leak_count": 3,
           "top9_miss_count": 1,
           "top9_hit_count": 0,
@@ -1281,71 +1279,71 @@
         },
         "18": {
           "recovery_score": 0.414,
-          "miss_penalty": 0.7551,
+          "miss_penalty": 0.6241,
           "leak_count": 1,
           "top9_miss_count": 4,
           "top9_hit_count": 3,
           "second_layer_hit_count": 0
         },
         "19": {
-          "recovery_score": 0.0484,
-          "miss_penalty": 0.1283,
-          "leak_count": 0,
+          "recovery_score": 0.3172,
+          "miss_penalty": 0.106,
+          "leak_count": 1,
           "top9_miss_count": 1,
           "top9_hit_count": 1,
           "second_layer_hit_count": 0
         },
         "20": {
           "recovery_score": 0.0484,
-          "miss_penalty": 0.1283,
+          "miss_penalty": 0.2795,
           "leak_count": 0,
-          "top9_miss_count": 1,
+          "top9_miss_count": 2,
           "top9_hit_count": 1,
           "second_layer_hit_count": 0
         },
         "21": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.2099,
+          "miss_penalty": 0.347,
           "leak_count": 1,
-          "top9_miss_count": 1,
+          "top9_miss_count": 2,
           "top9_hit_count": 0,
           "second_layer_hit_count": 0
         },
         "22": {
           "recovery_score": 1.0,
-          "miss_penalty": 0.2099,
+          "miss_penalty": 0.1735,
           "leak_count": 3,
           "top9_miss_count": 1,
           "top9_hit_count": 0,
           "second_layer_hit_count": 1
         },
         "23": {
-          "recovery_score": 0.0,
+          "recovery_score": 0.2688,
           "miss_penalty": 0.0,
-          "leak_count": 0,
+          "leak_count": 1,
           "top9_miss_count": 0,
           "top9_hit_count": 0,
           "second_layer_hit_count": 0
         },
         "24": {
-          "recovery_score": 0.0,
+          "recovery_score": 0.2688,
           "miss_penalty": 0.0,
-          "leak_count": 0,
+          "leak_count": 1,
           "top9_miss_count": 0,
           "top9_hit_count": 0,
           "second_layer_hit_count": 0
         },
         "25": {
           "recovery_score": 0.3172,
-          "miss_penalty": 0.3382,
+          "miss_penalty": 0.5855,
           "leak_count": 1,
-          "top9_miss_count": 2,
+          "top9_miss_count": 3,
           "top9_hit_count": 1,
           "second_layer_hit_count": 0
         },
         "26": {
           "recovery_score": 0.4624,
-          "miss_penalty": 0.4198,
+          "miss_penalty": 0.347,
           "leak_count": 1,
           "top9_miss_count": 2,
           "top9_hit_count": 0,
@@ -1353,23 +1351,23 @@
         },
         "27": {
           "recovery_score": 0.0484,
-          "miss_penalty": 0.1283,
+          "miss_penalty": 0.106,
           "leak_count": 0,
           "top9_miss_count": 1,
           "top9_hit_count": 1,
           "second_layer_hit_count": 0
         },
         "28": {
-          "recovery_score": 0.586,
+          "recovery_score": 0.6344,
           "miss_penalty": 0.0,
           "leak_count": 2,
           "top9_miss_count": 0,
-          "top9_hit_count": 1,
+          "top9_hit_count": 2,
           "second_layer_hit_count": 0
         },
         "29": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.8397,
+          "miss_penalty": 0.694,
           "leak_count": 1,
           "top9_miss_count": 4,
           "top9_hit_count": 0,
@@ -1377,7 +1375,7 @@
         },
         "30": {
           "recovery_score": 0.9247,
-          "miss_penalty": 0.7901,
+          "miss_penalty": 0.653,
           "leak_count": 2,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1387,13 +1385,13 @@
           "recovery_score": 0.0,
           "miss_penalty": 1.0,
           "leak_count": 0,
-          "top9_miss_count": 4,
+          "top9_miss_count": 5,
           "top9_hit_count": 0,
           "second_layer_hit_count": 0
         },
         "32": {
           "recovery_score": 0.5376,
-          "miss_penalty": 0.7901,
+          "miss_penalty": 0.653,
           "leak_count": 2,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1401,7 +1399,7 @@
         },
         "33": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.6297,
+          "miss_penalty": 0.5205,
           "leak_count": 1,
           "top9_miss_count": 3,
           "top9_hit_count": 0,
@@ -1409,7 +1407,7 @@
         },
         "34": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.4198,
+          "miss_penalty": 0.347,
           "leak_count": 1,
           "top9_miss_count": 2,
           "top9_hit_count": 0,
@@ -1417,15 +1415,15 @@
         },
         "35": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.4198,
+          "miss_penalty": 0.5205,
           "leak_count": 1,
-          "top9_miss_count": 2,
+          "top9_miss_count": 3,
           "top9_hit_count": 0,
           "second_layer_hit_count": 0
         },
         "36": {
           "recovery_score": 0.7312,
-          "miss_penalty": 0.2099,
+          "miss_penalty": 0.1735,
           "leak_count": 2,
           "top9_miss_count": 1,
           "top9_hit_count": 0,
@@ -1433,7 +1431,7 @@
         },
         "37": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.8397,
+          "miss_penalty": 0.694,
           "leak_count": 1,
           "top9_miss_count": 4,
           "top9_hit_count": 0,
@@ -1441,18 +1439,18 @@
         },
         "38": {
           "recovery_score": 0.2688,
-          "miss_penalty": 0.2099,
+          "miss_penalty": 0.1735,
           "leak_count": 1,
           "top9_miss_count": 1,
           "top9_hit_count": 0,
           "second_layer_hit_count": 0
         },
         "39": {
-          "recovery_score": 0.2688,
+          "recovery_score": 0.3172,
           "miss_penalty": 0.0,
           "leak_count": 1,
           "top9_miss_count": 0,
-          "top9_hit_count": 0,
+          "top9_hit_count": 1,
           "second_layer_hit_count": 0
         }
       },
@@ -1460,49 +1458,41 @@
     }
   },
   "hit_rate_optimizer": {
-    "status": "applied",
+    "status": "reviewed_no_change",
     "method": "frequency_timing_recency_companion_momentum_balance_backtest",
     "pool_size": 16,
     "target_size": 9,
     "previous_top9": [
-      8,
-      25,
-      21,
-      5,
-      35,
       2,
-      28,
-      37,
-      38
+      12,
+      33,
+      10,
+      34,
+      36,
+      25,
+      22,
+      11
     ],
     "selected_numbers": [
-      8,
-      25,
-      21,
-      5,
       2,
-      28,
-      39,
-      20,
-      18
+      12,
+      33,
+      36,
+      22,
+      34,
+      10,
+      25,
+      11
     ],
-    "promoted_numbers": [
-      20,
-      39,
-      18
-    ],
-    "demoted_numbers": [
-      35,
-      37,
-      38
-    ],
-    "portfolio_score": 0.499504,
-    "portfolio_score_before": 0.464922,
-    "portfolio_improvement": 0.034582,
-    "avg_signal": 0.581317,
-    "floor_signal": 0.492428,
-    "pair_score": 0.097981,
-    "balance_score": 0.857222,
+    "promoted_numbers": [],
+    "demoted_numbers": [],
+    "portfolio_score": 0.451303,
+    "portfolio_score_before": 0.451303,
+    "portfolio_improvement": 0.0,
+    "avg_signal": 0.526586,
+    "floor_signal": 0.397583,
+    "pair_score": 0.071841,
+    "balance_score": 0.852222,
     "latest_repeat_count": 0,
     "adopted_external_modes": [
       "多窗口頻率",
@@ -1516,24 +1506,24 @@
   },
   "high_confidence_gate": {
     "status": "blocked",
-    "top9_edge_vs_random": 0.0462,
-    "top9_avg_hits": 1.2,
+    "top9_edge_vs_random": 0.1129,
+    "top9_avg_hits": 1.2667,
     "random_top9_expectation": 1.1538,
-    "nine_pack_zero_rate": 0.2333,
-    "low_hit_severity": 0.1897,
-    "portfolio_score": 0.4995,
+    "nine_pack_zero_rate": 0.2417,
+    "low_hit_severity": 0.18,
+    "portfolio_score": 0.4513,
     "rule": "只有回測前九高於隨機基準、零命中率低於30%且整組優化分數通過時，才允許標成高機率；未通過只列強化候選。"
   },
   "front9_escape_correction": {
     "status": "applied",
     "review": {
       "status": "active",
-      "sample_size": 10,
-      "top9_avg_hits": 1.5,
-      "top15_avg_hits": 2.2,
+      "sample_size": 11,
+      "top9_avg_hits": 1.5455,
+      "top15_avg_hits": 2.1818,
       "second_layer_extra_hits_total": 7,
       "second_layer_escape_periods": 7,
-      "second_layer_escape_rate": 0.7,
+      "second_layer_escape_rate": 0.6364,
       "top_escape_numbers": [
         30,
         22,
@@ -1545,7 +1535,7 @@
         28,
         11,
         32,
-        2,
+        39,
         9
       ],
       "recent_escape_periods": [
@@ -1617,72 +1607,72 @@
       "rule": "每期檢查命中是否掉到第10到15名；若有外溢，下一期前九尾端弱號必須與外溢強訊號重排。"
     },
     "previous_top9": [
-      8,
-      25,
-      21,
-      5,
       2,
-      28,
-      39,
-      20,
-      18
+      12,
+      33,
+      36,
+      22,
+      34,
+      10,
+      25,
+      11
     ],
     "current_second_layer_before": [
+      30,
+      8,
+      18,
+      27,
       35,
-      10,
-      31,
-      16,
-      37,
-      38
+      29
     ],
     "corrected_top9": [
-      25,
-      21,
       2,
-      35,
-      28,
-      20,
-      39,
+      12,
       10,
-      31
+      34,
+      36,
+      30,
+      22,
+      8,
+      18
     ],
     "promoted_numbers": [
-      35,
-      10,
-      31
+      30,
+      8,
+      18
     ],
     "demoted_numbers": [
-      8,
-      5,
-      18
+      33,
+      25,
+      11
     ],
     "swap_count": 3,
     "swaps": [
       {
-        "promoted": 35,
-        "demoted": 18,
+        "promoted": 30,
+        "demoted": 11,
         "promoted_original_rank": 10,
         "demoted_original_rank": 9,
-        "escape_score": 0.38,
-        "holder_weakness": 0.8521,
+        "escape_score": 1.0258,
+        "holder_weakness": 0.9231,
         "rule": "第10到15名外溢訊號高於前九尾端保留強度，執行交換。"
       },
       {
-        "promoted": 10,
-        "demoted": 5,
-        "promoted_original_rank": 11,
-        "demoted_original_rank": 4,
-        "escape_score": 0.3167,
-        "holder_weakness": 0.7037,
-        "rule": "第10到15名外溢訊號高於前九尾端保留強度，執行交換。"
-      },
-      {
-        "promoted": 31,
-        "demoted": 8,
+        "promoted": 18,
+        "demoted": 25,
         "promoted_original_rank": 12,
-        "demoted_original_rank": 1,
-        "escape_score": 0.2533,
-        "holder_weakness": 0.4791,
+        "demoted_original_rank": 8,
+        "escape_score": 0.3581,
+        "holder_weakness": 0.7606,
+        "rule": "第10到15名外溢訊號高於前九尾端保留強度，執行交換。"
+      },
+      {
+        "promoted": 8,
+        "demoted": 33,
+        "promoted_original_rank": 11,
+        "demoted_original_rank": 3,
+        "escape_score": 0.3124,
+        "holder_weakness": 0.5627,
         "rule": "第10到15名外溢訊號高於前九尾端保留強度，執行交換。"
       }
     ],
@@ -1690,17 +1680,17 @@
   },
   "data_integrity_gate": {
     "status": "passed",
-    "draw_count": 713,
-    "official_source_count": 713,
+    "draw_count": 715,
+    "official_source_count": 715,
     "issues": [],
     "rule": "禁止假資料、空來源、重複日期、錯誤號碼與官方最新日期不一致時產生正式高信心。"
   },
   "backtest": {
     "rounds": 120,
-    "top5_avg_hits": 0.7,
-    "top9_avg_hits": 1.2,
-    "top10_avg_hits": 1.3917,
-    "top15_avg_hits": 2.0667,
+    "top5_avg_hits": 0.7167,
+    "top9_avg_hits": 1.2667,
+    "top10_avg_hits": 1.4333,
+    "top15_avg_hits": 2.075,
     "random_expectation": {
       "top5": 0.641,
       "top9": 1.1538,
@@ -1721,394 +1711,132 @@
         "hit_goal": 1
       },
       "three_hit_one": {
-        "avg_hits": 0.4333,
-        "pass_rate": 0.3833,
-        "zero_rate": 0.6167,
+        "avg_hits": 0.425,
+        "pass_rate": 0.375,
+        "zero_rate": 0.625,
         "hit_goal": 1
       },
       "five_hit_two": {
-        "avg_hits": 0.725,
-        "pass_rate": 0.1583,
-        "zero_rate": 0.4583,
+        "avg_hits": 0.7333,
+        "pass_rate": 0.15,
+        "zero_rate": 0.4417,
         "hit_goal": 2
       },
       "nine_hit_three": {
-        "avg_hits": 1.2333,
-        "pass_rate": 0.1083,
-        "zero_rate": 0.2333,
+        "avg_hits": 1.2833,
+        "pass_rate": 0.125,
+        "zero_rate": 0.2417,
         "hit_goal": 3
       }
     },
-    "top9_edge_vs_random": 0.0462,
-    "top10_edge_vs_random": 0.1096,
+    "top9_edge_vs_random": 0.1129,
+    "top10_edge_vs_random": 0.1512,
     "status": "research_positive"
   },
   "candidates": [
     {
-      "number": 25,
-      "score": 0.919553,
-      "confidence_index": 94.3,
-      "model_probability_index": 16.16,
+      "number": 2,
+      "score": 1.0,
+      "confidence_index": 99.0,
+      "model_probability_index": 16.92,
       "probability_label": "校準單號命中強度",
       "omission": 4,
-      "zone": "21-30",
-      "support_models": 4,
+      "zone": "01-10",
+      "support_models": 5,
       "reasons": [
+        "拖牌關聯",
         "牌型跟隨",
         "遺漏相位",
-        "尾數區間平衡",
         "和值鄰近",
+        "多窗口頻率",
         "整組命中率優化入選"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.3172,
-      "recent_miss_penalty": 0.3382,
+      "recent_miss_penalty": 0.106,
       "front9_escape_score": 0.2884,
       "front9_escape_status": "前九守門",
       "second_layer_hit_count": 0,
       "leak_count": 1,
-      "top9_miss_count": 2,
+      "top9_miss_count": 1,
       "top9_hit_count": 1,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.4747,
+        "multi_window_frequency": 0.6228,
         "omission_phase": 0.732,
-        "pair_lift": 0.5536,
-        "shape_follow": 0.9327,
-        "tail_zone_balance": 0.7106,
-        "sum_band_neighbor": 0.6597,
-        "trend_break": 0.2901,
+        "pair_lift": 0.8241,
+        "shape_follow": 0.8091,
+        "tail_zone_balance": 0.4595,
+        "sum_band_neighbor": 0.7225,
+        "trend_break": 0.2331,
         "date_cycle": 0.0
       },
       "rank": 1,
-      "hit_rate_optimizer_score": 0.677333,
+      "hit_rate_optimizer_score": 0.784292,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 1,
+      "front9_final_layer": "前九核心",
+      "verification_denominator": 8,
+      "stability_count": 5,
+      "route_class": "拖牌共現、遺漏補償、全歷史排序",
+      "practical_maturity": {
+        "score": 99.9,
+        "tier": "成熟通過"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 12,
+      "score": 0.925222,
+      "confidence_index": 94.5,
+      "model_probability_index": 16.2,
+      "probability_label": "校準單號命中強度",
+      "omission": 2,
+      "zone": "11-20",
+      "support_models": 4,
+      "reasons": [
+        "拖牌關聯",
+        "多窗口頻率",
+        "牌型跟隨",
+        "和值鄰近",
+        "整組命中率優化入選"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.347,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "前九守門",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 2,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.7365,
+        "omission_phase": 0.1091,
+        "pair_lift": 1.0,
+        "shape_follow": 0.7166,
+        "tail_zone_balance": 0.1289,
+        "sum_band_neighbor": 0.6338,
+        "trend_break": 0.1394,
+        "date_cycle": 0.0
+      },
+      "rank": 2,
+      "hit_rate_optimizer_score": 0.674889,
       "hit_rate_optimizer_status": "整組命中率入選",
       "front9_original_rank": 2,
       "front9_final_layer": "前九核心",
       "verification_denominator": 8,
       "stability_count": 5,
-      "route_class": "尾數版路、遺漏補償、牌型相似跟隨",
+      "route_class": "拖牌共現、全歷史排序、牌型相似跟隨",
       "practical_maturity": {
-        "score": 95.7,
+        "score": 94.4,
         "tier": "成熟通過"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 21,
-      "score": 0.8919,
-      "confidence_index": 92.9,
-      "model_probability_index": 15.94,
-      "probability_label": "校準單號命中強度",
-      "omission": 3,
-      "zone": "21-30",
-      "support_models": 2,
-      "reasons": [
-        "拖牌關聯",
-        "尾數區間平衡",
-        "整組命中率優化入選"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.2099,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "前九守門",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 1,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.5016,
-        "omission_phase": 0.1466,
-        "pair_lift": 1.0,
-        "shape_follow": 0.429,
-        "tail_zone_balance": 0.7714,
-        "sum_band_neighbor": 0.3469,
-        "trend_break": 0.1748,
-        "date_cycle": 0.0
-      },
-      "rank": 2,
-      "hit_rate_optimizer_score": 0.626986,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 3,
-      "front9_final_layer": "前九核心",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "拖牌共現、尾數版路",
-      "practical_maturity": {
-        "score": 85.0,
-        "tier": "可觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 2,
-      "score": 0.775751,
-      "confidence_index": 87.3,
-      "model_probability_index": 15.02,
-      "probability_label": "校準單號命中強度",
-      "omission": 2,
-      "zone": "01-10",
-      "support_models": 2,
-      "reasons": [
-        "拖牌關聯",
-        "牌型跟隨",
-        "和值鄰近",
-        "整組命中率優化入選"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.3172,
-      "recent_miss_penalty": 0.0,
-      "front9_escape_score": 0.2884,
-      "front9_escape_status": "前九守門",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 0,
-      "top9_hit_count": 1,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.5944,
-        "omission_phase": 0.1091,
-        "pair_lift": 0.6829,
-        "shape_follow": 0.6402,
-        "tail_zone_balance": 0.4106,
-        "sum_band_neighbor": 0.5899,
-        "trend_break": 0.1613,
-        "date_cycle": 0.0
-      },
-      "rank": 3,
-      "hit_rate_optimizer_score": 0.577038,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 5,
-      "front9_final_layer": "前九核心",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "拖牌共現、牌型相似跟隨",
-      "practical_maturity": {
-        "score": 80.1,
-        "tier": "可觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 35,
-      "score": 0.764736,
-      "confidence_index": 89.1,
-      "model_probability_index": 15.32,
-      "probability_label": "校準單號命中強度",
-      "omission": 16,
-      "zone": "31-39",
-      "support_models": 4,
-      "reasons": [
-        "趨勢轉折",
-        "尾數區間平衡",
-        "遺漏相位",
-        "牌型跟隨",
-        "整組命中率檢討降到備查",
-        "第10到15名外溢校正拉回前九"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.4198,
-      "front9_escape_score": 0.38,
-      "front9_escape_status": "已拉回前九",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 2,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.1513,
-        "omission_phase": 0.7343,
-        "pair_lift": 0.5739,
-        "shape_follow": 0.6445,
-        "tail_zone_balance": 0.8592,
-        "sum_band_neighbor": 0.1902,
-        "trend_break": 0.9324,
-        "date_cycle": 0.0
-      },
-      "rank": 4,
-      "hit_rate_optimizer_score": 0.594424,
-      "hit_rate_optimizer_status": "整組命中率降到備查",
-      "front9_original_rank": 10,
-      "front9_final_layer": "前九核心",
-      "verification_denominator": 8,
-      "stability_count": 5,
-      "route_class": "尾數版路、遺漏補償、趨勢轉折",
-      "practical_maturity": {
-        "score": 88.2,
-        "tier": "成熟通過"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 28,
-      "score": 0.73956,
-      "confidence_index": 85.5,
-      "model_probability_index": 14.74,
-      "probability_label": "校準單號命中強度",
-      "omission": 1,
-      "zone": "21-30",
-      "support_models": 1,
-      "reasons": [
-        "拖牌關聯",
-        "低命中漏抓回補",
-        "整組命中率優化入選"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.586,
-      "recent_miss_penalty": 0.0,
-      "front9_escape_score": 0.5419,
-      "front9_escape_status": "前九守門",
-      "second_layer_hit_count": 0,
-      "leak_count": 2,
-      "top9_miss_count": 0,
-      "top9_hit_count": 1,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.4948,
-        "omission_phase": 0.0639,
-        "pair_lift": 0.8014,
-        "shape_follow": 0.4961,
-        "tail_zone_balance": 0.4759,
-        "sum_band_neighbor": 0.1805,
-        "trend_break": 0.141,
-        "date_cycle": 0.0
-      },
-      "rank": 5,
-      "hit_rate_optimizer_score": 0.562832,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 6,
-      "front9_final_layer": "前九核心",
-      "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "拖牌共現",
-      "practical_maturity": {
-        "score": 67.0,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 20,
-      "score": 0.688383,
-      "confidence_index": 83.0,
-      "model_probability_index": 14.34,
-      "probability_label": "校準單號命中強度",
-      "omission": 12,
-      "zone": "11-20",
-      "support_models": 3,
-      "reasons": [
-        "遺漏相位",
-        "牌型跟隨",
-        "趨勢轉折",
-        "整組命中率優化入選"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0484,
-      "recent_miss_penalty": 0.1283,
-      "front9_escape_score": 0.0705,
-      "front9_escape_status": "前九守門",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 1,
-      "top9_hit_count": 1,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.528,
-        "omission_phase": 0.8671,
-        "pair_lift": 0.3985,
-        "shape_follow": 0.7135,
-        "tail_zone_balance": 0.0506,
-        "sum_band_neighbor": 0.5065,
-        "trend_break": 0.6993,
-        "date_cycle": 0.0
-      },
-      "rank": 6,
-      "hit_rate_optimizer_score": 0.497606,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 8,
-      "front9_final_layer": "前九核心",
-      "verification_denominator": 8,
-      "stability_count": 4,
-      "route_class": "遺漏補償、趨勢轉折、牌型相似跟隨",
-      "practical_maturity": {
-        "score": 77.5,
-        "tier": "可觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 39,
-      "score": 0.68822,
-      "confidence_index": 83.0,
-      "model_probability_index": 14.33,
-      "probability_label": "校準單號命中強度",
-      "omission": 2,
-      "zone": "31-39",
-      "support_models": 2,
-      "reasons": [
-        "牌型跟隨",
-        "多窗口頻率",
-        "整組命中率優化入選"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.0,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "前九守門",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 0,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.6488,
-        "omission_phase": 0.1091,
-        "pair_lift": 0.591,
-        "shape_follow": 0.7192,
-        "tail_zone_balance": 0.5591,
-        "sum_band_neighbor": 0.2069,
-        "trend_break": 0.3024,
-        "date_cycle": 0.0
-      },
-      "rank": 7,
-      "hit_rate_optimizer_score": 0.514439,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 7,
-      "front9_final_layer": "前九核心",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "全歷史排序、牌型相似跟隨",
-      "practical_maturity": {
-        "score": 71.9,
-        "tier": "研究觀察"
       },
       "previous_prediction_guard": {
         "passed": true,
@@ -2117,47 +1845,49 @@
     },
     {
       "number": 10,
-      "score": 0.67932,
-      "confidence_index": 82.3,
-      "model_probability_index": 14.22,
+      "score": 0.639678,
+      "confidence_index": 80.7,
+      "model_probability_index": 13.95,
       "probability_label": "校準單號命中強度",
-      "omission": 6,
+      "omission": 8,
       "zone": "01-10",
-      "support_models": 2,
+      "support_models": 1,
       "reasons": [
-        "日期循環",
         "遺漏相位",
-        "第10到15名外溢校正拉回前九"
+        "拖牌關聯",
+        "整組命中率優化入選"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.3172,
-      "recent_miss_penalty": 0.1283,
-      "front9_escape_score": 0.3167,
-      "front9_escape_status": "已拉回前九",
+      "recent_miss_penalty": 0.2795,
+      "front9_escape_score": 0.2884,
+      "front9_escape_status": "前九守門",
       "second_layer_hit_count": 0,
       "leak_count": 1,
-      "top9_miss_count": 1,
+      "top9_miss_count": 2,
       "top9_hit_count": 1,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.4791,
-        "omission_phase": 0.829,
-        "pair_lift": 0.4049,
-        "shape_follow": 0.4976,
-        "tail_zone_balance": 0.302,
-        "sum_band_neighbor": 0.4459,
-        "trend_break": 0.4118,
-        "date_cycle": 1.0
+        "multi_window_frequency": 0.5217,
+        "omission_phase": 0.9205,
+        "pair_lift": 0.5708,
+        "shape_follow": 0.3631,
+        "tail_zone_balance": 0.423,
+        "sum_band_neighbor": 0.3816,
+        "trend_break": 0.5283,
+        "date_cycle": 0.0
       },
-      "rank": 8,
-      "front9_original_rank": 11,
+      "rank": 3,
+      "hit_rate_optimizer_score": 0.440362,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 7,
       "front9_final_layer": "前九核心",
       "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "遺漏補償",
+      "stability_count": 2,
+      "route_class": "拖牌共現、遺漏補償",
       "practical_maturity": {
-        "score": 70.0,
+        "score": 71.8,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2166,108 +1896,51 @@
       }
     },
     {
-      "number": 31,
-      "score": 0.675017,
-      "confidence_index": 82.2,
-      "model_probability_index": 14.19,
+      "number": 34,
+      "score": 0.602527,
+      "confidence_index": 78.9,
+      "model_probability_index": 13.66,
       "probability_label": "校準單號命中強度",
-      "omission": 18,
+      "omission": 7,
       "zone": "31-39",
       "support_models": 3,
       "reasons": [
-        "遺漏相位",
         "尾數區間平衡",
-        "趨勢轉折",
-        "和值鄰近",
-        "近期多次落空降權後仍保留觀察",
-        "第10到15名外溢校正拉回前九"
+        "遺漏相位",
+        "牌型跟隨",
+        "整組命中率優化入選"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 1.0,
-      "front9_escape_score": 0.2533,
-      "front9_escape_status": "已拉回前九",
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.347,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "前九守門",
       "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 4,
+      "leak_count": 1,
+      "top9_miss_count": 2,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.2896,
-        "omission_phase": 1.0,
-        "pair_lift": 0.3621,
-        "shape_follow": 0.5638,
+        "multi_window_frequency": 0.2899,
+        "omission_phase": 0.8753,
+        "pair_lift": 0.3931,
+        "shape_follow": 0.7222,
         "tail_zone_balance": 1.0,
-        "sum_band_neighbor": 0.5643,
-        "trend_break": 1.0,
+        "sum_band_neighbor": 0.2905,
+        "trend_break": 0.4079,
         "date_cycle": 0.0
       },
-      "rank": 9,
-      "front9_original_rank": 12,
+      "rank": 4,
+      "hit_rate_optimizer_score": 0.443741,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 6,
       "front9_final_layer": "前九核心",
       "verification_denominator": 8,
       "stability_count": 4,
-      "route_class": "尾數版路、遺漏補償、趨勢轉折",
+      "route_class": "尾數版路、遺漏補償、牌型相似跟隨",
       "practical_maturity": {
-        "score": 72.8,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 5,
-      "score": 0.651402,
-      "confidence_index": 91.0,
-      "model_probability_index": 15.62,
-      "probability_label": "校準單號命中強度",
-      "omission": 13,
-      "zone": "01-10",
-      "support_models": 5,
-      "reasons": [
-        "遺漏相位",
-        "牌型跟隨",
-        "趨勢轉折",
-        "拖牌關聯",
-        "尾數區間平衡",
-        "近期多次落空降權後仍保留觀察",
-        "整組命中率優化入選",
-        "前九外溢檢討後降到備查"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0484,
-      "recent_miss_penalty": 0.758,
-      "front9_escape_score": 0.0348,
-      "front9_escape_status": "前九尾端降到備查",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 4,
-      "top9_hit_count": 1,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.3955,
-        "omission_phase": 0.8344,
-        "pair_lift": 0.6454,
-        "shape_follow": 0.7915,
-        "tail_zone_balance": 0.6306,
-        "sum_band_neighbor": 0.4739,
-        "trend_break": 0.7576,
-        "date_cycle": 0.0
-      },
-      "rank": 10,
-      "hit_rate_optimizer_score": 0.581215,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 4,
-      "front9_final_layer": "第10到15名備查",
-      "verification_denominator": 8,
-      "stability_count": 5,
-      "route_class": "拖牌共現、尾數版路、遺漏補償",
-      "practical_maturity": {
-        "score": 85.2,
+        "score": 77.7,
         "tier": "可觀察"
       },
       "previous_prediction_guard": {
@@ -2276,211 +1949,53 @@
       }
     },
     {
-      "number": 8,
-      "score": 0.648685,
-      "confidence_index": 99.0,
-      "model_probability_index": 16.92,
+      "number": 36,
+      "score": 0.595307,
+      "confidence_index": 78.5,
+      "model_probability_index": 13.59,
       "probability_label": "校準單號命中強度",
-      "omission": 23,
-      "zone": "01-10",
-      "support_models": 5,
-      "reasons": [
-        "趨勢轉折",
-        "日期循環",
-        "拖牌關聯",
-        "遺漏相位",
-        "牌型跟隨",
-        "整組命中率優化入選",
-        "前九外溢檢討後降到備查"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.5802,
-      "front9_escape_score": 0.0,
-      "front9_escape_status": "前九尾端降到備查",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 2,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.0,
-        "omission_phase": 0.9526,
-        "pair_lift": 0.9613,
-        "shape_follow": 0.6364,
-        "tail_zone_balance": 0.3959,
-        "sum_band_neighbor": 0.1791,
-        "trend_break": 1.0,
-        "date_cycle": 1.0
-      },
-      "rank": 11,
-      "hit_rate_optimizer_score": 0.70198,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 1,
-      "front9_final_layer": "第10到15名備查",
-      "verification_denominator": 8,
-      "stability_count": 5,
-      "route_class": "拖牌共現、遺漏補償、趨勢轉折",
-      "practical_maturity": {
-        "score": 88.8,
-        "tier": "成熟通過"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 16,
-      "score": 0.648604,
-      "confidence_index": 81.8,
-      "model_probability_index": 14.13,
-      "probability_label": "校準單號命中強度",
-      "omission": 14,
-      "zone": "11-20",
-      "support_models": 3,
-      "reasons": [
-        "日期循環",
-        "趨勢轉折",
-        "遺漏相位"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.3703,
-      "front9_escape_score": 0.19,
-      "front9_escape_status": "第10到15名外溢候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 1,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.51,
-        "omission_phase": 0.8013,
-        "pair_lift": 0.5985,
-        "shape_follow": 0.2091,
-        "tail_zone_balance": 0.2235,
-        "sum_band_neighbor": 0.2431,
-        "trend_break": 0.8532,
-        "date_cycle": 1.0
-      },
-      "rank": 12,
-      "front9_original_rank": 13,
-      "front9_final_layer": "第10到15名備查",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "遺漏補償、趨勢轉折",
-      "practical_maturity": {
-        "score": 68.3,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 37,
-      "score": 0.642269,
-      "confidence_index": 84.2,
-      "model_probability_index": 14.52,
-      "probability_label": "校準單號命中強度",
-      "omission": 8,
+      "omission": 6,
       "zone": "31-39",
       "support_models": 3,
       "reasons": [
-        "日期循環",
-        "遺漏相位",
         "牌型跟隨",
-        "近期多次落空降權後仍保留觀察",
-        "整組命中率檢討降到備查"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.8397,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "第10到15名外溢候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 4,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.4032,
-        "omission_phase": 0.9205,
-        "pair_lift": 0.4147,
-        "shape_follow": 0.7902,
-        "tail_zone_balance": 0.48,
-        "sum_band_neighbor": 0.3662,
-        "trend_break": 0.4807,
-        "date_cycle": 1.0
-      },
-      "rank": 13,
-      "hit_rate_optimizer_score": 0.465796,
-      "hit_rate_optimizer_status": "整組命中率降到備查",
-      "front9_original_rank": 14,
-      "front9_final_layer": "第10到15名備查",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "遺漏補償、牌型相似跟隨",
-      "practical_maturity": {
-        "score": 69.8,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 38,
-      "score": 0.620159,
-      "confidence_index": 83.1,
-      "model_probability_index": 14.34,
-      "probability_label": "校準單號命中強度",
-      "omission": 10,
-      "zone": "31-39",
-      "support_models": 2,
-      "reasons": [
         "遺漏相位",
         "尾數區間平衡",
-        "整組命中率檢討降到備查"
+        "低命中漏抓回補",
+        "整組命中率優化入選"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.2099,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "第10到15名外溢候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
+      "low_hit_recovery_score": 0.7312,
+      "recent_miss_penalty": 0.1735,
+      "front9_escape_score": 0.7665,
+      "front9_escape_status": "前九守門",
+      "second_layer_hit_count": 1,
+      "leak_count": 2,
       "top9_miss_count": 1,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.2254,
-        "omission_phase": 0.9314,
-        "pair_lift": 0.5978,
-        "shape_follow": 0.3695,
-        "tail_zone_balance": 0.6244,
-        "sum_band_neighbor": 0.177,
-        "trend_break": 0.5828,
+        "multi_window_frequency": 0.4278,
+        "omission_phase": 0.829,
+        "pair_lift": 0.1762,
+        "shape_follow": 0.9758,
+        "tail_zone_balance": 0.7412,
+        "sum_band_neighbor": 0.3766,
+        "trend_break": 0.3497,
         "date_cycle": 0.0
       },
-      "rank": 14,
-      "hit_rate_optimizer_score": 0.494183,
-      "hit_rate_optimizer_status": "整組命中率降到備查",
-      "front9_original_rank": 15,
-      "front9_final_layer": "第10到15名備查",
+      "rank": 5,
+      "hit_rate_optimizer_score": 0.506692,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 4,
+      "front9_final_layer": "前九核心",
       "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "尾數版路、遺漏補償",
+      "stability_count": 4,
+      "route_class": "尾數版路、遺漏補償、牌型相似跟隨",
       "practical_maturity": {
-        "score": 64.9,
-        "tier": "研究觀察"
+        "score": 76.1,
+        "tier": "可觀察"
       },
       "previous_prediction_guard": {
         "passed": true,
@@ -2488,97 +2003,50 @@
       }
     },
     {
-      "number": 33,
-      "score": 0.609228,
-      "confidence_index": 79.9,
-      "model_probability_index": 13.82,
+      "number": 30,
+      "score": 0.544657,
+      "confidence_index": 74.8,
+      "model_probability_index": 13.0,
       "probability_label": "校準單號命中強度",
-      "omission": 19,
-      "zone": "31-39",
-      "support_models": 3,
+      "omission": 3,
+      "zone": "21-30",
+      "support_models": 2,
       "reasons": [
-        "趨勢轉折",
-        "遺漏相位",
-        "尾數區間平衡"
+        "多窗口頻率",
+        "日期循環",
+        "低命中漏抓回補",
+        "近期多次落空降權後仍保留觀察",
+        "第10到15名外溢校正拉回前九"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.6297,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 3,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.2864,
-        "omission_phase": 0.9908,
-        "pair_lift": 0.3246,
-        "shape_follow": 0.4949,
-        "tail_zone_balance": 0.7035,
-        "sum_band_neighbor": 0.2611,
-        "trend_break": 1.0,
-        "date_cycle": 0.0
-      },
-      "rank": 15,
-      "front9_original_rank": 16,
-      "front9_final_layer": "第10到15名備查",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "尾數版路、遺漏補償、趨勢轉折",
-      "practical_maturity": {
-        "score": 67.1,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 11,
-      "score": 0.590579,
-      "confidence_index": 78.9,
-      "model_probability_index": 13.67,
-      "probability_label": "校準單號命中強度",
-      "omission": 9,
-      "zone": "11-20",
-      "support_models": 1,
-      "reasons": [
-        "遺漏相位",
-        "近期多次落空降權後仍保留觀察"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.5376,
-      "recent_miss_penalty": 0.7901,
-      "front9_escape_score": 0.5071,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
+      "low_hit_recovery_score": 0.9247,
+      "recent_miss_penalty": 0.653,
+      "front9_escape_score": 1.0258,
+      "front9_escape_status": "已拉回前九",
+      "second_layer_hit_count": 2,
       "leak_count": 2,
       "top9_miss_count": 3,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.5042,
-        "omission_phase": 0.9627,
-        "pair_lift": 0.3316,
-        "shape_follow": 0.5099,
-        "tail_zone_balance": 0.6,
-        "sum_band_neighbor": 0.3573,
-        "trend_break": 0.5752,
-        "date_cycle": 0.0
+        "multi_window_frequency": 1.0,
+        "omission_phase": 0.1466,
+        "pair_lift": 0.4299,
+        "shape_follow": 0.2811,
+        "tail_zone_balance": 0.3197,
+        "sum_band_neighbor": 0.4518,
+        "trend_break": 0.3794,
+        "date_cycle": 1.0
       },
-      "rank": 16,
-      "front9_original_rank": 17,
-      "front9_final_layer": "後段觀察",
+      "rank": 6,
+      "front9_original_rank": 10,
+      "front9_final_layer": "前九核心",
       "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "遺漏補償",
+      "stability_count": 3,
+      "route_class": "全歷史排序",
       "practical_maturity": {
-        "score": 58.1,
+        "score": 68.2,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2588,22 +2056,24 @@
     },
     {
       "number": 22,
-      "score": 0.588785,
-      "confidence_index": 78.9,
-      "model_probability_index": 13.65,
+      "score": 0.536895,
+      "confidence_index": 75.6,
+      "model_probability_index": 13.13,
       "probability_label": "校準單號命中強度",
-      "omission": 1,
+      "omission": 3,
       "zone": "21-30",
-      "support_models": 1,
+      "support_models": 2,
       "reasons": [
-        "牌型跟隨",
-        "低命中漏抓回補"
+        "日期循環",
+        "多窗口頻率",
+        "低命中漏抓回補",
+        "整組命中率優化入選"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 1.0,
-      "recent_miss_penalty": 0.2099,
+      "recent_miss_penalty": 0.1735,
       "front9_escape_score": 1.02,
-      "front9_escape_status": "後段候選",
+      "front9_escape_status": "前九守門",
       "second_layer_hit_count": 1,
       "leak_count": 3,
       "top9_miss_count": 1,
@@ -2611,23 +2081,25 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.6121,
-        "omission_phase": 0.0639,
-        "pair_lift": 0.4576,
-        "shape_follow": 0.6403,
-        "tail_zone_balance": 0.3306,
-        "sum_band_neighbor": 0.4142,
-        "trend_break": 0.1202,
-        "date_cycle": 0.0
+        "multi_window_frequency": 0.6637,
+        "omission_phase": 0.1466,
+        "pair_lift": 0.3587,
+        "shape_follow": 0.5506,
+        "tail_zone_balance": 0.2761,
+        "sum_band_neighbor": 0.4373,
+        "trend_break": 0.2367,
+        "date_cycle": 1.0
       },
-      "rank": 17,
-      "front9_original_rank": 18,
-      "front9_final_layer": "後段觀察",
+      "rank": 7,
+      "hit_rate_optimizer_score": 0.477936,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 5,
+      "front9_final_layer": "前九核心",
       "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "牌型相似跟隨",
+      "stability_count": 3,
+      "route_class": "全歷史排序",
       "practical_maturity": {
-        "score": 53.1,
+        "score": 67.3,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2636,50 +2108,50 @@
       }
     },
     {
-      "number": 30,
-      "score": 0.581052,
-      "confidence_index": 78.5,
-      "model_probability_index": 13.59,
+      "number": 8,
+      "score": 0.50168,
+      "confidence_index": 73.6,
+      "model_probability_index": 12.8,
       "probability_label": "校準單號命中強度",
-      "omission": 1,
-      "zone": "21-30",
-      "support_models": 3,
+      "omission": 25,
+      "zone": "01-10",
+      "support_models": 4,
       "reasons": [
-        "多窗口頻率",
+        "趨勢轉折",
         "日期循環",
-        "拖牌關聯",
-        "低命中漏抓回補",
-        "近期多次落空降權後仍保留觀察"
+        "遺漏相位",
+        "牌型跟隨",
+        "第10到15名外溢校正拉回前九"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.9247,
-      "recent_miss_penalty": 0.7901,
-      "front9_escape_score": 1.0258,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 2,
-      "leak_count": 2,
-      "top9_miss_count": 3,
+      "low_hit_recovery_score": 0.0,
+      "recent_miss_penalty": 0.4795,
+      "front9_escape_score": 0.3124,
+      "front9_escape_status": "已拉回前九",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 2,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 1.0,
-        "omission_phase": 0.0639,
-        "pair_lift": 0.6337,
-        "shape_follow": 0.0756,
-        "tail_zone_balance": 0.302,
-        "sum_band_neighbor": 0.305,
-        "trend_break": 0.2749,
+        "multi_window_frequency": 0.0,
+        "omission_phase": 0.9328,
+        "pair_lift": 0.22,
+        "shape_follow": 0.7949,
+        "tail_zone_balance": 0.4994,
+        "sum_band_neighbor": 0.0576,
+        "trend_break": 1.0,
         "date_cycle": 1.0
       },
-      "rank": 18,
-      "front9_original_rank": 19,
-      "front9_final_layer": "後段觀察",
+      "rank": 8,
+      "front9_original_rank": 11,
+      "front9_final_layer": "前九核心",
       "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "拖牌共現、全歷史排序",
+      "stability_count": 5,
+      "route_class": "遺漏補償、趨勢轉折、牌型相似跟隨",
       "practical_maturity": {
-        "score": 61.3,
+        "score": 68.0,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2689,27 +2161,24 @@
     },
     {
       "number": 18,
-      "score": 0.564384,
-      "confidence_index": 82.8,
-      "model_probability_index": 14.3,
+      "score": 0.499236,
+      "confidence_index": 73.4,
+      "model_probability_index": 12.78,
       "probability_label": "校準單號命中強度",
-      "omission": 1,
+      "omission": 3,
       "zone": "11-20",
-      "support_models": 4,
+      "support_models": 3,
       "reasons": [
-        "牌型跟隨",
         "和值鄰近",
-        "日期循環",
+        "牌型跟隨",
         "多窗口頻率",
-        "近期多次落空降權後仍保留觀察",
-        "整組命中率優化入選",
-        "前九外溢檢討後降到備查"
+        "第10到15名外溢校正拉回前九"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.414,
-      "recent_miss_penalty": 0.7551,
+      "recent_miss_penalty": 0.6241,
       "front9_escape_score": 0.3581,
-      "front9_escape_status": "前九尾端降到備查",
+      "front9_escape_status": "已拉回前九",
       "second_layer_hit_count": 0,
       "leak_count": 1,
       "top9_miss_count": 4,
@@ -2717,25 +2186,23 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.8174,
-        "omission_phase": 0.0639,
-        "pair_lift": 0.292,
-        "shape_follow": 1.0,
-        "tail_zone_balance": 0.1444,
+        "multi_window_frequency": 0.9436,
+        "omission_phase": 0.1466,
+        "pair_lift": 0.1487,
+        "shape_follow": 0.9865,
+        "tail_zone_balance": 0.1688,
         "sum_band_neighbor": 1.0,
-        "trend_break": 0.1488,
-        "date_cycle": 1.0
+        "trend_break": 0.1748,
+        "date_cycle": 0.0
       },
-      "rank": 19,
-      "hit_rate_optimizer_score": 0.492428,
-      "hit_rate_optimizer_status": "整組命中率入選",
-      "front9_original_rank": 9,
-      "front9_final_layer": "後段觀察",
+      "rank": 9,
+      "front9_original_rank": 12,
+      "front9_final_layer": "前九核心",
       "verification_denominator": 8,
       "stability_count": 4,
       "route_class": "全歷史排序、牌型相似跟隨",
       "practical_maturity": {
-        "score": 68.1,
+        "score": 67.3,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2744,147 +2211,257 @@
       }
     },
     {
-      "number": 17,
-      "score": 0.510289,
-      "confidence_index": 75.0,
-      "model_probability_index": 13.03,
+      "number": 33,
+      "score": 0.47387,
+      "confidence_index": 88.3,
+      "model_probability_index": 15.19,
       "probability_label": "校準單號命中強度",
-      "omission": 4,
-      "zone": "11-20",
-      "support_models": 1,
+      "omission": 21,
+      "zone": "31-39",
+      "support_models": 5,
       "reasons": [
+        "趨勢轉折",
+        "日期循環",
         "遺漏相位",
-        "低命中漏抓回補"
+        "尾數區間平衡",
+        "拖牌關聯",
+        "整組命中率優化入選",
+        "前九外溢檢討後降到備查"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.8065,
-      "recent_miss_penalty": 0.2099,
-      "front9_escape_score": 0.7607,
-      "front9_escape_status": "後段候選",
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.5205,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "前九尾端降到備查",
       "second_layer_hit_count": 0,
-      "leak_count": 3,
-      "top9_miss_count": 1,
+      "leak_count": 1,
+      "top9_miss_count": 3,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.5592,
-        "omission_phase": 0.732,
-        "pair_lift": 0.3388,
-        "shape_follow": 0.5706,
-        "tail_zone_balance": 0.0,
-        "sum_band_neighbor": 0.293,
-        "trend_break": 0.2939,
+        "multi_window_frequency": 0.2915,
+        "omission_phase": 0.972,
+        "pair_lift": 0.6805,
+        "shape_follow": 0.3607,
+        "tail_zone_balance": 0.7412,
+        "sum_band_neighbor": 0.1791,
+        "trend_break": 1.0,
+        "date_cycle": 1.0
+      },
+      "rank": 10,
+      "hit_rate_optimizer_score": 0.593998,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 3,
+      "front9_final_layer": "第10到15名備查",
+      "verification_denominator": 8,
+      "stability_count": 5,
+      "route_class": "拖牌共現、尾數版路、遺漏補償",
+      "practical_maturity": {
+        "score": 83.5,
+        "tier": "可觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 27,
+      "score": 0.471533,
+      "confidence_index": 73.1,
+      "model_probability_index": 12.72,
+      "probability_label": "校準單號命中強度",
+      "omission": 2,
+      "zone": "21-30",
+      "support_models": 2,
+      "reasons": [
+        "牌型跟隨",
+        "多窗口頻率"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.0484,
+      "recent_miss_penalty": 0.106,
+      "front9_escape_score": 0.1874,
+      "front9_escape_status": "第10到15名外溢候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 1,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.6381,
+        "omission_phase": 0.1091,
+        "pair_lift": 0.3591,
+        "shape_follow": 1.0,
+        "tail_zone_balance": 0.2863,
+        "sum_band_neighbor": 0.3647,
+        "trend_break": 0.1322,
         "date_cycle": 0.0
       },
-      "rank": 20,
-      "front9_original_rank": 20,
-      "front9_final_layer": "後段觀察",
+      "rank": 11,
+      "front9_original_rank": 13,
+      "front9_final_layer": "第10到15名備查",
+      "verification_denominator": 8,
+      "stability_count": 2,
+      "route_class": "全歷史排序、牌型相似跟隨",
+      "practical_maturity": {
+        "score": 60.1,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 35,
+      "score": 0.452384,
+      "confidence_index": 72.2,
+      "model_probability_index": 12.57,
+      "probability_label": "校準單號命中強度",
+      "omission": 18,
+      "zone": "31-39",
+      "support_models": 3,
+      "reasons": [
+        "遺漏相位",
+        "趨勢轉折",
+        "尾數區間平衡"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.5205,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "第10到15名外溢候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 3,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.1427,
+        "omission_phase": 1.0,
+        "pair_lift": 0.3708,
+        "shape_follow": 0.0979,
+        "tail_zone_balance": 0.9232,
+        "sum_band_neighbor": 0.2352,
+        "trend_break": 1.0,
+        "date_cycle": 0.0
+      },
+      "rank": 12,
+      "front9_original_rank": 14,
+      "front9_final_layer": "第10到15名備查",
+      "verification_denominator": 8,
+      "stability_count": 3,
+      "route_class": "尾數版路、遺漏補償、趨勢轉折",
+      "practical_maturity": {
+        "score": 62.4,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 25,
+      "score": 0.447082,
+      "confidence_index": 77.0,
+      "model_probability_index": 13.35,
+      "probability_label": "校準單號命中強度",
+      "omission": 6,
+      "zone": "21-30",
+      "support_models": 4,
+      "reasons": [
+        "遺漏相位",
+        "牌型跟隨",
+        "尾數區間平衡",
+        "和值鄰近",
+        "整組命中率優化入選",
+        "前九外溢檢討後降到備查"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.3172,
+      "recent_miss_penalty": 0.5855,
+      "front9_escape_score": 0.2884,
+      "front9_escape_status": "前九尾端降到備查",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 3,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.4771,
+        "omission_phase": 0.829,
+        "pair_lift": 0.2981,
+        "shape_follow": 0.7307,
+        "tail_zone_balance": 0.6704,
+        "sum_band_neighbor": 0.6694,
+        "trend_break": 0.3497,
+        "date_cycle": 0.0
+      },
+      "rank": 13,
+      "hit_rate_optimizer_score": 0.419781,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 8,
+      "front9_final_layer": "第10到15名備查",
+      "verification_denominator": 8,
+      "stability_count": 4,
+      "route_class": "尾數版路、遺漏補償、牌型相似跟隨",
+      "practical_maturity": {
+        "score": 69.5,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 29,
+      "score": 0.438417,
+      "confidence_index": 71.5,
+      "model_probability_index": 12.46,
+      "probability_label": "校準單號命中強度",
+      "omission": 9,
+      "zone": "21-30",
+      "support_models": 1,
+      "reasons": [
+        "遺漏相位",
+        "近期多次落空降權後仍保留觀察"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.694,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "第10到15名外溢候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 4,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.3951,
+        "omission_phase": 0.9627,
+        "pair_lift": 0.3637,
+        "shape_follow": 0.4521,
+        "tail_zone_balance": 0.1472,
+        "sum_band_neighbor": 0.4266,
+        "trend_break": 0.5392,
+        "date_cycle": 0.0
+      },
+      "rank": 14,
+      "front9_original_rank": 15,
+      "front9_final_layer": "第10到15名備查",
       "verification_denominator": 8,
       "stability_count": 1,
       "route_class": "遺漏補償",
       "practical_maturity": {
-        "score": 55.7,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 1,
-      "score": 0.479084,
-      "confidence_index": 73.5,
-      "model_probability_index": 12.78,
-      "probability_label": "校準單號命中強度",
-      "omission": 0,
-      "zone": "01-10",
-      "support_models": 3,
-      "reasons": [
-        "拖牌關聯",
-        "尾數區間平衡",
-        "牌型跟隨",
-        "近期多次落空降權後仍保留觀察",
-        "最新開獎號降權；禁止作為本期獨隻"
-      ],
-      "last_draw_repeat": true,
-      "low_hit_recovery_score": 0.4624,
-      "recent_miss_penalty": 0.9504,
-      "front9_escape_score": 0.5132,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 1,
-      "leak_count": 1,
-      "top9_miss_count": 3,
-      "top9_hit_count": 0,
-      "strong_single_eligible": false,
-      "strict_guard": "最新開獎號不得直接作為本期獨隻",
-      "model_scores": {
-        "multi_window_frequency": 0.5196,
-        "omission_phase": 0.0,
-        "pair_lift": 0.8247,
-        "shape_follow": 0.6313,
-        "tail_zone_balance": 0.7714,
-        "sum_band_neighbor": 0.1508,
-        "trend_break": 0.0617,
-        "date_cycle": 0.0
-      },
-      "rank": 21,
-      "front9_original_rank": 21,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 3,
-      "route_class": "拖牌共現、尾數版路、牌型相似跟隨",
-      "practical_maturity": {
-        "score": 58.2,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 14,
-      "score": 0.455712,
-      "confidence_index": 72.3,
-      "model_probability_index": 12.6,
-      "probability_label": "校準單號命中強度",
-      "omission": 3,
-      "zone": "11-20",
-      "support_models": 1,
-      "reasons": [
-        "牌型跟隨"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.6297,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 3,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.365,
-        "omission_phase": 0.1466,
-        "pair_lift": 0.413,
-        "shape_follow": 0.6413,
-        "tail_zone_balance": 0.5249,
-        "sum_band_neighbor": 0.4918,
-        "trend_break": 0.1748,
-        "date_cycle": 0.0
-      },
-      "rank": 22,
-      "front9_original_rank": 22,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "牌型相似跟隨",
-      "practical_maturity": {
-        "score": 54.0,
+        "score": 53.5,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2894,21 +2471,22 @@
     },
     {
       "number": 32,
-      "score": 0.452578,
-      "confidence_index": 72.2,
-      "model_probability_index": 12.57,
+      "score": 0.412844,
+      "confidence_index": 70.2,
+      "model_probability_index": 12.26,
       "probability_label": "校準單號命中強度",
-      "omission": 9,
+      "omission": 11,
       "zone": "31-39",
-      "support_models": 2,
+      "support_models": 3,
       "reasons": [
         "遺漏相位",
-        "牌型跟隨",
+        "尾數區間平衡",
+        "趨勢轉折",
         "近期多次落空降權後仍保留觀察"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.5376,
-      "recent_miss_penalty": 0.7901,
+      "recent_miss_penalty": 0.653,
       "front9_escape_score": 0.5071,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
@@ -2918,23 +2496,23 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.3529,
-        "omission_phase": 0.9627,
-        "pair_lift": 0.1775,
-        "shape_follow": 0.632,
-        "tail_zone_balance": 0.5591,
-        "sum_band_neighbor": 0.1956,
-        "trend_break": 0.5452,
+        "multi_window_frequency": 0.3724,
+        "omission_phase": 0.8995,
+        "pair_lift": 0.2848,
+        "shape_follow": 0.3574,
+        "tail_zone_balance": 0.6889,
+        "sum_band_neighbor": 0.2185,
+        "trend_break": 0.6618,
         "date_cycle": 0.0
       },
-      "rank": 23,
-      "front9_original_rank": 23,
-      "front9_final_layer": "後段觀察",
+      "rank": 15,
+      "front9_original_rank": 16,
+      "front9_final_layer": "第10到15名備查",
       "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "遺漏補償、牌型相似跟隨",
+      "stability_count": 3,
+      "route_class": "尾數版路、遺漏補償、趨勢轉折",
       "practical_maturity": {
-        "score": 58.2,
+        "score": 61.1,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2943,48 +2521,48 @@
       }
     },
     {
-      "number": 6,
-      "score": 0.449782,
-      "confidence_index": 72.0,
-      "model_probability_index": 12.55,
+      "number": 9,
+      "score": 0.41196,
+      "confidence_index": 70.2,
+      "model_probability_index": 12.25,
       "probability_label": "校準單號命中強度",
-      "omission": 15,
+      "omission": 0,
       "zone": "01-10",
       "support_models": 2,
       "reasons": [
-        "趨勢轉折",
-        "遺漏相位",
-        "近期多次落空降權後仍保留觀察"
+        "多窗口頻率",
+        "牌型跟隨",
+        "最新開獎號降權；禁止作為本期獨隻"
       ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0484,
-      "recent_miss_penalty": 0.758,
-      "front9_escape_score": 0.0348,
+      "last_draw_repeat": true,
+      "low_hit_recovery_score": 0.3656,
+      "recent_miss_penalty": 0.0386,
+      "front9_escape_score": 0.3232,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 4,
-      "top9_hit_count": 1,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
+      "leak_count": 1,
+      "top9_miss_count": 1,
+      "top9_hit_count": 2,
+      "strong_single_eligible": false,
+      "strict_guard": "最新開獎號不得直接作為本期獨隻",
       "model_scores": {
-        "multi_window_frequency": 0.3004,
-        "omission_phase": 0.7679,
-        "pair_lift": 0.3914,
-        "shape_follow": 0.1364,
-        "tail_zone_balance": 0.4749,
-        "sum_band_neighbor": 0.482,
-        "trend_break": 0.8741,
+        "multi_window_frequency": 0.9441,
+        "omission_phase": 0.0,
+        "pair_lift": 0.459,
+        "shape_follow": 0.9051,
+        "tail_zone_balance": 0.2506,
+        "sum_band_neighbor": 0.4136,
+        "trend_break": 0.1687,
         "date_cycle": 0.0
       },
-      "rank": 24,
-      "front9_original_rank": 24,
+      "rank": 16,
+      "front9_original_rank": 17,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
       "stability_count": 2,
-      "route_class": "遺漏補償、趨勢轉折",
+      "route_class": "全歷史排序、牌型相似跟隨",
       "practical_maturity": {
-        "score": 58.0,
+        "score": 51.9,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -2993,49 +2571,53 @@
       }
     },
     {
-      "number": 36,
-      "score": 0.421722,
-      "confidence_index": 70.7,
-      "model_probability_index": 12.33,
+      "number": 11,
+      "score": 0.411291,
+      "confidence_index": 75.5,
+      "model_probability_index": 13.11,
       "probability_label": "校準單號命中強度",
-      "omission": 4,
-      "zone": "31-39",
+      "omission": 11,
+      "zone": "11-20",
       "support_models": 3,
       "reasons": [
         "遺漏相位",
         "牌型跟隨",
-        "尾數區間平衡",
-        "低命中漏抓回補"
+        "趨勢轉折",
+        "近期多次落空降權後仍保留觀察",
+        "整組命中率優化入選",
+        "前九外溢檢討後降到備查"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.7312,
-      "recent_miss_penalty": 0.2099,
-      "front9_escape_score": 0.7665,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 1,
+      "low_hit_recovery_score": 0.5376,
+      "recent_miss_penalty": 0.653,
+      "front9_escape_score": 0.5071,
+      "front9_escape_status": "前九尾端降到備查",
+      "second_layer_hit_count": 0,
       "leak_count": 2,
-      "top9_miss_count": 1,
+      "top9_miss_count": 3,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.4177,
-        "omission_phase": 0.732,
-        "pair_lift": 0.0889,
-        "shape_follow": 0.7228,
-        "tail_zone_balance": 0.7035,
-        "sum_band_neighbor": 0.2774,
-        "trend_break": 0.2331,
+        "multi_window_frequency": 0.4558,
+        "omission_phase": 0.8995,
+        "pair_lift": 0.1822,
+        "shape_follow": 0.8038,
+        "tail_zone_balance": 0.52,
+        "sum_band_neighbor": 0.4135,
+        "trend_break": 0.6797,
         "date_cycle": 0.0
       },
-      "rank": 25,
-      "front9_original_rank": 25,
+      "rank": 17,
+      "hit_rate_optimizer_score": 0.397583,
+      "hit_rate_optimizer_status": "整組命中率入選",
+      "front9_original_rank": 9,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
       "stability_count": 3,
-      "route_class": "尾數版路、遺漏補償、牌型相似跟隨",
+      "route_class": "遺漏補償、趨勢轉折、牌型相似跟隨",
       "practical_maturity": {
-        "score": 61.4,
+        "score": 64.4,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3044,47 +2626,46 @@
       }
     },
     {
-      "number": 19,
-      "score": 0.416953,
-      "confidence_index": 70.4,
-      "model_probability_index": 12.29,
+      "number": 13,
+      "score": 0.407857,
+      "confidence_index": 70.0,
+      "model_probability_index": 12.22,
       "probability_label": "校準單號命中強度",
-      "omission": 8,
+      "omission": 2,
       "zone": "11-20",
-      "support_models": 2,
+      "support_models": 1,
       "reasons": [
-        "日期循環",
-        "遺漏相位"
+        "日期循環"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0484,
-      "recent_miss_penalty": 0.1283,
-      "front9_escape_score": 0.0348,
+      "low_hit_recovery_score": 0.0,
+      "recent_miss_penalty": 0.0,
+      "front9_escape_score": 0.0264,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
       "leak_count": 0,
-      "top9_miss_count": 1,
-      "top9_hit_count": 1,
+      "top9_miss_count": 0,
+      "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.3701,
-        "omission_phase": 0.9205,
-        "pair_lift": 0.3599,
-        "shape_follow": 0.2981,
-        "tail_zone_balance": 0.0791,
-        "sum_band_neighbor": 0.1232,
-        "trend_break": 0.4762,
+        "multi_window_frequency": 0.5339,
+        "omission_phase": 0.1091,
+        "pair_lift": 0.4011,
+        "shape_follow": 0.4605,
+        "tail_zone_balance": 0.2612,
+        "sum_band_neighbor": 0.6039,
+        "trend_break": 0.1166,
         "date_cycle": 1.0
       },
-      "rank": 26,
-      "front9_original_rank": 26,
+      "rank": 18,
+      "front9_original_rank": 18,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "遺漏補償",
+      "stability_count": 1,
+      "route_class": "全歷史排序",
       "practical_maturity": {
-        "score": 57.0,
+        "score": 52.6,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3093,20 +2674,20 @@
       }
     },
     {
-      "number": 3,
-      "score": 0.415777,
-      "confidence_index": 70.4,
-      "model_probability_index": 12.28,
+      "number": 14,
+      "score": 0.405211,
+      "confidence_index": 69.9,
+      "model_probability_index": 12.2,
       "probability_label": "校準單號命中強度",
-      "omission": 6,
-      "zone": "01-10",
+      "omission": 5,
+      "zone": "11-20",
       "support_models": 1,
       "reasons": [
         "遺漏相位"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.6297,
+      "recent_miss_penalty": 0.5205,
       "front9_escape_score": 0.2535,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
@@ -3116,23 +2697,23 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.5206,
-        "omission_phase": 0.829,
-        "pair_lift": 0.3301,
-        "shape_follow": 0.2779,
-        "tail_zone_balance": 0.4749,
-        "sum_band_neighbor": 0.3434,
-        "trend_break": 0.4385,
+        "multi_window_frequency": 0.361,
+        "omission_phase": 0.7814,
+        "pair_lift": 0.375,
+        "shape_follow": 0.2791,
+        "tail_zone_balance": 0.52,
+        "sum_band_neighbor": 0.6045,
+        "trend_break": 0.2914,
         "date_cycle": 0.0
       },
-      "rank": 27,
-      "front9_original_rank": 27,
+      "rank": 19,
+      "front9_original_rank": 19,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
       "stability_count": 1,
       "route_class": "遺漏補償",
       "practical_maturity": {
-        "score": 52.8,
+        "score": 52.5,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3141,95 +2722,46 @@
       }
     },
     {
-      "number": 27,
-      "score": 0.402474,
-      "confidence_index": 69.7,
-      "model_probability_index": 12.17,
+      "number": 1,
+      "score": 0.367149,
+      "confidence_index": 68.0,
+      "model_probability_index": 11.89,
       "probability_label": "校準單號命中強度",
-      "omission": 0,
-      "zone": "21-30",
-      "support_models": 2,
+      "omission": 2,
+      "zone": "01-10",
+      "support_models": 1,
       "reasons": [
-        "日期循環",
+        "尾數區間平衡",
         "拖牌關聯",
-        "最新開獎號降權；禁止作為本期獨隻"
-      ],
-      "last_draw_repeat": true,
-      "low_hit_recovery_score": 0.0484,
-      "recent_miss_penalty": 0.1283,
-      "front9_escape_score": 0.0348,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 1,
-      "top9_hit_count": 1,
-      "strong_single_eligible": false,
-      "strict_guard": "最新開獎號不得直接作為本期獨隻",
-      "model_scores": {
-        "multi_window_frequency": 0.5573,
-        "omission_phase": 0.0,
-        "pair_lift": 0.6953,
-        "shape_follow": 0.4963,
-        "tail_zone_balance": 0.2514,
-        "sum_band_neighbor": 0.4253,
-        "trend_break": 0.0156,
-        "date_cycle": 1.0
-      },
-      "rank": 28,
-      "front9_original_rank": 28,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "拖牌共現",
-      "practical_maturity": {
-        "score": 51.6,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 23,
-      "score": 0.39596,
-      "confidence_index": 69.4,
-      "model_probability_index": 12.12,
-      "probability_label": "校準單號命中強度",
-      "omission": 30,
-      "zone": "21-30",
-      "support_models": 2,
-      "reasons": [
-        "趨勢轉折",
-        "遺漏相位"
+        "近期多次落空降權後仍保留觀察"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.0,
-      "front9_escape_score": 0.0529,
+      "low_hit_recovery_score": 0.4624,
+      "recent_miss_penalty": 0.7855,
+      "front9_escape_score": 0.5132,
       "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 0,
+      "second_layer_hit_count": 1,
+      "leak_count": 1,
+      "top9_miss_count": 3,
       "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.0454,
-        "omission_phase": 0.8816,
-        "pair_lift": 0.3831,
-        "shape_follow": 0.0,
-        "tail_zone_balance": 0.5549,
-        "sum_band_neighbor": 0.1263,
-        "trend_break": 1.0,
+        "multi_window_frequency": 0.5657,
+        "omission_phase": 0.1091,
+        "pair_lift": 0.5637,
+        "shape_follow": 0.1884,
+        "tail_zone_balance": 0.7706,
+        "sum_band_neighbor": 0.1895,
+        "trend_break": 0.1662,
         "date_cycle": 0.0
       },
-      "rank": 29,
-      "front9_original_rank": 29,
+      "rank": 20,
+      "front9_original_rank": 20,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "遺漏補償、趨勢轉折",
+      "stability_count": 1,
+      "route_class": "拖牌共現、尾數版路",
       "practical_maturity": {
         "score": 51.4,
         "tier": "研究觀察"
@@ -3240,70 +2772,22 @@
       }
     },
     {
-      "number": 15,
-      "score": 0.31617,
-      "confidence_index": 65.5,
-      "model_probability_index": 11.49,
+      "number": 37,
+      "score": 0.358252,
+      "confidence_index": 67.6,
+      "model_probability_index": 11.82,
       "probability_label": "校準單號命中強度",
-      "omission": 17,
-      "zone": "11-20",
+      "omission": 10,
+      "zone": "31-39",
       "support_models": 2,
       "reasons": [
-        "趨勢轉折",
-        "遺漏相位"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.4198,
-      "front9_escape_score": 0.0,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 2,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.3865,
-        "omission_phase": 0.7005,
-        "pair_lift": 0.2531,
-        "shape_follow": 0.1428,
-        "tail_zone_balance": 0.3792,
-        "sum_band_neighbor": 0.1382,
-        "trend_break": 0.9907,
-        "date_cycle": 0.0
-      },
-      "rank": 30,
-      "front9_original_rank": 30,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "遺漏補償、趨勢轉折",
-      "practical_maturity": {
-        "score": 54.0,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 29,
-      "score": 0.303604,
-      "confidence_index": 64.9,
-      "model_probability_index": 11.39,
-      "probability_label": "校準單號命中強度",
-      "omission": 7,
-      "zone": "21-30",
-      "support_models": 1,
-      "reasons": [
+        "日期循環",
         "遺漏相位",
         "近期多次落空降權後仍保留觀察"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.8397,
+      "recent_miss_penalty": 0.694,
       "front9_escape_score": 0.2535,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
@@ -3313,170 +2797,72 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.3691,
-        "omission_phase": 0.8753,
-        "pair_lift": 0.0991,
-        "shape_follow": 0.5634,
-        "tail_zone_balance": 0.3306,
-        "sum_band_neighbor": 0.3384,
-        "trend_break": 0.4227,
-        "date_cycle": 0.0
+        "multi_window_frequency": 0.4194,
+        "omission_phase": 0.9314,
+        "pair_lift": 0.0612,
+        "shape_follow": 0.5397,
+        "tail_zone_balance": 0.5391,
+        "sum_band_neighbor": 0.4873,
+        "trend_break": 0.5973,
+        "date_cycle": 1.0
       },
-      "rank": 31,
-      "front9_original_rank": 31,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "遺漏補償",
-      "practical_maturity": {
-        "score": 49.4,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 13,
-      "score": 0.253616,
-      "confidence_index": 62.4,
-      "model_probability_index": 10.99,
-      "probability_label": "校準單號命中強度",
-      "omission": 0,
-      "zone": "11-20",
-      "support_models": 1,
-      "reasons": [
-        "牌型跟隨",
-        "和值鄰近",
-        "最新開獎號降權；禁止作為本期獨隻"
-      ],
-      "last_draw_repeat": true,
-      "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.0,
-      "front9_escape_score": 0.0264,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 0,
-      "top9_miss_count": 0,
-      "top9_hit_count": 0,
-      "strong_single_eligible": false,
-      "strict_guard": "最新開獎號不得直接作為本期獨隻",
-      "model_scores": {
-        "multi_window_frequency": 0.4686,
-        "omission_phase": 0.0,
-        "pair_lift": 0.3436,
-        "shape_follow": 0.9204,
-        "tail_zone_balance": 0.3035,
-        "sum_band_neighbor": 0.5532,
-        "trend_break": 0.0,
-        "date_cycle": 0.0
-      },
-      "rank": 32,
-      "front9_original_rank": 32,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "牌型相似跟隨",
-      "practical_maturity": {
-        "score": 42.9,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 26,
-      "score": 0.251823,
-      "confidence_index": 62.3,
-      "model_probability_index": 10.98,
-      "probability_label": "校準單號命中強度",
-      "omission": 2,
-      "zone": "21-30",
-      "support_models": 0,
-      "reasons": [
-        "綜合模型"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.4624,
-      "recent_miss_penalty": 0.4198,
-      "front9_escape_score": 0.5129,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 1,
-      "leak_count": 1,
-      "top9_miss_count": 2,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.3257,
-        "omission_phase": 0.1091,
-        "pair_lift": 0.1964,
-        "shape_follow": 0.5629,
-        "tail_zone_balance": 0.5549,
-        "sum_band_neighbor": 0.3508,
-        "trend_break": 0.1166,
-        "date_cycle": 0.0
-      },
-      "rank": 33,
-      "front9_original_rank": 33,
-      "front9_final_layer": "後段觀察",
-      "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "全歷史排序",
-      "practical_maturity": {
-        "score": 43.6,
-        "tier": "研究觀察"
-      },
-      "previous_prediction_guard": {
-        "passed": true,
-        "message": "非上期沿用，不需連莊門檻"
-      }
-    },
-    {
-      "number": 34,
-      "score": 0.185887,
-      "confidence_index": 59.1,
-      "model_probability_index": 10.45,
-      "probability_label": "校準單號命中強度",
-      "omission": 5,
-      "zone": "31-39",
-      "support_models": 2,
-      "reasons": [
-        "尾數區間平衡",
-        "遺漏相位"
-      ],
-      "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.4198,
-      "front9_escape_score": 0.2535,
-      "front9_escape_status": "後段候選",
-      "second_layer_hit_count": 0,
-      "leak_count": 1,
-      "top9_miss_count": 2,
-      "top9_hit_count": 0,
-      "strong_single_eligible": true,
-      "strict_guard": "通過非最新開獎號獨隻守門",
-      "model_scores": {
-        "multi_window_frequency": 0.2523,
-        "omission_phase": 0.7814,
-        "pair_lift": 0.0457,
-        "shape_follow": 0.2159,
-        "tail_zone_balance": 0.9249,
-        "sum_band_neighbor": 0.3311,
-        "trend_break": 0.2914,
-        "date_cycle": 0.0
-      },
-      "rank": 34,
-      "front9_original_rank": 34,
+      "rank": 21,
+      "front9_original_rank": 21,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
       "stability_count": 2,
-      "route_class": "尾數版路、遺漏補償",
+      "route_class": "遺漏補償",
       "practical_maturity": {
-        "score": 50.0,
+        "score": 55.3,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 6,
+      "score": 0.318048,
+      "confidence_index": 65.6,
+      "model_probability_index": 11.5,
+      "probability_label": "校準單號命中強度",
+      "omission": 17,
+      "zone": "01-10",
+      "support_models": 2,
+      "reasons": [
+        "趨勢轉折",
+        "遺漏相位"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.0484,
+      "recent_miss_penalty": 0.6265,
+      "front9_escape_score": 0.0348,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 4,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.3254,
+        "omission_phase": 0.7005,
+        "pair_lift": 0.2006,
+        "shape_follow": 0.19,
+        "tail_zone_balance": 0.5118,
+        "sum_band_neighbor": 0.4848,
+        "trend_break": 0.9907,
+        "date_cycle": 0.0
+      },
+      "rank": 22,
+      "front9_original_rank": 22,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 2,
+      "route_class": "遺漏補償、趨勢轉折",
+      "practical_maturity": {
+        "score": 54.1,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3486,19 +2872,20 @@
     },
     {
       "number": 4,
-      "score": 0.121465,
-      "confidence_index": 56.0,
-      "model_probability_index": 9.94,
+      "score": 0.314502,
+      "confidence_index": 65.4,
+      "model_probability_index": 11.47,
       "probability_label": "校準單號命中強度",
-      "omission": 3,
+      "omission": 5,
       "zone": "01-10",
-      "support_models": 1,
+      "support_models": 2,
       "reasons": [
-        "尾數區間平衡"
+        "尾數區間平衡",
+        "遺漏相位"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.6297,
+      "recent_miss_penalty": 0.5205,
       "front9_escape_score": 0.0,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
@@ -3508,23 +2895,170 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.3662,
-        "omission_phase": 0.1466,
-        "pair_lift": 0.0616,
-        "shape_follow": 0.5026,
-        "tail_zone_balance": 0.6963,
-        "sum_band_neighbor": 0.2974,
-        "trend_break": 0.1748,
+        "multi_window_frequency": 0.3427,
+        "omission_phase": 0.7814,
+        "pair_lift": 0.2675,
+        "shape_follow": 0.3705,
+        "tail_zone_balance": 0.8506,
+        "sum_band_neighbor": 0.386,
+        "trend_break": 0.2914,
         "date_cycle": 0.0
       },
-      "rank": 35,
-      "front9_original_rank": 35,
+      "rank": 23,
+      "front9_original_rank": 23,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 2,
+      "route_class": "尾數版路、遺漏補償",
+      "practical_maturity": {
+        "score": 53.9,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 20,
+      "score": 0.311546,
+      "confidence_index": 65.3,
+      "model_probability_index": 11.45,
+      "probability_label": "校準單號命中強度",
+      "omission": 14,
+      "zone": "11-20",
+      "support_models": 3,
+      "reasons": [
+        "趨勢轉折",
+        "遺漏相位",
+        "牌型跟隨"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.0484,
+      "recent_miss_penalty": 0.2795,
+      "front9_escape_score": 0.0348,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 2,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.5984,
+        "omission_phase": 0.8013,
+        "pair_lift": 0.0,
+        "shape_follow": 0.7178,
+        "tail_zone_balance": 0.0925,
+        "sum_band_neighbor": 0.4086,
+        "trend_break": 0.8159,
+        "date_cycle": 0.0
+      },
+      "rank": 24,
+      "front9_original_rank": 24,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 3,
+      "route_class": "遺漏補償、趨勢轉折、牌型相似跟隨",
+      "practical_maturity": {
+        "score": 58.1,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 15,
+      "score": 0.309645,
+      "confidence_index": 65.2,
+      "model_probability_index": 11.44,
+      "probability_label": "校準單號命中強度",
+      "omission": 19,
+      "zone": "11-20",
+      "support_models": 2,
+      "reasons": [
+        "趨勢轉折",
+        "遺漏相位"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.0,
+      "recent_miss_penalty": 0.347,
+      "front9_escape_score": 0.0,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 2,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.4057,
+        "omission_phase": 0.9908,
+        "pair_lift": 0.0479,
+        "shape_follow": 0.5385,
+        "tail_zone_balance": 0.5232,
+        "sum_band_neighbor": 0.1474,
+        "trend_break": 1.0,
+        "date_cycle": 0.0
+      },
+      "rank": 25,
+      "front9_original_rank": 25,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 2,
+      "route_class": "遺漏補償、趨勢轉折",
+      "practical_maturity": {
+        "score": 53.8,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 39,
+      "score": 0.305579,
+      "confidence_index": 65.0,
+      "model_probability_index": 11.4,
+      "probability_label": "校準單號命中強度",
+      "omission": 1,
+      "zone": "31-39",
+      "support_models": 1,
+      "reasons": [
+        "多窗口頻率"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.3172,
+      "recent_miss_penalty": 0.0,
+      "front9_escape_score": 0.2884,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 0,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.8269,
+        "omission_phase": 0.0639,
+        "pair_lift": 0.2776,
+        "shape_follow": 0.5333,
+        "tail_zone_balance": 0.48,
+        "sum_band_neighbor": 0.1506,
+        "trend_break": 0.2999,
+        "date_cycle": 0.0
+      },
+      "rank": 26,
+      "front9_original_rank": 26,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
       "stability_count": 1,
-      "route_class": "尾數版路",
+      "route_class": "全歷史排序",
       "practical_maturity": {
-        "score": 43.9,
+        "score": 44.5,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3534,19 +3068,20 @@
     },
     {
       "number": 7,
-      "score": 0.098825,
-      "confidence_index": 54.8,
-      "model_probability_index": 9.76,
+      "score": 0.26598,
+      "confidence_index": 63.0,
+      "model_probability_index": 11.09,
       "probability_label": "校準單號命中強度",
-      "omission": 2,
+      "omission": 4,
       "zone": "01-10",
-      "support_models": 1,
+      "support_models": 2,
       "reasons": [
+        "遺漏相位",
         "多窗口頻率"
       ],
       "last_draw_repeat": false,
       "low_hit_recovery_score": 0.5108,
-      "recent_miss_penalty": 0.4985,
+      "recent_miss_penalty": 0.412,
       "front9_escape_score": 0.5478,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 1,
@@ -3556,23 +3091,23 @@
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.6232,
-        "omission_phase": 0.1091,
-        "pair_lift": 0.0395,
-        "shape_follow": 0.3595,
-        "tail_zone_balance": 0.2514,
-        "sum_band_neighbor": 0.4987,
-        "trend_break": 0.1443,
+        "multi_window_frequency": 0.7224,
+        "omission_phase": 0.732,
+        "pair_lift": 0.2157,
+        "shape_follow": 0.1814,
+        "tail_zone_balance": 0.3096,
+        "sum_band_neighbor": 0.5225,
+        "trend_break": 0.2608,
         "date_cycle": 0.0
       },
-      "rank": 36,
-      "front9_original_rank": 36,
+      "rank": 27,
+      "front9_original_rank": 27,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "全歷史排序",
+      "stability_count": 2,
+      "route_class": "遺漏補償、全歷史排序",
       "practical_maturity": {
-        "score": 43.2,
+        "score": 52.5,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3581,46 +3116,48 @@
       }
     },
     {
-      "number": 9,
-      "score": 0.072419,
-      "confidence_index": 53.5,
-      "model_probability_index": 9.55,
+      "number": 38,
+      "score": 0.261003,
+      "confidence_index": 62.8,
+      "model_probability_index": 11.05,
       "probability_label": "校準單號命中強度",
-      "omission": 1,
-      "zone": "01-10",
-      "support_models": 1,
+      "omission": 12,
+      "zone": "31-39",
+      "support_models": 3,
       "reasons": [
-        "多窗口頻率"
+        "遺漏相位",
+        "趨勢轉折",
+        "尾數區間平衡"
       ],
       "last_draw_repeat": false,
-      "low_hit_recovery_score": 0.3656,
-      "recent_miss_penalty": 0.0466,
-      "front9_escape_score": 0.3232,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.1735,
+      "front9_escape_score": 0.2535,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
       "leak_count": 1,
       "top9_miss_count": 1,
-      "top9_hit_count": 2,
+      "top9_hit_count": 0,
       "strong_single_eligible": true,
       "strict_guard": "通過非最新開獎號獨隻守門",
       "model_scores": {
-        "multi_window_frequency": 0.6756,
-        "omission_phase": 0.0639,
-        "pair_lift": 0.0,
-        "shape_follow": 0.4235,
-        "tail_zone_balance": 0.3306,
-        "sum_band_neighbor": 0.3623,
-        "trend_break": 0.1712,
+        "multi_window_frequency": 0.2217,
+        "omission_phase": 0.8671,
+        "pair_lift": 0.1475,
+        "shape_follow": 0.3572,
+        "tail_zone_balance": 0.6488,
+        "sum_band_neighbor": 0.052,
+        "trend_break": 0.6993,
         "date_cycle": 0.0
       },
-      "rank": 37,
-      "front9_original_rank": 37,
+      "rank": 28,
+      "front9_original_rank": 28,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
-      "stability_count": 1,
-      "route_class": "全歷史排序",
+      "stability_count": 3,
+      "route_class": "尾數版路、遺漏補償、趨勢轉折",
       "practical_maturity": {
-        "score": 37.4,
+        "score": 56.5,
         "tier": "研究觀察"
       },
       "previous_prediction_guard": {
@@ -3629,46 +3166,242 @@
       }
     },
     {
-      "number": 12,
-      "score": 0.010505,
-      "confidence_index": 50.5,
-      "model_probability_index": 9.06,
+      "number": 5,
+      "score": 0.255775,
+      "confidence_index": 62.5,
+      "model_probability_index": 11.01,
       "probability_label": "校準單號命中強度",
-      "omission": 0,
-      "zone": "11-20",
-      "support_models": 2,
+      "omission": 15,
+      "zone": "01-10",
+      "support_models": 3,
       "reasons": [
-        "牌型跟隨",
-        "多窗口頻率",
-        "最新開獎號降權；禁止作為本期獨隻"
+        "趨勢轉折",
+        "遺漏相位",
+        "尾數區間平衡"
       ],
-      "last_draw_repeat": true,
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.0484,
+      "recent_miss_penalty": 0.6265,
+      "front9_escape_score": 0.0348,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 4,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.3867,
+        "omission_phase": 0.7679,
+        "pair_lift": 0.0,
+        "shape_follow": 0.3621,
+        "tail_zone_balance": 0.6937,
+        "sum_band_neighbor": 0.5467,
+        "trend_break": 0.8741,
+        "date_cycle": 0.0
+      },
+      "rank": 29,
+      "front9_original_rank": 29,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 3,
+      "route_class": "尾數版路、遺漏補償、趨勢轉折",
+      "practical_maturity": {
+        "score": 56.4,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 23,
+      "score": 0.253046,
+      "confidence_index": 62.4,
+      "model_probability_index": 10.99,
+      "probability_label": "校準單號命中強度",
+      "omission": 1,
+      "zone": "21-30",
+      "support_models": 0,
+      "reasons": [
+        "綜合模型"
+      ],
+      "last_draw_repeat": false,
       "low_hit_recovery_score": 0.2688,
-      "recent_miss_penalty": 0.4198,
+      "recent_miss_penalty": 0.0,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 0,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.1936,
+        "omission_phase": 0.0639,
+        "pair_lift": 0.496,
+        "shape_follow": 0.1936,
+        "tail_zone_balance": 0.4084,
+        "sum_band_neighbor": 0.22,
+        "trend_break": 0.0583,
+        "date_cycle": 0.0
+      },
+      "rank": 30,
+      "front9_original_rank": 30,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 1,
+      "route_class": "全歷史排序",
+      "practical_maturity": {
+        "score": 38.7,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 21,
+      "score": 0.243266,
+      "confidence_index": 61.9,
+      "model_probability_index": 10.91,
+      "probability_label": "校準單號命中強度",
+      "omission": 5,
+      "zone": "21-30",
+      "support_models": 3,
+      "reasons": [
+        "日期循環",
+        "遺漏相位",
+        "尾數區間平衡"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.347,
       "front9_escape_score": 0.2535,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
       "leak_count": 1,
       "top9_miss_count": 2,
       "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.4668,
+        "omission_phase": 0.7814,
+        "pair_lift": 0.0825,
+        "shape_follow": 0.2758,
+        "tail_zone_balance": 0.6672,
+        "sum_band_neighbor": 0.4694,
+        "trend_break": 0.2914,
+        "date_cycle": 1.0
+      },
+      "rank": 31,
+      "front9_original_rank": 31,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 3,
+      "route_class": "尾數版路、遺漏補償",
+      "practical_maturity": {
+        "score": 56.0,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 17,
+      "score": 0.207903,
+      "confidence_index": 60.2,
+      "model_probability_index": 10.63,
+      "probability_label": "校準單號命中強度",
+      "omission": 6,
+      "zone": "11-20",
+      "support_models": 1,
+      "reasons": [
+        "遺漏相位",
+        "低命中漏抓回補"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.8065,
+      "recent_miss_penalty": 0.1735,
+      "front9_escape_score": 0.7607,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 3,
+      "top9_miss_count": 1,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.5434,
+        "omission_phase": 0.829,
+        "pair_lift": 0.0751,
+        "shape_follow": 0.3602,
+        "tail_zone_balance": 0.1391,
+        "sum_band_neighbor": 0.2972,
+        "trend_break": 0.4105,
+        "date_cycle": 0.0
+      },
+      "rank": 32,
+      "front9_original_rank": 32,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 1,
+      "route_class": "遺漏補償",
+      "practical_maturity": {
+        "score": 46.5,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 3,
+      "score": 0.148334,
+      "confidence_index": 57.3,
+      "model_probability_index": 10.15,
+      "probability_label": "校準單號命中強度",
+      "omission": 0,
+      "zone": "01-10",
+      "support_models": 1,
+      "reasons": [
+        "多窗口頻率",
+        "最新開獎號降權；禁止作為本期獨隻"
+      ],
+      "last_draw_repeat": true,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.5205,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 3,
+      "top9_hit_count": 0,
       "strong_single_eligible": false,
       "strict_guard": "最新開獎號不得直接作為本期獨隻",
       "model_scores": {
-        "multi_window_frequency": 0.6898,
+        "multi_window_frequency": 0.7499,
         "omission_phase": 0.0,
-        "pair_lift": 0.023,
-        "shape_follow": 0.716,
-        "tail_zone_balance": 0.1591,
-        "sum_band_neighbor": 0.5348,
-        "trend_break": 0.0228,
+        "pair_lift": 0.4293,
+        "shape_follow": 0.2746,
+        "tail_zone_balance": 0.5118,
+        "sum_band_neighbor": 0.4091,
+        "trend_break": 0.1446,
         "date_cycle": 0.0
       },
-      "rank": 38,
-      "front9_original_rank": 38,
+      "rank": 33,
+      "front9_original_rank": 33,
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
-      "stability_count": 2,
-      "route_class": "全歷史排序、牌型相似跟隨",
+      "stability_count": 1,
+      "route_class": "全歷史排序",
       "practical_maturity": {
         "score": 39.7,
         "tier": "研究觀察"
@@ -3680,36 +3413,282 @@
     },
     {
       "number": 24,
+      "score": 0.129027,
+      "confidence_index": 56.3,
+      "model_probability_index": 10.0,
+      "probability_label": "校準單號命中強度",
+      "omission": 1,
+      "zone": "21-30",
+      "support_models": 1,
+      "reasons": [
+        "尾數區間平衡"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.2688,
+      "recent_miss_penalty": 0.0,
+      "front9_escape_score": 0.2535,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 0,
+      "top9_hit_count": 0,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.4597,
+        "omission_phase": 0.0639,
+        "pair_lift": 0.3758,
+        "shape_follow": 0.0955,
+        "tail_zone_balance": 0.6672,
+        "sum_band_neighbor": 0.0,
+        "trend_break": 0.0725,
+        "date_cycle": 0.0
+      },
+      "rank": 34,
+      "front9_original_rank": 34,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 1,
+      "route_class": "尾數版路",
+      "practical_maturity": {
+        "score": 39.1,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 26,
+      "score": 0.085376,
+      "confidence_index": 54.2,
+      "model_probability_index": 9.65,
+      "probability_label": "校準單號命中強度",
+      "omission": 0,
+      "zone": "21-30",
+      "support_models": 0,
+      "reasons": [
+        "綜合模型",
+        "最新開獎號降權；禁止作為本期獨隻"
+      ],
+      "last_draw_repeat": true,
+      "low_hit_recovery_score": 0.4624,
+      "recent_miss_penalty": 0.347,
+      "front9_escape_score": 0.5129,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 1,
+      "leak_count": 1,
+      "top9_miss_count": 2,
+      "top9_hit_count": 0,
+      "strong_single_eligible": false,
+      "strict_guard": "最新開獎號不得直接作為本期獨隻",
+      "model_scores": {
+        "multi_window_frequency": 0.5553,
+        "omission_phase": 0.0,
+        "pair_lift": 0.3318,
+        "shape_follow": 0.4585,
+        "tail_zone_balance": 0.4084,
+        "sum_band_neighbor": 0.3569,
+        "trend_break": 0.0,
+        "date_cycle": 0.0
+      },
+      "rank": 35,
+      "front9_original_rank": 35,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 1,
+      "route_class": "全歷史排序",
+      "practical_maturity": {
+        "score": 33.6,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 31,
+      "score": 0.041596,
+      "confidence_index": 52.0,
+      "model_probability_index": 9.3,
+      "probability_label": "校準單號命中強度",
+      "omission": 0,
+      "zone": "31-39",
+      "support_models": 3,
+      "reasons": [
+        "尾數區間平衡",
+        "和值鄰近",
+        "牌型跟隨",
+        "近期多次落空降權後仍保留觀察",
+        "最新開獎號降權；禁止作為本期獨隻"
+      ],
+      "last_draw_repeat": true,
+      "low_hit_recovery_score": 0.0,
+      "recent_miss_penalty": 1.0,
+      "front9_escape_score": 0.0,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 0,
+      "top9_miss_count": 5,
+      "top9_hit_count": 0,
+      "strong_single_eligible": false,
+      "strict_guard": "最新開獎號不得直接作為本期獨隻",
+      "model_scores": {
+        "multi_window_frequency": 0.4679,
+        "omission_phase": 0.0,
+        "pair_lift": 0.0827,
+        "shape_follow": 0.6241,
+        "tail_zone_balance": 1.0,
+        "sum_band_neighbor": 0.6424,
+        "trend_break": 0.0,
+        "date_cycle": 0.0
+      },
+      "rank": 36,
+      "front9_original_rank": 36,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 3,
+      "route_class": "尾數版路、牌型相似跟隨",
+      "practical_maturity": {
+        "score": 44.8,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 19,
+      "score": 0.021152,
+      "confidence_index": 51.0,
+      "model_probability_index": 9.14,
+      "probability_label": "校準單號命中強度",
+      "omission": 1,
+      "zone": "11-20",
+      "support_models": 1,
+      "reasons": [
+        "日期循環"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.3172,
+      "recent_miss_penalty": 0.106,
+      "front9_escape_score": 0.2884,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 1,
+      "top9_miss_count": 1,
+      "top9_hit_count": 1,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.5305,
+        "omission_phase": 0.0639,
+        "pair_lift": 0.2197,
+        "shape_follow": 0.0,
+        "tail_zone_balance": 0.0,
+        "sum_band_neighbor": 0.2365,
+        "trend_break": 0.112,
+        "date_cycle": 1.0
+      },
+      "rank": 37,
+      "front9_original_rank": 37,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 1,
+      "route_class": "全歷史排序",
+      "practical_maturity": {
+        "score": 35.8,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 28,
+      "score": 0.020912,
+      "confidence_index": 51.0,
+      "model_probability_index": 9.14,
+      "probability_label": "校準單號命中強度",
+      "omission": 1,
+      "zone": "21-30",
+      "support_models": 1,
+      "reasons": [
+        "多窗口頻率",
+        "低命中漏抓回補"
+      ],
+      "last_draw_repeat": false,
+      "low_hit_recovery_score": 0.6344,
+      "recent_miss_penalty": 0.0,
+      "front9_escape_score": 0.5768,
+      "front9_escape_status": "後段候選",
+      "second_layer_hit_count": 0,
+      "leak_count": 2,
+      "top9_miss_count": 0,
+      "top9_hit_count": 2,
+      "strong_single_eligible": true,
+      "strict_guard": "通過非最新開獎號獨隻守門",
+      "model_scores": {
+        "multi_window_frequency": 0.69,
+        "omission_phase": 0.0639,
+        "pair_lift": 0.0,
+        "shape_follow": 0.4425,
+        "tail_zone_balance": 0.316,
+        "sum_band_neighbor": 0.1985,
+        "trend_break": 0.1847,
+        "date_cycle": 0.0
+      },
+      "rank": 38,
+      "front9_original_rank": 38,
+      "front9_final_layer": "後段觀察",
+      "verification_denominator": 8,
+      "stability_count": 1,
+      "route_class": "全歷史排序",
+      "practical_maturity": {
+        "score": 35.8,
+        "tier": "研究觀察"
+      },
+      "previous_prediction_guard": {
+        "passed": true,
+        "message": "非上期沿用，不需連莊門檻"
+      }
+    },
+    {
+      "number": 16,
       "score": 0.0,
       "confidence_index": 50.0,
       "model_probability_index": 8.97,
       "probability_label": "校準單號命中強度",
       "omission": 0,
-      "zone": "21-30",
+      "zone": "11-20",
       "support_models": 1,
       "reasons": [
-        "尾數區間平衡",
+        "多窗口頻率",
         "最新開獎號降權；禁止作為本期獨隻"
       ],
       "last_draw_repeat": true,
       "low_hit_recovery_score": 0.0,
-      "recent_miss_penalty": 0.0,
-      "front9_escape_score": 0.0,
+      "recent_miss_penalty": 0.306,
+      "front9_escape_score": 0.0617,
       "front9_escape_status": "後段候選",
       "second_layer_hit_count": 0,
       "leak_count": 0,
-      "top9_miss_count": 0,
+      "top9_miss_count": 1,
       "top9_hit_count": 0,
       "strong_single_eligible": false,
       "strict_guard": "最新開獎號不得直接作為本期獨隻",
       "model_scores": {
-        "multi_window_frequency": 0.2374,
+        "multi_window_frequency": 0.7132,
         "omission_phase": 0.0,
-        "pair_lift": 0.2236,
-        "shape_follow": 0.2063,
-        "tail_zone_balance": 0.6963,
-        "sum_band_neighbor": 0.0,
-        "trend_break": 0.0,
+        "pair_lift": 0.2141,
+        "shape_follow": 0.1953,
+        "tail_zone_balance": 0.2612,
+        "sum_band_neighbor": 0.2043,
+        "trend_break": 0.0337,
         "date_cycle": 0.0
       },
       "rank": 39,
@@ -3717,7 +3696,7 @@
       "front9_final_layer": "後段觀察",
       "verification_denominator": 8,
       "stability_count": 1,
-      "route_class": "尾數版路",
+      "route_class": "全歷史排序",
       "practical_maturity": {
         "score": 35.2,
         "tier": "研究觀察"
@@ -3732,7 +3711,7 @@
     "strong_single": {
       "name": "最強獨隻1中1",
       "numbers": [
-        25
+        2
       ],
       "hit_goal": 1,
       "theoretical_probability": {
@@ -3744,8 +3723,8 @@
       "selection_audit": {
         "status": "passed",
         "selected_rank": 1,
-        "selected_score": 0.919553,
-        "selected_confidence": 94.3,
+        "selected_score": 1.0,
+        "selected_confidence": 99.0,
         "last_draw_repeat": false,
         "rule": "獨隻1中1優先排除最新開獎號，禁止用上期開獎號混充。"
       }
@@ -3753,8 +3732,8 @@
     "two_hit_one": {
       "name": "最強2中1",
       "numbers": [
-        21,
-        25
+        2,
+        12
       ],
       "hit_goal": 1,
       "theoretical_probability": {
@@ -3762,14 +3741,14 @@
         "odds_1_in": 4.12,
         "random_expected_hits": 0.2564
       },
-      "coverage_score": 0.7457
+      "coverage_score": 0.7493
     },
     "three_hit_one": {
       "name": "最強3中1",
       "numbers": [
         2,
-        21,
-        25
+        10,
+        12
       ],
       "hit_goal": 1,
       "theoretical_probability": {
@@ -3777,16 +3756,16 @@
         "odds_1_in": 2.9,
         "random_expected_hits": 0.3846
       },
-      "coverage_score": 0.8679
+      "coverage_score": 0.7493
     },
     "five_hit_two": {
       "name": "最強5中2",
       "numbers": [
         2,
-        21,
-        25,
-        28,
-        35
+        10,
+        12,
+        34,
+        36
       ],
       "hit_goal": 2,
       "theoretical_probability": {
@@ -3800,14 +3779,14 @@
       "name": "最強9中3",
       "numbers": [
         2,
+        8,
         10,
-        20,
-        21,
-        25,
-        28,
-        31,
-        35,
-        39
+        12,
+        18,
+        22,
+        30,
+        34,
+        36
       ],
       "hit_goal": 3,
       "theoretical_probability": {
@@ -3815,19 +3794,19 @@
         "odds_1_in": 14.24,
         "random_expected_hits": 1.1538
       },
-      "coverage_score": 0.795
+      "coverage_score": 0.76
     }
   },
   "high_confidence_watch": [],
   "date_cycle_numbers": [
     37,
     8,
-    10,
+    13,
+    33,
     30,
-    27,
-    19,
-    18,
-    16
+    22,
+    21,
+    19
   ],
   "ironlaw_spec": {
     "data_first": "SQLite與CSV先更新，才產生候選號。",
@@ -3848,113 +3827,113 @@
   "risk_notice": "樂透為隨機遊戲，本系統只做資料研究與風險標示，不保證命中或獲利。",
   "prediction": {
     "top5": [
-      25,
-      21,
       2,
-      35,
-      28
+      12,
+      10,
+      34,
+      36
     ],
     "top9": [
-      25,
-      21,
       2,
-      35,
-      28,
-      20,
-      39,
+      12,
       10,
-      31
+      34,
+      36,
+      30,
+      22,
+      8,
+      18
     ],
     "top10": [
-      25,
-      21,
       2,
-      35,
-      28,
-      20,
-      39,
+      12,
       10,
-      31,
-      5
+      34,
+      36,
+      30,
+      22,
+      8,
+      18,
+      33
     ],
     "top15": [
-      25,
-      21,
       2,
-      35,
-      28,
-      20,
-      39,
+      12,
       10,
-      31,
-      5,
+      34,
+      36,
+      30,
+      22,
       8,
-      16,
-      37,
-      38,
-      33
+      18,
+      33,
+      27,
+      35,
+      25,
+      29,
+      32
     ],
     "high_confidence_watch": []
   },
   "latest_ironlaw": {
     "primary_single": [
-      25
+      2
     ],
     "nine_hit_three": [
-      25,
-      21,
       2,
-      35,
-      28,
-      20,
-      39,
+      12,
       10,
-      31
+      34,
+      36,
+      30,
+      22,
+      8,
+      18
     ],
     "high_confidence_numbers": []
   },
   "low_probability": {
     "avoid_5": [
-      24,
-      12,
-      9,
-      7,
-      4
+      16,
+      28,
+      19,
+      31,
+      26
     ],
     "avoid_10": [
-      24,
-      12,
-      9,
-      7,
-      4,
-      34,
+      16,
+      28,
+      19,
+      31,
       26,
-      13,
-      29,
-      15
+      24,
+      3,
+      17,
+      21,
+      23
     ],
     "avoid_15": [
-      24,
-      12,
-      9,
-      7,
-      4,
-      34,
-      26,
-      13,
-      29,
-      15,
-      23,
-      27,
-      3,
+      16,
+      28,
       19,
-      36
+      31,
+      26,
+      24,
+      3,
+      17,
+      21,
+      23,
+      5,
+      38,
+      7,
+      39,
+      15
     ]
   },
   "industrial_engine": {
     "release_gate": {
       "status": "research_only",
-      "actual_backtest_edge": 0.0462,
+      "actual_backtest_edge": 0.1129,
       "message": "歷史資料不足，僅列研究觀察。"
     },
     "previous_prediction_guard": {
@@ -3972,7 +3951,7 @@
     },
     "practical_maturity": {
       "status": "research_only",
-      "top10_avg_maturity": "79.34",
+      "top10_avg_maturity": "77.42",
       "action": "未達完整歷史門檻前禁止包裝成保證。"
     },
     "model_audit": {
