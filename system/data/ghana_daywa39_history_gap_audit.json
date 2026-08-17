@@ -2,8 +2,8 @@
   "status": "official_public_partial",
   "source": "https://www.nla.com.gh/winning-numbers",
   "server_function": "https://www.nla.com.gh/_serverFn/a326a1cfceda0eb077997216108eb8dd18bb12e3da7300fd63de2cd7bdcbec2e",
-  "official_public_range": "2024-04-10..2026-08-14",
-  "official_public_draw_count": 717,
+  "official_public_range": "2024-04-10..2026-08-16",
+  "official_public_draw_count": 719,
   "prehistory_audit_range": "2000-01-01..2024-03-31",
   "prehistory_rows": 0,
   "prehistory_direct_rows": 0,
@@ -13,11 +13,11 @@
     "missing_inside_public_range": 3,
     "products": {
       "5/39 Direct Friday": {
-        "captured_draws": 113,
+        "captured_draws": 114,
         "first_draw_date": "2024-04-13",
         "first_visible_draw_number": 136,
-        "latest_draw_date": "2026-08-08",
-        "latest_visible_draw_number": 249,
+        "latest_draw_date": "2026-08-15",
+        "latest_visible_draw_number": 250,
         "minimum_missing_before_public_range": 135,
         "missing_inside_public_range": 1
       },
@@ -31,11 +31,11 @@
         "missing_inside_public_range": 0
       },
       "5/39 Direct Saturday": {
-        "captured_draws": 122,
+        "captured_draws": 123,
         "first_draw_date": "2024-04-14",
         "first_visible_draw_number": 137,
-        "latest_draw_date": "2026-08-09",
-        "latest_visible_draw_number": 258,
+        "latest_draw_date": "2026-08-16",
+        "latest_visible_draw_number": 259,
         "minimum_missing_before_public_range": 136,
         "missing_inside_public_range": 0
       },
@@ -271,6 +271,6 @@
       "status": "ok"
     }
   ],
-  "updated_at_taiwan": "2026-08-14T23:22:19+08:00",
+  "updated_at_taiwan": "2026-08-17T18:05:27+08:00",
   "note": "The official public winning-numbers interface exposes 5/39 Direct rows only from 2024-04-10 in the current scan. Earlier draw numbers exist by official draw_number sequence, but the current public interface did not return their winning numbers."
 }
