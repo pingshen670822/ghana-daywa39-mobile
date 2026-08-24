@@ -3,27 +3,27 @@
   "server_function": "https://www.nla.com.gh/_serverFn/a326a1cfceda0eb077997216108eb8dd18bb12e3da7300fd63de2cd7bdcbec2e",
   "start": "2024-04-01",
   "end": "2026-08-25",
-  "draw_count": 724,
+  "draw_count": 725,
   "earliest_draw_date": "2024-04-10",
-  "latest_draw_date": "2026-08-22",
+  "latest_draw_date": "2026-08-23",
   "latest_draw": {
-    "draw_date": "2026-08-22",
-    "n1": 5,
-    "n2": 15,
-    "n3": 17,
+    "draw_date": "2026-08-23",
+    "n1": 4,
+    "n2": 6,
+    "n3": 14,
     "n4": 25,
-    "n5": 33,
-    "source": "NLA official winning-numbers:5/39 Direct Friday:draw#251",
-    "official_datetime_utc": "2026-08-21T18:45:00Z",
-    "product_code": "5/39 Direct Friday",
-    "draw_number": "251"
+    "n5": 35,
+    "source": "NLA official winning-numbers:5/39 Direct Saturday:draw#260",
+    "official_datetime_utc": "2026-08-22T18:45:00Z",
+    "product_code": "5/39 Direct Saturday",
+    "draw_number": "260"
   },
   "coverage_note": "Official-interface scan from 2000-01-01 through 2024-03-31 returned zero Daywa 5/39 Direct rows.",
   "history_gap_audit_json": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history_gap_audit.json",
   "history_gap_audit": {
     "status": "official_public_partial",
-    "official_public_range": "2024-04-10..2026-08-22",
-    "official_public_draw_count": 724,
+    "official_public_range": "2024-04-10..2026-08-23",
+    "official_public_draw_count": 725,
     "prehistory_audit_range": "2000-01-01..2024-03-31",
     "prehistory_rows": 0,
     "prehistory_direct_rows": 0,
@@ -51,11 +51,11 @@
           "missing_inside_public_range": 0
         },
         "5/39 Direct Saturday": {
-          "captured_draws": 123,
+          "captured_draws": 124,
           "first_draw_date": "2024-04-14",
           "first_visible_draw_number": 137,
-          "latest_draw_date": "2026-08-16",
-          "latest_visible_draw_number": 259,
+          "latest_draw_date": "2026-08-23",
+          "latest_visible_draw_number": 260,
           "minimum_missing_before_public_range": 136,
           "missing_inside_public_range": 0
         },
@@ -290,11 +290,11 @@
     {
       "start": "2026-08-01",
       "end": "2026-08-25",
-      "rows": 77,
-      "direct_rows": 18,
+      "rows": 80,
+      "direct_rows": 19,
       "status": "ok"
     }
   ],
   "output_csv": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/data/ghana_daywa39_history.csv",
-  "updated_at_taiwan": "2026-08-24T22:30:44+08:00"
+  "updated_at_taiwan": "2026-08-24T23:10:27+08:00"
 }
