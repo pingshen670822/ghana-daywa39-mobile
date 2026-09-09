@@ -1,22 +1,22 @@
 {
   "status": "synced",
   "attempt": 1,
-  "previous_latest_draw_date": "2026-09-06",
-  "official_latest_draw_date": "2026-09-08",
-  "analysis_latest_draw_date": "2026-09-08",
+  "previous_latest_draw_date": "2026-09-08",
+  "official_latest_draw_date": "2026-09-09",
+  "analysis_latest_draw_date": "2026-09-09",
   "top9": [
-    18,
-    25,
-    27,
-    14,
-    1,
-    31,
-    26,
-    23,
-    34
+    12,
+    3,
+    19,
+    29,
+    24,
+    10,
+    11,
+    33,
+    30
   ],
   "desktop_report": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/reports/latest_battle_report.html",
   "mobile_report": "/home/runner/work/ghana-daywa39-mobile/ghana-daywa39-mobile/system/site/index.html",
   "cloud_source_synced": false,
-  "updated_at_taiwan": "2026-09-08T21:47:17+08:00"
+  "updated_at_taiwan": "2026-09-10T01:56:07+08:00"
 }
