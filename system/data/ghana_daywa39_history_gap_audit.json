@@ -2,8 +2,8 @@
   "status": "official_public_partial",
   "source": "https://www.nla.com.gh/winning-numbers",
   "server_function": "https://www.nla.com.gh/_serverFn/a326a1cfceda0eb077997216108eb8dd18bb12e3da7300fd63de2cd7bdcbec2e",
-  "official_public_range": "2024-04-10..2026-09-27",
-  "official_public_draw_count": 754,
+  "official_public_range": "2024-04-10..2026-09-30",
+  "official_public_draw_count": 756,
   "prehistory_audit_range": "2000-01-01..2024-03-31",
   "prehistory_rows": 0,
   "prehistory_direct_rows": 0,
@@ -22,11 +22,11 @@
         "missing_inside_public_range": 1
       },
       "5/39 Direct Monday": {
-        "captured_draws": 124,
+        "captured_draws": 125,
         "first_draw_date": "2024-04-16",
         "first_visible_draw_number": 401,
-        "latest_draw_date": "2026-09-15",
-        "latest_visible_draw_number": 524,
+        "latest_draw_date": "2026-09-22",
+        "latest_visible_draw_number": 525,
         "minimum_missing_before_public_range": 400,
         "missing_inside_public_range": 0
       },
@@ -49,11 +49,11 @@
         "missing_inside_public_range": 1
       },
       "5/39 Direct Tuesday": {
-        "captured_draws": 129,
+        "captured_draws": 130,
         "first_draw_date": "2024-04-10",
         "first_visible_draw_number": 136,
-        "latest_draw_date": "2026-09-23",
-        "latest_visible_draw_number": 264,
+        "latest_draw_date": "2026-09-30",
+        "latest_visible_draw_number": 265,
         "minimum_missing_before_public_range": 135,
         "missing_inside_public_range": 0
       },
@@ -68,7 +68,7 @@
       }
     }
   },
-  "batch_count": 30,
+  "batch_count": 31,
   "prehistory_batches": [
     {
       "start": "2000-01-01",
@@ -271,6 +271,6 @@
       "status": "ok"
     }
   ],
-  "updated_at_taiwan": "2026-09-29T01:46:26+08:00",
+  "updated_at_taiwan": "2026-10-01T00:02:22+08:00",
   "note": "The official public winning-numbers interface exposes 5/39 Direct rows only from 2024-04-10 in the current scan. Earlier draw numbers exist by official draw_number sequence, but the current public interface did not return their winning numbers."
 }
