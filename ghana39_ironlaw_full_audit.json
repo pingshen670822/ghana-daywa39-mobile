@@ -1,0 +1,255 @@
+{
+  "status": "passed",
+  "generated_at_taiwan": "2026-10-06T08:24:35+08:00",
+  "latest_draw_date": "2026-09-30",
+  "latest_numbers": [
+    3,
+    20,
+    24,
+    32,
+    33
+  ],
+  "target_draw_date": "2026-10-01",
+  "version": "20261006082422",
+  "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
+  "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
+  "passed_count": 33,
+  "failed_count": 0,
+  "warning_count": 0,
+  "checks": [
+    {
+      "item": "CSV歷史資料存在",
+      "status": "passed",
+      "passed": true,
+      "message": "CSV rows=756",
+      "detail": null
+    },
+    {
+      "item": "CSV開獎格式",
+      "status": "passed",
+      "passed": true,
+      "message": "5顆號碼、1-39、日期排序、來源欄位",
+      "detail": {
+        "invalid": [],
+        "duplicate": []
+      }
+    },
+    {
+      "item": "SQLite資料庫存在",
+      "status": "passed",
+      "passed": true,
+      "message": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\data\\ghana_daywa39.sqlite",
+      "detail": null
+    },
+    {
+      "item": "CSV與SQLite最新一致",
+      "status": "passed",
+      "passed": true,
+      "message": "CSV 2026-09-30 / DB 2026-09-30",
+      "detail": null
+    },
+    {
+      "item": "SQLite重複日期",
+      "status": "passed",
+      "passed": true,
+      "message": "不得有重複開獎日期",
+      "detail": []
+    },
+    {
+      "item": "最新分析存在",
+      "status": "passed",
+      "passed": true,
+      "message": "C:\\Users\\MSI\\Documents\\Codex\\2026-07-14\\new-chat\\outputs\\CaliforniaGana39PredictionSystem\\reports\\latest_analysis.json",
+      "detail": null
+    },
+    {
+      "item": "最新開獎號碼合法",
+      "status": "passed",
+      "passed": true,
+      "message": "03 20 24 32 33",
+      "detail": null
+    },
+    {
+      "item": "分析與CSV最新一致",
+      "status": "passed",
+      "passed": true,
+      "message": "analysis 2026-09-30 03 20 24 32 33",
+      "detail": null
+    },
+    {
+      "item": "官方抓取摘要一致",
+      "status": "passed",
+      "passed": true,
+      "message": "fetch_summary=2026-09-30 analysis=2026-09-30",
+      "detail": null
+    },
+    {
+      "item": "官方公開資料更新時間",
+      "status": "passed",
+      "passed": true,
+      "message": "latest=2026-09-30 updated=2026-10-06T08:15:37+08:00",
+      "detail": null
+    },
+    {
+      "item": "候選前九完整",
+      "status": "passed",
+      "passed": true,
+      "message": "22 16 13 02 35 17 37 01 30",
+      "detail": null
+    },
+    {
+      "item": "候選前十五完整",
+      "status": "passed",
+      "passed": true,
+      "message": "22 16 13 02 35 17 37 01 30 19 39 34 10 25 23",
+      "detail": null
+    },
+    {
+      "item": "最強獨隻守門",
+      "status": "passed",
+      "passed": true,
+      "message": "single=22",
+      "detail": null
+    },
+    {
+      "item": "強牌組分層",
+      "status": "passed",
+      "passed": true,
+      "message": "獨隻、2中1、3中1、5中2、9中3",
+      "detail": null
+    },
+    {
+      "item": "低機率三層",
+      "status": "passed",
+      "passed": true,
+      "message": "5不中、10不中、15不中",
+      "detail": null
+    },
+    {
+      "item": "資料真實性守門",
+      "status": "passed",
+      "passed": true,
+      "message": "禁止假資料、空來源、重複日期、錯誤號碼與官方最新日期不一致時產生正式高信心。",
+      "detail": null
+    },
+    {
+      "item": "滾動重算啟用",
+      "status": "passed",
+      "passed": true,
+      "message": "開獎後錯誤模組重新加權",
+      "detail": null
+    },
+    {
+      "item": "命中率強化啟用",
+      "status": "passed",
+      "passed": true,
+      "message": "前九不再只照單號分數排序，改用整組命中率分數、配對共現、區間平衡與近期錯誤回饋共同決定。",
+      "detail": null
+    },
+    {
+      "item": "9名後外溢檢查",
+      "status": "passed",
+      "passed": true,
+      "message": "第10到15名補中造成前九失準時，下一期立即壓縮到前九內，目標把主要候選鎖在9顆內。",
+      "detail": null
+    },
+    {
+      "item": "上期結算沒有過期待處理",
+      "status": "passed",
+      "passed": true,
+      "message": "pending target_date不得小於等於最新開獎日",
+      "detail": []
+    },
+    {
+      "item": "鐵律規格欄位",
+      "status": "passed",
+      "passed": true,
+      "message": "539鐵律同級規格鍵值",
+      "detail": null
+    },
+    {
+      "item": "桌面戰報規格",
+      "status": "passed",
+      "passed": true,
+      "message": "必含539鐵律同級戰報區塊",
+      "detail": null
+    },
+    {
+      "item": "手機完整戰報規格",
+      "status": "passed",
+      "passed": true,
+      "message": "手機獨立頁必含完整戰報",
+      "detail": null
+    },
+    {
+      "item": "手機即時刷新",
+      "status": "passed",
+      "passed": true,
+      "message": "手機開啟、回前景、恢復連線立即檢查版本",
+      "detail": null
+    },
+    {
+      "item": "禁用舊品牌字樣",
+      "status": "passed",
+      "passed": true,
+      "message": "戰報與手機頁不得出現舊字樣",
+      "detail": null
+    },
+    {
+      "item": "站台JSON同步",
+      "status": "passed",
+      "passed": true,
+      "message": "site/latest_analysis.json 必須與 reports/latest_analysis.json 同版",
+      "detail": null
+    },
+    {
+      "item": "版本JSON同步",
+      "status": "passed",
+      "passed": true,
+      "message": "version.json 必須指向最新獨立手機版",
+      "detail": null
+    },
+    {
+      "item": "雲端來源同步",
+      "status": "passed",
+      "passed": true,
+      "message": "cloud_mobile_site/public 必須可獨立部署",
+      "detail": null
+    },
+    {
+      "item": "自動更新排程",
+      "status": "passed",
+      "passed": true,
+      "message": "每日17:31更新發布排程",
+      "detail": null
+    },
+    {
+      "item": "自主修復排程",
+      "status": "passed",
+      "passed": true,
+      "message": "每日19:31自主修復排程",
+      "detail": null
+    },
+    {
+      "item": "自動更新鐵律時間",
+      "status": "passed",
+      "passed": true,
+      "message": "17:30開獎、17:31更新、19:30故障門檻",
+      "detail": null
+    },
+    {
+      "item": "同步狀態紀錄",
+      "status": "passed",
+      "passed": true,
+      "message": "synced",
+      "detail": null
+    },
+    {
+      "item": "自主修復狀態紀錄",
+      "status": "passed",
+      "passed": true,
+      "message": "尚未有修復紀錄",
+      "detail": null
+    }
+  ]
+}
