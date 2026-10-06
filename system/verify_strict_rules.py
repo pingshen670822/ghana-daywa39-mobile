@@ -46,6 +46,8 @@ def main() -> int:
     audit = analysis.get("ironlaw_full_audit") or {}
     mobile_html_path = ROOT / "site" / "full-report.html"
     mobile_html = mobile_html_path.read_text(encoding="utf-8") if mobile_html_path.exists() else ""
+    repair_html_path = ROOT / "site" / "repair.html"
+    repair_html = repair_html_path.read_text(encoding="utf-8") if repair_html_path.exists() else ""
     audit_path = ROOT / "reports" / "ghana39_ironlaw_full_audit.json"
     audit_report = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}
     rows = list(csv.DictReader((ROOT / "data" / "ghana_daywa39_history.csv").open(encoding="utf-8-sig")))
@@ -96,6 +98,8 @@ def main() -> int:
         "HasFullAudit": ("全系統稽核結果" in html) and ("發布封鎖" in html or "failed_count" in html or "稽核未過" in html),
         "HasTargetDateCorrection": ("預測目標開獎日" in html) and ("官方最新開獎日" in html) and ("官方資料缺口" in html),
         "HasMobilePageShowRefresh": "pageshow" in mobile_html and "autoRefreshIfStale" in mobile_html,
+        "HasManualUpdateButton": ("手動更新最新" in mobile_html) and ("manualUpdateLatest" in mobile_html),
+        "HasCloudRepairButton": ("當機立即修復" in mobile_html) and ("repair.html" in mobile_html) and ("ghana39-cloud-self-repair.yml" in repair_html),
         "HasDataGate": "資料真實性" in html,
         "HasSingleGuard": "獨隻守門" in html,
         "H2Count": len(re.findall("<h2", html)),
@@ -143,6 +147,8 @@ def main() -> int:
     assert checks["HasFullAudit"]
     assert checks["HasTargetDateCorrection"]
     assert checks["HasMobilePageShowRefresh"]
+    assert checks["HasManualUpdateButton"]
+    assert checks["HasCloudRepairButton"]
     assert checks["HasDataGate"]
     assert checks["HasSingleGuard"]
     assert not checks["HasOldText"]

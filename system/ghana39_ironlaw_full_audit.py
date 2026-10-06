@@ -256,7 +256,7 @@ def main() -> int:
     repair_status = load_json(SELF_REPAIR_STATUS_PATH)
     report_html = read_text(REPORT_HTML_PATH)
     site_html = read_text(SITE_FULL_REPORT_PATH)
-    mobile_html = site_html + read_text(SITE_DIR / "prediction.html") + read_text(SITE_DIR / "clear-cache.html")
+    mobile_html = site_html + read_text(SITE_DIR / "prediction.html") + read_text(SITE_DIR / "clear-cache.html") + read_text(SITE_DIR / "repair.html")
     rows = csv_rows()
     csv_latest = latest_csv_draw(rows)
     db_latest = db_latest_draw()
@@ -340,12 +340,14 @@ def main() -> int:
         "資料真實性",
         "獨隻守門",
     ]
+    required_mobile_html = required_html + ["手動更新最新", "當機立即修復"]
     add(checks, "桌面戰報規格", "passed" if all(text in report_html for text in required_html) else "failed", "必含539鐵律同級戰報區塊")
-    add(checks, "手機完整戰報規格", "passed" if all(text in site_html for text in required_html) else "failed", "手機獨立頁必含完整戰報")
-    add(checks, "手機即時刷新", "passed" if all(text in mobile_html for text in ("version.json", "pageshow", "autoRefreshIfStale", "clearMobileCaches")) else "failed", "手機開啟、回前景、恢復連線立即檢查版本")
+    add(checks, "手機完整戰報規格", "passed" if all(text in site_html for text in required_mobile_html) else "failed", "手機獨立頁必含完整戰報")
+    add(checks, "手機即時刷新", "passed" if all(text in mobile_html for text in ("version.json", "pageshow", "autoRefreshIfStale", "clearMobileCaches", "manualUpdateLatest")) else "failed", "手機開啟、回前景、恢復連線立即檢查版本")
+    add(checks, "雲端手動修復入口", "passed" if all(text in mobile_html for text in ("手動更新最新", "當機立即修復", "repair.html", "ghana39-cloud-self-repair.yml")) else "failed", "手機頁必須提供手動更新與當機修復按鈕")
     add(checks, "禁用舊品牌字樣", "passed" if FORBIDDEN_OLD_TEXT not in report_html + site_html else "failed", "戰報與手機頁不得出現舊字樣")
     add(checks, "站台JSON同步", "passed" if site_analysis and site_analysis.get("generated_at_taiwan") == analysis.get("generated_at_taiwan") else "failed", "site/latest_analysis.json 必須與 reports/latest_analysis.json 同版")
-    add(checks, "版本JSON同步", "passed" if version.get("latest_draw_date") == latest_date and version.get("independent_mobile") is True else "failed", "version.json 必須指向最新獨立手機版")
+    add(checks, "版本JSON同步", "passed" if version.get("latest_draw_date") == latest_date and version.get("independent_mobile") is True and version.get("manual_update_button") is True and version.get("cloud_repair_button") is True else "failed", "version.json 必須指向最新獨立手機版與手動修復入口")
     repo_public_ready = (ROOT.parent / "full-report.html").exists()
     local_cloud_ready = CLOUD_PUBLIC_DIR.exists() and (CLOUD_PUBLIC_DIR / "full-report.html").exists()
     add(checks, "雲端來源同步", "passed" if local_cloud_ready or repo_public_ready else "failed", "cloud_mobile_site/public 或 GitHub Pages 根目錄必須可獨立部署")

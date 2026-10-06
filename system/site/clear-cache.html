@@ -21,6 +21,13 @@
     .mobile-action,.mobile-refresh{display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px;border:0;border-radius:8px;font-weight:900;text-decoration:none}
     .mobile-action{background:#166534;color:#fff}
     .mobile-refresh{margin-top:10px;background:#1d4ed8;color:#fff;font-size:16px}
+    .repair-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 8px}
+    .repair-panel-actions{display:grid;gap:8px;margin:10px 0}
+    .repair-actions button,.repair-actions a,.repair-panel-actions button,.repair-panel-actions a{appearance:none;display:block;width:100%;box-sizing:border-box;text-align:center;border:0;border-radius:8px;padding:13px 8px;font-size:16px;font-weight:900;text-decoration:none;color:#fff;line-height:1.25}
+    .manual-update{background:#1d4ed8}
+    .instant-repair{background:#b91c1c}
+    .cache-refresh{background:#166534}
+    .report-return{background:#334155}
     .cloud-update-link{display:block;margin-top:12px;text-align:center;color:#1d4ed8;font-weight:900}
     .cloud-note{font-weight:800;color:#14532d;word-break:break-all}
     .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
@@ -45,11 +52,14 @@
       table td::before{content:attr(data-label);font-weight:900;color:#64748b;text-align:left;flex:0 0 42%;max-width:42%}
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .repair-actions{grid-template-columns:1fr}
     }
-    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20261006084402</p></section></main>
+    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20261006135545</p></section></main>
     <script>
-    window.GHANA39_BUILD_VERSION = '20261006084402';
+    window.GHANA39_BUILD_VERSION = '20261006135545';
     window.GHANA39_HOME_PAGE = 'home.html';
+    window.GHANA39_GITHUB_LIVE_BASE = 'https://pingshen670822.github.io/ghana-daywa39-mobile';
+    window.GHANA39_REPAIR_WORKFLOW_URL = 'https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
@@ -94,7 +104,45 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20261006084402&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20261006135545&force=' + Date.now());
+    }
+    function versionStamp(data) {
+      return String((data && (data.version || data.generated_at_taiwan)) || '').replace(/\D/g, '').slice(0, 14);
+    }
+    async function fetchLiveVersion() {
+      try {
+        const live = await fetch(window.GHANA39_GITHUB_LIVE_BASE + '/version.json?manual=' + Date.now(), { cache: 'no-store', mode: 'cors', headers: { 'Cache-Control': 'no-cache' } });
+        if (live.ok) return live.json();
+      } catch (err) {}
+      const local = await fetch('version.json?manual=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+      if (!local.ok) throw new Error('local version failed');
+      return local.json();
+    }
+    async function manualUpdateLatest() {
+      setMobileStatus('手動更新最新 ' + new Date().toLocaleTimeString());
+      var stamp = '';
+      try {
+        const data = await fetchLiveVersion();
+        stamp = versionStamp(data);
+      } catch (err) {}
+      await clearMobileCaches();
+      var nextVersion = stamp || window.GHANA39_BUILD_VERSION;
+      location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
+    }
+    function openRepairPanel() {
+      location.href = 'repair.html?v=20261006135545&from=' + encodeURIComponent(currentMobilePage());
+    }
+    async function openCloudRepair() {
+      setMobileStatus('當機修復啟動 ' + new Date().toLocaleTimeString());
+      try {
+        await clearMobileCaches();
+      } catch (err) {}
+      var opened = window.open(window.GHANA39_REPAIR_WORKFLOW_URL, '_blank', 'noopener,noreferrer');
+      if (!opened) {
+        location.href = window.GHANA39_REPAIR_WORKFLOW_URL;
+      } else {
+        setMobileStatus('已開啟雲端修復入口 ' + new Date().toLocaleTimeString());
+      }
     }
     async function autoRefreshIfStale() {
       try {
@@ -113,7 +161,7 @@
     window.addEventListener('pageshow', autoRefreshIfStale);
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20261006084402', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20261006135545', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });

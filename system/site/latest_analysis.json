@@ -1,7 +1,7 @@
 {
   "engine_version": "ghana_daywa39_precision_spec_v5_hit_rate_portfolio_20260804",
-  "generated_at_taiwan": "2026-10-06T08:44:02+08:00",
-  "generated_at_draw_timezone": "2026-10-06T08:44:02+08:00",
+  "generated_at_taiwan": "2026-10-06T13:55:45+08:00",
+  "generated_at_draw_timezone": "2026-10-06T13:55:45+08:00",
   "game_spec": {
     "code": "GH_DAYWA39",
     "display_name": "非洲迦納彩 Daywa 5/39 Direct",
@@ -1766,8 +1766,8 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-06T08:44:10+08:00",
-    "passed_count": 34,
+    "generated_at_taiwan": "2026-10-06T13:57:24+08:00",
+    "passed_count": 35,
     "failed_count": 0,
     "warning_count": 0,
     "latest_draw_date": "2026-09-30",

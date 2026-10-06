@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#111827">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ghana39">
-  <link rel="manifest" href="manifest.webmanifest?v=20261006084402">
+  <link rel="manifest" href="manifest.webmanifest?v=20261006135545">
   <title>迦納彩39 低機率精準暫避</title>
   <style>
     :root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#dbe4ef;--brand:#0f766e;--hot:#b91c1c;--soft:#f6f8fb;}
@@ -34,6 +34,13 @@
     .mobile-action,.mobile-refresh{display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px;border:0;border-radius:8px;font-weight:900;text-decoration:none}
     .mobile-action{background:#166534;color:#fff}
     .mobile-refresh{margin-top:10px;background:#1d4ed8;color:#fff;font-size:16px}
+    .repair-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 8px}
+    .repair-panel-actions{display:grid;gap:8px;margin:10px 0}
+    .repair-actions button,.repair-actions a,.repair-panel-actions button,.repair-panel-actions a{appearance:none;display:block;width:100%;box-sizing:border-box;text-align:center;border:0;border-radius:8px;padding:13px 8px;font-size:16px;font-weight:900;text-decoration:none;color:#fff;line-height:1.25}
+    .manual-update{background:#1d4ed8}
+    .instant-repair{background:#b91c1c}
+    .cache-refresh{background:#166534}
+    .report-return{background:#334155}
     .cloud-update-link{display:block;margin-top:12px;text-align:center;color:#1d4ed8;font-weight:900}
     .cloud-note{font-weight:800;color:#14532d;word-break:break-all}
     .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
@@ -58,13 +65,14 @@
       table td::before{content:attr(data-label);font-weight:900;color:#64748b;text-align:left;flex:0 0 42%;max-width:42%}
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .repair-actions{grid-template-columns:1fr}
     }
     </style>
 </head>
 <body>
 <header>
   <h1>迦納彩39 低機率精準暫避</h1>
-  <p>非洲迦納彩 Daywa 5/39 Direct / 版本 20261006084402</p>
+  <p>非洲迦納彩 Daywa 5/39 Direct / 版本 20261006135545</p>
   <p>官方最新 2026-09-30：03 20 24 32 33；預測目標 2026-10-06 17:30 台灣時間</p>
   <p>官方資料缺口：2026-10-01、2026-10-02、2026-10-03、2026-10-04、2026-10-05、2026-10-06</p>
   <p>歷史資料：官方公開資料不完整 / 共 756 筆</p>
@@ -72,25 +80,30 @@
 <main>
   <section class="band launch-panel">
     <div class="launch-title">迦納彩39 手機雲端獨立版</div>
-    <button class="mobile-refresh" type="button" onclick="forceRefresh()">重新讀取雲端最新頁</button>
-    <a class="cloud-update-link" href="clear-cache.html?v=20261006084402">手機沒更新點這裡清除舊快取</a>
+    <div class="repair-actions" aria-label="雲端更新與修復">
+      <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
+      <button class="instant-repair" type="button" onclick="openRepairPanel()">當機立即修復</button>
+    </div>
+    <a class="cloud-update-link" href="clear-cache.html?v=20261006135545">手機沒更新點這裡清除舊快取</a>
     <div class="quick-links">
-      <a href="prediction.html?v=20261006084402">下期預測</a>
-      <a href="review.html?v=20261006084402">上期檢討</a>
-      <a href="low-probability.html?v=20261006084402" class="secondary">低機率</a>
-      <a href="full-report.html?v=20261006084402" class="secondary">完整戰報</a>
+      <a href="prediction.html?v=20261006135545">下期預測</a>
+      <a href="review.html?v=20261006135545">上期檢討</a>
+      <a href="low-probability.html?v=20261006135545" class="secondary">低機率</a>
+      <a href="full-report.html?v=20261006135545" class="secondary">完整戰報</a>
     </div>
     <p class="cloud-note">本頁為獨立雲端手機版：首頁、下期預測、上期檢討、低機率、完整戰報都在手機站內完成。</p>
     <p class="cloud-note">NLA官方公開接口目前可驗證範圍：2024-04-10..2026-09-30；2000-01-01..2024-03-31 掃描狀態：no_official_rows_returned；依官方期號序列推估公開起點前至少缺 1082 期。</p>
-    <p class="cloud-note" id="mobileUpdateStatus">版本 20261006084402</p>
+    <p class="cloud-note" id="mobileUpdateStatus">版本 20261006135545</p>
   </section>
   <section class="band warn"><h2>下期低機率暫避預測</h2><p><strong>台灣開獎時間：</strong>2026-10-06 17:30 台灣時間 / <strong>對應開獎日：</strong>2026-10-06</p><table><thead><tr><th>暫避包</th><th>號碼</th><th>信心指標</th><th>平均暫避分</th><th>明細</th></tr></thead><tbody><tr><td data-label="暫避包">5不中</td><td data-label="號碼">24 20 08 32 33</td><td data-label="信心指標">研究暫避</td><td data-label="平均暫避分">45.36</td><td data-label="明細">依排名後段、低交叉驗算與近期弱勢整理</td></tr><tr><td data-label="暫避包">10不中</td><td data-label="號碼">24 20 08 32 33 28 31 26 21 36</td><td data-label="信心指標">研究暫避</td><td data-label="平均暫避分">41.07</td><td data-label="明細">依排名後段、低交叉驗算與近期弱勢整理</td></tr><tr><td data-label="暫避包">15不中</td><td data-label="號碼">24 20 08 32 33 28 31 26 21 36 14 15 11 03 38</td><td data-label="信心指標">研究暫避</td><td data-label="平均暫避分">38.167</td><td data-label="明細">依排名後段、低交叉驗算與近期弱勢整理</td></tr></tbody></table></section><section class="band"><h2>低機率每日紀錄</h2><table><thead><tr><th>目標日</th><th>暫避包</th><th>預測號</th><th>開獎日</th><th>實際開獎</th><th>誤中</th><th>誤中號</th><th>結果</th></tr></thead><tbody><tr><td data-label="目標日">2026-08-03</td><td data-label="暫避包">5不中</td><td data-label="預測號">17 24 39 19 34</td><td data-label="開獎日">2026-08-04</td><td data-label="實際開獎">02 34 09 18 22</td><td data-label="誤中">1</td><td data-label="誤中號">34</td><td data-label="結果">誤中觀察</td></tr><tr><td data-label="目標日">2026-07-29</td><td data-label="暫避包">5不中</td><td data-label="預測號">39 28 09 37 38</td><td data-label="開獎日">2026-07-29</td><td data-label="實際開獎">32 11 12 17 30</td><td data-label="誤中">0</td><td data-label="誤中號">-</td><td data-label="結果">達標</td></tr><tr><td data-label="目標日">2026-07-27</td><td data-label="暫避包">5不中</td><td data-label="預測號">21 37 39 09 28</td><td data-label="開獎日">2026-07-28</td><td data-label="實際開獎">36 37 38 09 28</td><td data-label="誤中">3</td><td data-label="誤中號">09 28 37</td><td data-label="結果">誤中觀察</td></tr><tr><td data-label="目標日">2026-07-22</td><td data-label="暫避包">5不中</td><td data-label="預測號">03 39 13 19 22</td><td data-label="開獎日">2026-07-22</td><td data-label="實際開獎">05 06 10 18 27</td><td data-label="誤中">0</td><td data-label="誤中號">-</td><td data-label="結果">達標</td></tr><tr><td data-label="目標日">2026-07-17</td><td data-label="暫避包">5不中</td><td data-label="預測號">26 20 13 33 08</td><td data-label="開獎日">2026-07-17</td><td data-label="實際開獎">01 33 35 11 19</td><td data-label="誤中">1</td><td data-label="誤中號">33</td><td data-label="結果">誤中觀察</td></tr><tr><td data-label="目標日">2026-07-15</td><td data-label="暫避包">5不中</td><td data-label="預測號">08 02 35 19 10</td><td data-label="開獎日">2026-07-15</td><td data-label="實際開獎">32 03 17 18 29</td><td data-label="誤中">0</td><td data-label="誤中號">-</td><td data-label="結果">達標</td></tr><tr><td data-label="目標日">2026-07-13</td><td data-label="暫避包">5不中</td><td data-label="預測號">35 13 19 08 16</td><td data-label="開獎日">2026-07-14</td><td data-label="實際開獎">07 10 14 20 25</td><td data-label="誤中">0</td><td data-label="誤中號">-</td><td data-label="結果">達標</td></tr></tbody></table></section><section class="band"><h2>低機率每月總紀錄分析</h2><table><thead><tr><th>暫避包</th><th>結算期數</th><th>達標期數</th><th>達標率</th><th>平均誤中</th><th>最差日期</th><th>最常誤中</th></tr></thead><tbody><tr><td data-label="暫避包">5不中</td><td data-label="結算期數">1</td><td data-label="達標期數">0</td><td data-label="達標率">0.0%</td><td data-label="平均誤中">1</td><td data-label="最差日期">2026-08-04</td><td data-label="最常誤中">34</td></tr><tr><td data-label="暫避包">5不中</td><td data-label="結算期數">6</td><td data-label="達標期數">4</td><td data-label="達標率">66.7%</td><td data-label="平均誤中">0.667</td><td data-label="最差日期">2026-07-28</td><td data-label="最常誤中">09 28 37 33</td></tr></tbody></table></section>
 </main>
 <nav class="bottom-nav"><a class="" href="home.html">首頁</a><a class="" href="prediction.html">預測</a><a class="" href="review.html">檢討</a><a class="active" href="low-probability.html">低機率</a><a class="" href="full-report.html">完整</a></nav>
 
     <script>
-    window.GHANA39_BUILD_VERSION = '20261006084402';
+    window.GHANA39_BUILD_VERSION = '20261006135545';
     window.GHANA39_HOME_PAGE = 'home.html';
+    window.GHANA39_GITHUB_LIVE_BASE = 'https://pingshen670822.github.io/ghana-daywa39-mobile';
+    window.GHANA39_REPAIR_WORKFLOW_URL = 'https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
@@ -135,7 +148,45 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20261006084402&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20261006135545&force=' + Date.now());
+    }
+    function versionStamp(data) {
+      return String((data && (data.version || data.generated_at_taiwan)) || '').replace(/\D/g, '').slice(0, 14);
+    }
+    async function fetchLiveVersion() {
+      try {
+        const live = await fetch(window.GHANA39_GITHUB_LIVE_BASE + '/version.json?manual=' + Date.now(), { cache: 'no-store', mode: 'cors', headers: { 'Cache-Control': 'no-cache' } });
+        if (live.ok) return live.json();
+      } catch (err) {}
+      const local = await fetch('version.json?manual=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+      if (!local.ok) throw new Error('local version failed');
+      return local.json();
+    }
+    async function manualUpdateLatest() {
+      setMobileStatus('手動更新最新 ' + new Date().toLocaleTimeString());
+      var stamp = '';
+      try {
+        const data = await fetchLiveVersion();
+        stamp = versionStamp(data);
+      } catch (err) {}
+      await clearMobileCaches();
+      var nextVersion = stamp || window.GHANA39_BUILD_VERSION;
+      location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
+    }
+    function openRepairPanel() {
+      location.href = 'repair.html?v=20261006135545&from=' + encodeURIComponent(currentMobilePage());
+    }
+    async function openCloudRepair() {
+      setMobileStatus('當機修復啟動 ' + new Date().toLocaleTimeString());
+      try {
+        await clearMobileCaches();
+      } catch (err) {}
+      var opened = window.open(window.GHANA39_REPAIR_WORKFLOW_URL, '_blank', 'noopener,noreferrer');
+      if (!opened) {
+        location.href = window.GHANA39_REPAIR_WORKFLOW_URL;
+      } else {
+        setMobileStatus('已開啟雲端修復入口 ' + new Date().toLocaleTimeString());
+      }
     }
     async function autoRefreshIfStale() {
       try {
@@ -154,7 +205,7 @@
     window.addEventListener('pageshow', autoRefreshIfStale);
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20261006084402', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20261006135545', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });

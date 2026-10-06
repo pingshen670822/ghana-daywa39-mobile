@@ -1,6 +1,6 @@
 {
-  "version": "20261006084402",
-  "generated_at_taiwan": "2026-10-06T08:44:02+08:00",
+  "version": "20261006135545",
+  "generated_at_taiwan": "2026-10-06T13:55:45+08:00",
   "latest_draw_date": "2026-09-30",
   "latest_numbers": [
     3,
@@ -155,10 +155,10 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-06T08:24:35+08:00",
+    "generated_at_taiwan": "2026-10-06T08:44:10+08:00",
     "latest_draw_date": "2026-09-30",
-    "target_draw_date": "2026-10-01",
-    "passed_count": 33,
+    "target_draw_date": "2026-10-06",
+    "passed_count": 34,
     "failed_count": 0,
     "warning_count": 0,
     "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
@@ -166,5 +166,13 @@
     "rule": "539鐵律同級全系統稽核：資料、戰報、手機雲端、排程、自主修復、禁用舊內容全部過關才允許發布。"
   },
   "independent_mobile": true,
+  "manual_update_button": true,
+  "cloud_repair_button": true,
+  "cloud_repair_workflow_url": "https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml",
+  "cloud_self_repair_schedule_taiwan": [
+    "17:35",
+    "19:35"
+  ],
+  "github_live_base": "https://pingshen670822.github.io/ghana-daywa39-mobile",
   "standard": "ghana39"
 }

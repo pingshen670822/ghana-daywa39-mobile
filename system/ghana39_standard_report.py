@@ -50,6 +50,9 @@ MOBILE_FILES = {
     "system": "其他稽核.html",
 }
 
+GITHUB_LIVE_BASE = "https://pingshen670822.github.io/ghana-daywa39-mobile"
+CLOUD_REPAIR_WORKFLOW_URL = "https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml"
+
 
 def esc(value) -> str:
     return html.escape("" if value is None else str(value))
@@ -1700,6 +1703,13 @@ def mobile_css() -> str:
     .mobile-action,.mobile-refresh{display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px;border:0;border-radius:8px;font-weight:900;text-decoration:none}
     .mobile-action{background:#166534;color:#fff}
     .mobile-refresh{margin-top:10px;background:#1d4ed8;color:#fff;font-size:16px}
+    .repair-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 8px}
+    .repair-panel-actions{display:grid;gap:8px;margin:10px 0}
+    .repair-actions button,.repair-actions a,.repair-panel-actions button,.repair-panel-actions a{appearance:none;display:block;width:100%;box-sizing:border-box;text-align:center;border:0;border-radius:8px;padding:13px 8px;font-size:16px;font-weight:900;text-decoration:none;color:#fff;line-height:1.25}
+    .manual-update{background:#1d4ed8}
+    .instant-repair{background:#b91c1c}
+    .cache-refresh{background:#166534}
+    .report-return{background:#334155}
     .cloud-update-link{display:block;margin-top:12px;text-align:center;color:#1d4ed8;font-weight:900}
     .cloud-note{font-weight:800;color:#14532d;word-break:break-all}
     .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
@@ -1724,6 +1734,7 @@ def mobile_css() -> str:
       table td::before{content:attr(data-label);font-weight:900;color:#64748b;text-align:left;flex:0 0 42%;max-width:42%}
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .repair-actions{grid-template-columns:1fr}
     }
     """
 
@@ -1733,6 +1744,8 @@ def mobile_script(version: str, home: str = "home.html") -> str:
     <script>
     window.GHANA39_BUILD_VERSION = '{esc(version)}';
     window.GHANA39_HOME_PAGE = '{esc(home)}';
+    window.GHANA39_GITHUB_LIVE_BASE = '{esc(GITHUB_LIVE_BASE)}';
+    window.GHANA39_REPAIR_WORKFLOW_URL = '{esc(CLOUD_REPAIR_WORKFLOW_URL)}';
     function setMobileStatus(text) {{
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
@@ -1778,6 +1791,44 @@ def mobile_script(version: str, home: str = "home.html") -> str:
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
       location.replace(currentMobilePage() + '?v={esc(version)}&force=' + Date.now());
+    }}
+    function versionStamp(data) {{
+      return String((data && (data.version || data.generated_at_taiwan)) || '').replace(/\\D/g, '').slice(0, 14);
+    }}
+    async function fetchLiveVersion() {{
+      try {{
+        const live = await fetch(window.GHANA39_GITHUB_LIVE_BASE + '/version.json?manual=' + Date.now(), {{ cache: 'no-store', mode: 'cors', headers: {{ 'Cache-Control': 'no-cache' }} }});
+        if (live.ok) return live.json();
+      }} catch (err) {{}}
+      const local = await fetch('version.json?manual=' + Date.now(), {{ cache: 'no-store', headers: {{ 'Cache-Control': 'no-cache' }} }});
+      if (!local.ok) throw new Error('local version failed');
+      return local.json();
+    }}
+    async function manualUpdateLatest() {{
+      setMobileStatus('手動更新最新 ' + new Date().toLocaleTimeString());
+      var stamp = '';
+      try {{
+        const data = await fetchLiveVersion();
+        stamp = versionStamp(data);
+      }} catch (err) {{}}
+      await clearMobileCaches();
+      var nextVersion = stamp || window.GHANA39_BUILD_VERSION;
+      location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
+    }}
+    function openRepairPanel() {{
+      location.href = 'repair.html?v={esc(version)}&from=' + encodeURIComponent(currentMobilePage());
+    }}
+    async function openCloudRepair() {{
+      setMobileStatus('當機修復啟動 ' + new Date().toLocaleTimeString());
+      try {{
+        await clearMobileCaches();
+      }} catch (err) {{}}
+      var opened = window.open(window.GHANA39_REPAIR_WORKFLOW_URL, '_blank', 'noopener,noreferrer');
+      if (!opened) {{
+        location.href = window.GHANA39_REPAIR_WORKFLOW_URL;
+      }} else {{
+        setMobileStatus('已開啟雲端修復入口 ' + new Date().toLocaleTimeString());
+      }}
     }}
     async function autoRefreshIfStale() {{
       try {{
@@ -1853,7 +1904,10 @@ def mobile_shell(title: str, active: str, analysis: dict, body: str) -> str:
 <main>
   <section class="band launch-panel">
     <div class="launch-title">迦納彩39 手機雲端獨立版</div>
-    <button class="mobile-refresh" type="button" onclick="forceRefresh()">重新讀取雲端最新頁</button>
+    <div class="repair-actions" aria-label="雲端更新與修復">
+      <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
+      <button class="instant-repair" type="button" onclick="openRepairPanel()">當機立即修復</button>
+    </div>
     <a class="cloud-update-link" href="clear-cache.html?v={esc(version)}">手機沒更新點這裡清除舊快取</a>
     <div class="quick-links">
       <a href="prediction.html?v={esc(version)}">下期預測</a>
@@ -1941,6 +1995,8 @@ def build_mobile_pages(analysis: dict, settled: dict, history: list[dict]) -> di
         "模型回測.html": mobile_shell("迦納彩39 模型回測", "full", analysis, models_body),
         "system.html": mobile_shell("迦納彩39 其他稽核", "full", analysis, system_body),
         "其他稽核.html": mobile_shell("迦納彩39 其他稽核", "full", analysis, system_body),
+        "repair.html": build_repair_html(analysis),
+        "雲端修復.html": build_repair_html(analysis),
         "clear-cache.html": build_clear_cache_html(analysis),
         "清除快取.html": build_clear_cache_html(analysis),
         "manifest.webmanifest": build_manifest(),
@@ -1953,6 +2009,50 @@ def build_mobile_pages(analysis: dict, settled: dict, history: list[dict]) -> di
 def build_clear_cache_html(analysis: dict) -> str:
     version = build_version(analysis)
     return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>清除快取</title><style>{mobile_css()}</style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 {esc(version)}</p></section></main>{mobile_script(version)}</body></html>"""
+
+
+def build_repair_html(analysis: dict) -> str:
+    version = build_version(analysis)
+    latest = analysis.get("latest_draw") or {}
+    return f"""<!doctype html>
+<html lang="zh-Hant" data-mobile-independent="true">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="theme-color" content="#111827">
+  <title>迦納彩39 雲端修復控制台</title>
+  <style>{mobile_css()}</style>
+</head>
+<body>
+<header>
+  <h1>雲端修復控制台</h1>
+  <p>版本 {esc(version)} / 官方最新 {esc(latest.get('draw_date', '-'))}：{esc(fmt_numbers(latest.get('numbers', [])))}</p>
+  <p>預測目標 {esc(analysis.get('target_draw_date', '-'))} 17:30 台灣時間</p>
+</header>
+<main>
+  <section class="band launch-panel">
+    <h2>手機雲端更新</h2>
+    <div class="repair-panel-actions">
+      <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
+      <button class="instant-repair" type="button" onclick="openCloudRepair()">當機立即修復</button>
+      <button class="cache-refresh" type="button" onclick="forceRefresh()">清除快取重讀</button>
+      <a class="report-return" href="full-report.html?v={esc(version)}">回完整戰報</a>
+    </div>
+    <p class="cloud-note">每日17:30台灣時間開獎；17:31更新；19:30仍未更新即進入自主修復檢查。</p>
+    <p class="cloud-note">公開雲端修復排程：17:35、19:35 台灣時間。</p>
+    <p class="cloud-note"><a href="{esc(CLOUD_REPAIR_WORKFLOW_URL)}" target="_blank" rel="noopener">雲端修復排程入口</a></p>
+    <p class="cloud-note" id="mobileUpdateStatus">版本 {esc(version)}</p>
+  </section>
+  {self_repair_html(analysis)}
+  {ironlaw_full_audit_html(analysis)}
+</main>
+{mobile_nav("full")}
+{mobile_script(version)}
+</body>
+</html>"""
 
 
 def build_manifest() -> str:
@@ -2005,6 +2105,11 @@ def version_payload(analysis: dict) -> dict:
         "self_repair_status": analysis.get("self_repair_status"),
         "ironlaw_full_audit": analysis.get("ironlaw_full_audit"),
         "independent_mobile": True,
+        "manual_update_button": True,
+        "cloud_repair_button": True,
+        "cloud_repair_workflow_url": CLOUD_REPAIR_WORKFLOW_URL,
+        "cloud_self_repair_schedule_taiwan": ["17:35", "19:35"],
+        "github_live_base": GITHUB_LIVE_BASE,
         "standard": "ghana39",
     }
 
