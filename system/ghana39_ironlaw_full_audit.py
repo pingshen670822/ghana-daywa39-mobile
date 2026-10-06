@@ -33,6 +33,7 @@ SITE_ANALYSIS_PATH = SITE_DIR / "latest_analysis.json"
 REPORT_HTML_PATH = REPORT_DIR / "latest_battle_report.html"
 SITE_FULL_REPORT_PATH = SITE_DIR / "full-report.html"
 SITE_VERSION_PATH = SITE_DIR / "version.json"
+CLOUD_PACKAGE_JSON_PATH = ROOT / "cloud_mobile_site" / "package.json"
 SYNC_STATUS_PATH = DATA_DIR / "sync_status.json"
 SELF_REPAIR_STATUS_PATH = DATA_DIR / "self_repair_status.json"
 AUDIT_JSON_PATH = REPORT_DIR / "ghana39_ironlaw_full_audit.json"
@@ -251,12 +252,14 @@ def main() -> int:
     analysis = load_json(ANALYSIS_PATH)
     site_analysis = load_json(SITE_ANALYSIS_PATH)
     version = load_json(SITE_VERSION_PATH)
+    package_json = load_json(CLOUD_PACKAGE_JSON_PATH)
     fetch_summary = load_json(FETCH_SUMMARY_PATH)
     sync_status = load_json(SYNC_STATUS_PATH)
     repair_status = load_json(SELF_REPAIR_STATUS_PATH)
     report_html = read_text(REPORT_HTML_PATH)
     site_html = read_text(SITE_FULL_REPORT_PATH)
     mobile_html = site_html + read_text(SITE_DIR / "prediction.html") + read_text(SITE_DIR / "clear-cache.html") + read_text(SITE_DIR / "repair.html")
+    cloud_package_text = read_text(CLOUD_PACKAGE_JSON_PATH)
     rows = csv_rows()
     csv_latest = latest_csv_draw(rows)
     db_latest = db_latest_draw()
@@ -345,9 +348,14 @@ def main() -> int:
     add(checks, "手機完整戰報規格", "passed" if all(text in site_html for text in required_mobile_html) else "failed", "手機獨立頁必含完整戰報")
     add(checks, "手機即時刷新", "passed" if all(text in mobile_html for text in ("version.json", "pageshow", "autoRefreshIfStale", "clearMobileCaches", "manualUpdateLatest")) else "failed", "手機開啟、回前景、恢復連線立即檢查版本")
     add(checks, "雲端手動修復入口", "passed" if all(text in mobile_html for text in ("手動更新最新", "當機立即修復", "repair.html", "ghana39-cloud-self-repair.yml")) else "failed", "手機頁必須提供手動更新與當機修復按鈕")
+    add(checks, "539介面模式", "passed" if all(text in site_html for text in ("539介面模式", 'data-report-mode="539-interface"', "開獎依據", "預測目標", "最強獨隻", "前九核心")) else "failed", "戰報第一屏必須為539操作介面")
+    add(checks, "手動更新完成時間", "passed" if all(text in mobile_html for text in ("最後手動更新完成", "finalizeManualUpdateIfNeeded", "ghana39_last_manual_update", 'data-update-status="manual-complete-time"')) else "failed", "手動更新完成後必須顯示完成時間與版本")
     add(checks, "禁用舊品牌字樣", "passed" if FORBIDDEN_OLD_TEXT not in report_html + site_html else "failed", "戰報與手機頁不得出現舊字樣")
     add(checks, "站台JSON同步", "passed" if site_analysis and site_analysis.get("generated_at_taiwan") == analysis.get("generated_at_taiwan") else "failed", "site/latest_analysis.json 必須與 reports/latest_analysis.json 同版")
-    add(checks, "版本JSON同步", "passed" if version.get("latest_draw_date") == latest_date and version.get("independent_mobile") is True and version.get("manual_update_button") is True and version.get("cloud_repair_button") is True else "failed", "version.json 必須指向最新獨立手機版與手動修復入口")
+    add(checks, "版本JSON同步", "passed" if version.get("latest_draw_date") == latest_date and version.get("independent_mobile") is True and version.get("manual_update_button") is True and version.get("cloud_repair_button") is True and version.get("report_mode") == "539-interface" and version.get("manual_update_completed_time_visible") is True else "failed", "version.json 必須指向最新獨立手機版、539模式與手動修復入口")
+    scripts = package_json.get("scripts") or {}
+    script_text = " ".join(str(value) for value in scripts.values())
+    add(checks, "雲端建置腳本跨平台", "passed" if package_json and "WRANGLER_LOG_PATH=" not in script_text and "'WRANGLER_LOG_PATH'" not in cloud_package_text else "failed", "移除會讓Windows建置失敗的Linux環境變數寫法")
     repo_public_ready = (ROOT.parent / "full-report.html").exists()
     local_cloud_ready = CLOUD_PUBLIC_DIR.exists() and (CLOUD_PUBLIC_DIR / "full-report.html").exists()
     add(checks, "雲端來源同步", "passed" if local_cloud_ready or repo_public_ready else "failed", "cloud_mobile_site/public 或 GitHub Pages 根目錄必須可獨立部署")

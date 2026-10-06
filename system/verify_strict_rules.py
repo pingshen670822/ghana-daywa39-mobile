@@ -48,6 +48,8 @@ def main() -> int:
     mobile_html = mobile_html_path.read_text(encoding="utf-8") if mobile_html_path.exists() else ""
     repair_html_path = ROOT / "site" / "repair.html"
     repair_html = repair_html_path.read_text(encoding="utf-8") if repair_html_path.exists() else ""
+    package_html_path = ROOT / "cloud_mobile_site" / "package.json"
+    package_text = package_html_path.read_text(encoding="utf-8") if package_html_path.exists() else ""
     audit_path = ROOT / "reports" / "ghana39_ironlaw_full_audit.json"
     audit_report = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}
     rows = list(csv.DictReader((ROOT / "data" / "ghana_daywa39_history.csv").open(encoding="utf-8-sig")))
@@ -100,6 +102,9 @@ def main() -> int:
         "HasMobilePageShowRefresh": "pageshow" in mobile_html and "autoRefreshIfStale" in mobile_html,
         "HasManualUpdateButton": ("手動更新最新" in mobile_html) and ("manualUpdateLatest" in mobile_html),
         "HasCloudRepairButton": ("當機立即修復" in mobile_html) and ("repair.html" in mobile_html) and ("ghana39-cloud-self-repair.yml" in repair_html),
+        "Has539InterfaceMode": ("539介面模式" in mobile_html) and ('data-report-mode="539-interface"' in mobile_html),
+        "HasManualUpdateCompletedTime": ("最後手動更新完成" in mobile_html) and ("finalizeManualUpdateIfNeeded" in mobile_html) and ("ghana39_last_manual_update" in mobile_html),
+        "BuildScriptCrossPlatform": "WRANGLER_LOG_PATH=" not in package_text,
         "HasDataGate": "資料真實性" in html,
         "HasSingleGuard": "獨隻守門" in html,
         "H2Count": len(re.findall("<h2", html)),
@@ -149,6 +154,9 @@ def main() -> int:
     assert checks["HasMobilePageShowRefresh"]
     assert checks["HasManualUpdateButton"]
     assert checks["HasCloudRepairButton"]
+    assert checks["Has539InterfaceMode"]
+    assert checks["HasManualUpdateCompletedTime"]
+    assert checks["BuildScriptCrossPlatform"]
     assert checks["HasDataGate"]
     assert checks["HasSingleGuard"]
     assert not checks["HasOldText"]

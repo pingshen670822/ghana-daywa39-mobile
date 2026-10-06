@@ -1,6 +1,6 @@
 # 迦納彩39 全系統鐵律稽核
 
-- 產生時間：2026-10-06T13:57:24+08:00
+- 產生時間：2026-10-06T14:29:28+08:00
 - 狀態：passed
 - 最新開獎日：2026-09-30
 - 下期目標日：2026-10-06
@@ -34,9 +34,12 @@
 | 手機完整戰報規格 | passed | 手機獨立頁必含完整戰報 |
 | 手機即時刷新 | passed | 手機開啟、回前景、恢復連線立即檢查版本 |
 | 雲端手動修復入口 | passed | 手機頁必須提供手動更新與當機修復按鈕 |
+| 539介面模式 | passed | 戰報第一屏必須為539操作介面 |
+| 手動更新完成時間 | passed | 手動更新完成後必須顯示完成時間與版本 |
 | 禁用舊品牌字樣 | passed | 戰報與手機頁不得出現舊字樣 |
 | 站台JSON同步 | passed | site/latest_analysis.json 必須與 reports/latest_analysis.json 同版 |
-| 版本JSON同步 | passed | version.json 必須指向最新獨立手機版與手動修復入口 |
+| 版本JSON同步 | passed | version.json 必須指向最新獨立手機版、539模式與手動修復入口 |
+| 雲端建置腳本跨平台 | passed | 移除會讓Windows建置失敗的Linux環境變數寫法 |
 | 雲端來源同步 | passed | cloud_mobile_site/public 或 GitHub Pages 根目錄必須可獨立部署 |
 | 自動更新排程 | passed | 每日17:31更新發布排程 |
 | 自主修復排程 | passed | 每日19:31自主修復排程 |

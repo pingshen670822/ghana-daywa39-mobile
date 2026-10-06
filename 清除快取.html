@@ -11,6 +11,12 @@
     .ultra-card{border:3px solid #b91c1c;background:#fff1f2}
     .warn{background:#fff7ed;border-color:#fed7aa}
     .grid{display:grid;gap:10px}
+    .interface-539-panel{border:3px solid #0f766e;background:#ecfdf5}
+    .embedded-539{border-radius:8px;padding:10px;margin:8px 0}
+    .interface-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+    .interface-card{border-color:#99f6e4;background:#ffffff}
+    .interface-rule{margin:0 0 10px;font-weight:900;color:#14532d}
+    .interface-sub{margin-top:6px;color:#475569;font-size:13px;font-weight:800;line-height:1.35}
     .label{color:var(--muted);font-size:13px;font-weight:800}
     .value{margin-top:5px;font-size:21px;font-weight:900;line-height:1.25;color:#0f172a;overflow-wrap:anywhere}
     .num{font-size:20px;font-weight:900;color:#b91c1c}
@@ -28,6 +34,9 @@
     .instant-repair{background:#b91c1c}
     .cache-refresh{background:#166534}
     .report-return{background:#334155}
+    .update-status-box{margin:10px 0 8px;padding:10px;border:1px solid #bbf7d0;border-radius:8px;background:#fff}
+    .update-status-box .status-main{margin:4px 0 0;font-size:15px;color:#0f172a;font-weight:900;line-height:1.45}
+    .update-status-box .status-sub{margin:5px 0 0;color:#14532d;font-size:13px;font-weight:900;line-height:1.45;word-break:break-word}
     .cloud-update-link{display:block;margin-top:12px;text-align:center;color:#1d4ed8;font-weight:900}
     .cloud-note{font-weight:800;color:#14532d;word-break:break-all}
     .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
@@ -53,16 +62,65 @@
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
       .repair-actions{grid-template-columns:1fr}
+      .interface-grid{grid-template-columns:1fr 1fr}
     }
-    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 20261006135545</p></section></main>
+    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><div class="update-status-box" data-update-status="manual-complete-time"><div class="label">更新狀態</div><p class="status-main" id="mobileUpdateStatus">版本 20261006142900</p><p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p></div></section></main>
     <script>
-    window.GHANA39_BUILD_VERSION = '20261006135545';
+    window.GHANA39_BUILD_VERSION = '20261006142900';
     window.GHANA39_HOME_PAGE = 'home.html';
     window.GHANA39_GITHUB_LIVE_BASE = 'https://pingshen670822.github.io/ghana-daywa39-mobile';
     window.GHANA39_REPAIR_WORKFLOW_URL = 'https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml';
     function setMobileStatus(text) {
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
+    }
+    function taiwanTimeText(value) {
+      var date = value ? new Date(value) : new Date();
+      try {
+        return new Intl.DateTimeFormat('zh-TW', {
+          timeZone: 'Asia/Taipei',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).format(date).replace(/\//g, '-');
+      } catch (err) {
+        return date.toLocaleString();
+      }
+    }
+    function renderLastUpdateStatus() {
+      var el = document.getElementById('lastManualUpdateStatus');
+      if (!el) return;
+      var text = '最後手動更新完成：尚未在本手機執行';
+      try {
+        var raw = localStorage.getItem('ghana39_last_manual_update');
+        if (raw) {
+          var data = JSON.parse(raw);
+          if (data && data.completedAt) {
+            text = '最後手動更新完成：' + taiwanTimeText(data.completedAt) + ' / 版本 ' + (data.version || window.GHANA39_BUILD_VERSION);
+          }
+        }
+      } catch (err) {}
+      el.textContent = text;
+    }
+    function finalizeManualUpdateIfNeeded() {
+      try {
+        var params = new URLSearchParams(window.location.search || '');
+        var pending = localStorage.getItem('ghana39_manual_update_pending');
+        if (params.has('manual') || pending) {
+          var version = params.get('v') || window.GHANA39_BUILD_VERSION;
+          localStorage.setItem('ghana39_last_manual_update', JSON.stringify({
+            completedAt: new Date().toISOString(),
+            version: version,
+            page: currentMobilePage()
+          }));
+          localStorage.removeItem('ghana39_manual_update_pending');
+        }
+      } catch (err) {}
+      renderLastUpdateStatus();
     }
     function normalizeMobilePage(page) {
       if (!page || page === 'home' || page === 'index') return 'full-report.html';
@@ -104,7 +162,7 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20261006135545&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20261006142900&force=' + Date.now());
     }
     function versionStamp(data) {
       return String((data && (data.version || data.generated_at_taiwan)) || '').replace(/\D/g, '').slice(0, 14);
@@ -127,10 +185,17 @@
       } catch (err) {}
       await clearMobileCaches();
       var nextVersion = stamp || window.GHANA39_BUILD_VERSION;
+      try {
+        localStorage.setItem('ghana39_manual_update_pending', JSON.stringify({
+          startedAt: new Date().toISOString(),
+          version: nextVersion,
+          page: currentMobilePage()
+        }));
+      } catch (err) {}
       location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
     }
     function openRepairPanel() {
-      location.href = 'repair.html?v=20261006135545&from=' + encodeURIComponent(currentMobilePage());
+      location.href = 'repair.html?v=20261006142900&from=' + encodeURIComponent(currentMobilePage());
     }
     async function openCloudRepair() {
       setMobileStatus('當機修復啟動 ' + new Date().toLocaleTimeString());
@@ -157,11 +222,12 @@
         }
       } catch (err) {}
     }
+    finalizeManualUpdateIfNeeded();
     autoRefreshIfStale();
-    window.addEventListener('pageshow', autoRefreshIfStale);
+    window.addEventListener('pageshow', function() { finalizeManualUpdateIfNeeded(); autoRefreshIfStale(); });
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20261006135545', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20261006142900', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });

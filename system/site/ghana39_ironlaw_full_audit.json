@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "generated_at_taiwan": "2026-10-06T13:57:24+08:00",
+  "generated_at_taiwan": "2026-10-06T14:29:28+08:00",
   "latest_draw_date": "2026-09-30",
   "latest_numbers": [
     3,
@@ -10,10 +10,10 @@
     33
   ],
   "target_draw_date": "2026-10-06",
-  "version": "20261006135545",
+  "version": "20261006142900",
   "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
   "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
-  "passed_count": 35,
+  "passed_count": 38,
   "failed_count": 0,
   "warning_count": 0,
   "checks": [
@@ -203,6 +203,20 @@
       "detail": null
     },
     {
+      "item": "539介面模式",
+      "status": "passed",
+      "passed": true,
+      "message": "戰報第一屏必須為539操作介面",
+      "detail": null
+    },
+    {
+      "item": "手動更新完成時間",
+      "status": "passed",
+      "passed": true,
+      "message": "手動更新完成後必須顯示完成時間與版本",
+      "detail": null
+    },
+    {
       "item": "禁用舊品牌字樣",
       "status": "passed",
       "passed": true,
@@ -220,7 +234,14 @@
       "item": "版本JSON同步",
       "status": "passed",
       "passed": true,
-      "message": "version.json 必須指向最新獨立手機版與手動修復入口",
+      "message": "version.json 必須指向最新獨立手機版、539模式與手動修復入口",
+      "detail": null
+    },
+    {
+      "item": "雲端建置腳本跨平台",
+      "status": "passed",
+      "passed": true,
+      "message": "移除會讓Windows建置失敗的Linux環境變數寫法",
       "detail": null
     },
     {

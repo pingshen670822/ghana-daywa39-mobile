@@ -687,6 +687,36 @@ def date_ribbon_html(analysis: dict) -> str:
     return '<div class="band date-ribbon"><h2>本報表日期對照</h2>' + table(["項目", "數據"], rows) + "</div>"
 
 
+def interface_539_panel_html(analysis: dict, embedded: bool = False) -> str:
+    latest = analysis.get("latest_draw") or {}
+    audit = analysis.get("ironlaw_full_audit") or {}
+    low = analysis.get("low_probability") or {}
+    cards = [
+        ("開獎依據", f"{latest.get('draw_date', '-')} / {fmt_numbers(latest.get('numbers', [])) or '-'}", latest_label(analysis)),
+        ("預測目標", f"{analysis.get('target_draw_date', '-')} 17:30", "台灣時間"),
+        ("最強獨隻", fmt_numbers(ultra_numbers(analysis)) or fmt_numbers(strong_single_numbers(analysis)) or "-", ultra_pick(analysis).get("status", "-")),
+        ("前九核心", fmt_numbers(top_numbers(analysis, 9)) or "-", "主攻層"),
+        ("低機率防守", fmt_numbers(low.get("avoid_10") or []) or "-", "10碼暫避"),
+        ("系統狀態", audit.get("status", "pending"), f"失敗 {audit.get('failed_count', 0)} / 警示 {audit.get('warning_count', 0)}"),
+    ]
+    card_html = "".join(
+        '<div class="card interface-card">'
+        f'<div class="label">{esc(label)}</div>'
+        f'<div class="value">{esc(value)}</div>'
+        f'<div class="interface-sub">{esc(sub)}</div>'
+        "</div>"
+        for label, value, sub in cards
+    )
+    wrapper_class = "interface-539-panel embedded-539" if embedded else "band interface-539-panel"
+    return (
+        f'<div class="{wrapper_class}" data-report-mode="539-interface">'
+        "<h2>539介面模式</h2>"
+        '<p class="interface-rule">開獎、預測、主攻、防守、檢討、修復分區固定顯示；手機與雲端同版同步。</p>'
+        f'<div class="grid interface-grid">{card_html}</div>'
+        "</div>"
+    )
+
+
 def report_spec_layout_html(analysis: dict) -> str:
     rows = [
         ["01", "開獎資料", "全歷史範圍、最新開獎日、最新號碼、下期台灣時間", "已置頂"],
@@ -1158,6 +1188,7 @@ def standard_full_body(analysis: dict, settled: dict, history: list[dict]) -> st
     decorate_analysis(analysis)
     return (
         date_ribbon_html(analysis)
+        + interface_539_panel_html(analysis)
         + report_spec_layout_html(analysis)
         + daily_ironlaw_schedule_html(analysis)
         + decisive_battle_answer_html(analysis)
@@ -1484,6 +1515,10 @@ def desktop_css() -> str:
     .ultra-card{border:3px solid #b91c1c;background:#fff1f2;}
     .warn{background:#fff7ed;border-color:#fed7aa;}
     .date-ribbon{background:#ecfeff;border-color:#67e8f9;}
+    .interface-539-panel{border:3px solid #0f766e;background:#ecfdf5;}
+    .interface-card{border-color:#99f6e4;background:#fff;}
+    .interface-rule{margin:0 0 10px;font-weight:900;color:#14532d;}
+    .interface-sub{margin-top:6px;color:#475569;font-size:13px;font-weight:800;line-height:1.35;}
     .label{font-size:13px;color:#64748b;font-weight:700;}
     .value{font-size:22px;font-weight:900;margin-top:6px;}
     table{width:100%;border-collapse:collapse;min-width:760px;}
@@ -1693,6 +1728,12 @@ def mobile_css() -> str:
     .ultra-card{border:3px solid #b91c1c;background:#fff1f2}
     .warn{background:#fff7ed;border-color:#fed7aa}
     .grid{display:grid;gap:10px}
+    .interface-539-panel{border:3px solid #0f766e;background:#ecfdf5}
+    .embedded-539{border-radius:8px;padding:10px;margin:8px 0}
+    .interface-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+    .interface-card{border-color:#99f6e4;background:#ffffff}
+    .interface-rule{margin:0 0 10px;font-weight:900;color:#14532d}
+    .interface-sub{margin-top:6px;color:#475569;font-size:13px;font-weight:800;line-height:1.35}
     .label{color:var(--muted);font-size:13px;font-weight:800}
     .value{margin-top:5px;font-size:21px;font-weight:900;line-height:1.25;color:#0f172a;overflow-wrap:anywhere}
     .num{font-size:20px;font-weight:900;color:#b91c1c}
@@ -1710,6 +1751,9 @@ def mobile_css() -> str:
     .instant-repair{background:#b91c1c}
     .cache-refresh{background:#166534}
     .report-return{background:#334155}
+    .update-status-box{margin:10px 0 8px;padding:10px;border:1px solid #bbf7d0;border-radius:8px;background:#fff}
+    .update-status-box .status-main{margin:4px 0 0;font-size:15px;color:#0f172a;font-weight:900;line-height:1.45}
+    .update-status-box .status-sub{margin:5px 0 0;color:#14532d;font-size:13px;font-weight:900;line-height:1.45;word-break:break-word}
     .cloud-update-link{display:block;margin-top:12px;text-align:center;color:#1d4ed8;font-weight:900}
     .cloud-note{font-weight:800;color:#14532d;word-break:break-all}
     .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
@@ -1735,6 +1779,7 @@ def mobile_css() -> str:
       table td[colspan]::before{content:""}
       .quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}
       .repair-actions{grid-template-columns:1fr}
+      .interface-grid{grid-template-columns:1fr 1fr}
     }
     """
 
@@ -1749,6 +1794,54 @@ def mobile_script(version: str, home: str = "home.html") -> str:
     function setMobileStatus(text) {{
       var el = document.getElementById('mobileUpdateStatus');
       if (el) el.textContent = text;
+    }}
+    function taiwanTimeText(value) {{
+      var date = value ? new Date(value) : new Date();
+      try {{
+        return new Intl.DateTimeFormat('zh-TW', {{
+          timeZone: 'Asia/Taipei',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }}).format(date).replace(/\\//g, '-');
+      }} catch (err) {{
+        return date.toLocaleString();
+      }}
+    }}
+    function renderLastUpdateStatus() {{
+      var el = document.getElementById('lastManualUpdateStatus');
+      if (!el) return;
+      var text = '最後手動更新完成：尚未在本手機執行';
+      try {{
+        var raw = localStorage.getItem('ghana39_last_manual_update');
+        if (raw) {{
+          var data = JSON.parse(raw);
+          if (data && data.completedAt) {{
+            text = '最後手動更新完成：' + taiwanTimeText(data.completedAt) + ' / 版本 ' + (data.version || window.GHANA39_BUILD_VERSION);
+          }}
+        }}
+      }} catch (err) {{}}
+      el.textContent = text;
+    }}
+    function finalizeManualUpdateIfNeeded() {{
+      try {{
+        var params = new URLSearchParams(window.location.search || '');
+        var pending = localStorage.getItem('ghana39_manual_update_pending');
+        if (params.has('manual') || pending) {{
+          var version = params.get('v') || window.GHANA39_BUILD_VERSION;
+          localStorage.setItem('ghana39_last_manual_update', JSON.stringify({{
+            completedAt: new Date().toISOString(),
+            version: version,
+            page: currentMobilePage()
+          }}));
+          localStorage.removeItem('ghana39_manual_update_pending');
+        }}
+      }} catch (err) {{}}
+      renderLastUpdateStatus();
     }}
     function normalizeMobilePage(page) {{
       if (!page || page === 'home' || page === 'index') return 'full-report.html';
@@ -1813,6 +1906,13 @@ def mobile_script(version: str, home: str = "home.html") -> str:
       }} catch (err) {{}}
       await clearMobileCaches();
       var nextVersion = stamp || window.GHANA39_BUILD_VERSION;
+      try {{
+        localStorage.setItem('ghana39_manual_update_pending', JSON.stringify({{
+          startedAt: new Date().toISOString(),
+          version: nextVersion,
+          page: currentMobilePage()
+        }}));
+      }} catch (err) {{}}
       location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
     }}
     function openRepairPanel() {{
@@ -1843,8 +1943,9 @@ def mobile_script(version: str, home: str = "home.html") -> str:
         }}
       }} catch (err) {{}}
     }}
+    finalizeManualUpdateIfNeeded();
     autoRefreshIfStale();
-    window.addEventListener('pageshow', autoRefreshIfStale);
+    window.addEventListener('pageshow', function() {{ finalizeManualUpdateIfNeeded(); autoRefreshIfStale(); }});
     if ('serviceWorker' in navigator) {{
       window.addEventListener('load', function(){{
         navigator.serviceWorker.register('service-worker.js?v={esc(version)}', {{ updateViaCache: 'none' }}).then(function(reg){{ reg.update(); }}).catch(function(){{}});
@@ -1903,7 +2004,8 @@ def mobile_shell(title: str, active: str, analysis: dict, body: str) -> str:
 </header>
 <main>
   <section class="band launch-panel">
-    <div class="launch-title">迦納彩39 手機雲端獨立版</div>
+    <div class="launch-title">539介面模式 / 迦納彩39 手機雲端獨立版</div>
+    {interface_539_panel_html(analysis, embedded=True)}
     <div class="repair-actions" aria-label="雲端更新與修復">
       <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
       <button class="instant-repair" type="button" onclick="openRepairPanel()">當機立即修復</button>
@@ -1917,7 +2019,11 @@ def mobile_shell(title: str, active: str, analysis: dict, body: str) -> str:
     </div>
     <p class="cloud-note">本頁為獨立雲端手機版：首頁、下期預測、上期檢討、低機率、完整戰報都在手機站內完成。</p>
     <p class="cloud-note">{esc(history_note)}</p>
-    <p class="cloud-note" id="mobileUpdateStatus">版本 {esc(version)}</p>
+    <div class="update-status-box" data-update-status="manual-complete-time">
+      <div class="label">更新狀態</div>
+      <p class="status-main" id="mobileUpdateStatus">版本 {esc(version)} / 戰報產生 {esc(display_time(analysis.get('generated_at_taiwan', '-')))}</p>
+      <p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p>
+    </div>
   </section>
   {body}
 </main>
@@ -2008,7 +2114,7 @@ def build_mobile_pages(analysis: dict, settled: dict, history: list[dict]) -> di
 
 def build_clear_cache_html(analysis: dict) -> str:
     version = build_version(analysis)
-    return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>清除快取</title><style>{mobile_css()}</style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><p id="mobileUpdateStatus">版本 {esc(version)}</p></section></main>{mobile_script(version)}</body></html>"""
+    return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>清除快取</title><style>{mobile_css()}</style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><div class="update-status-box" data-update-status="manual-complete-time"><div class="label">更新狀態</div><p class="status-main" id="mobileUpdateStatus">版本 {esc(version)}</p><p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p></div></section></main>{mobile_script(version)}</body></html>"""
 
 
 def build_repair_html(analysis: dict) -> str:
@@ -2035,6 +2141,7 @@ def build_repair_html(analysis: dict) -> str:
 <main>
   <section class="band launch-panel">
     <h2>手機雲端更新</h2>
+    {interface_539_panel_html(analysis, embedded=True)}
     <div class="repair-panel-actions">
       <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
       <button class="instant-repair" type="button" onclick="openCloudRepair()">當機立即修復</button>
@@ -2044,7 +2151,11 @@ def build_repair_html(analysis: dict) -> str:
     <p class="cloud-note">每日17:30台灣時間開獎；17:31更新；19:30仍未更新即進入自主修復檢查。</p>
     <p class="cloud-note">公開雲端修復排程：17:35、19:35 台灣時間。</p>
     <p class="cloud-note"><a href="{esc(CLOUD_REPAIR_WORKFLOW_URL)}" target="_blank" rel="noopener">雲端修復排程入口</a></p>
-    <p class="cloud-note" id="mobileUpdateStatus">版本 {esc(version)}</p>
+    <div class="update-status-box" data-update-status="manual-complete-time">
+      <div class="label">更新狀態</div>
+      <p class="status-main" id="mobileUpdateStatus">版本 {esc(version)} / 戰報產生 {esc(display_time(analysis.get('generated_at_taiwan', '-')))}</p>
+      <p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p>
+    </div>
   </section>
   {self_repair_html(analysis)}
   {ironlaw_full_audit_html(analysis)}
@@ -2107,6 +2218,9 @@ def version_payload(analysis: dict) -> dict:
         "independent_mobile": True,
         "manual_update_button": True,
         "cloud_repair_button": True,
+        "report_mode": "539-interface",
+        "manual_update_completed_time_visible": True,
+        "fault_audit_required": True,
         "cloud_repair_workflow_url": CLOUD_REPAIR_WORKFLOW_URL,
         "cloud_self_repair_schedule_taiwan": ["17:35", "19:35"],
         "github_live_base": GITHUB_LIVE_BASE,
