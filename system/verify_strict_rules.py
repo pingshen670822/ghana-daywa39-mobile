@@ -5,14 +5,25 @@ from __future__ import annotations
 import csv
 import json
 import re
+from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parent
+TAIWAN_TZ = ZoneInfo("Asia/Taipei")
 
 
 def fmt(numbers) -> str:
     return " ".join(f"{int(number):02d}" for number in numbers)
+
+
+def expected_target_date(latest_draw_date: str) -> str:
+    latest = datetime.strptime(latest_draw_date, "%Y-%m-%d").date()
+    today = datetime.now(TAIWAN_TZ).date()
+    if latest >= today:
+        return (latest + timedelta(days=1)).isoformat()
+    return today.isoformat()
 
 
 def main() -> int:
@@ -22,6 +33,7 @@ def main() -> int:
     single = int(analysis["strong_packs"]["strong_single"]["numbers"][0])
     latest_numbers = [int(number) for number in analysis["latest_draw"]["numbers"]]
     latest_date = analysis["latest_draw"]["draw_date"]
+    expected_target = expected_target_date(latest_date)
     top9 = [int(item["number"]) for item in analysis["candidates"][:9]]
     low_hit = analysis.get("low_hit_regime_shift") or {}
     failure_memory = low_hit.get("failure_memory") or {}
@@ -29,12 +41,20 @@ def main() -> int:
     optimizer = analysis.get("hit_rate_optimizer") or {}
     high_gate = analysis.get("high_confidence_gate") or {}
     external = analysis.get("external_method_weight_shift") or {}
+    ultra = analysis.get("ultra_confidence_pick") or {}
+    repair = analysis.get("self_repair_status") or {}
+    audit = analysis.get("ironlaw_full_audit") or {}
+    mobile_html_path = ROOT / "site" / "full-report.html"
+    mobile_html = mobile_html_path.read_text(encoding="utf-8") if mobile_html_path.exists() else ""
+    audit_path = ROOT / "reports" / "ghana39_ironlaw_full_audit.json"
+    audit_report = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}
     rows = list(csv.DictReader((ROOT / "data" / "ghana_daywa39_history.csv").open(encoding="utf-8-sig")))
 
     checks = {
         "LatestDate": latest_date,
         "LatestNumbers": fmt(latest_numbers),
         "TargetDate": analysis["target_draw_date"],
+        "ExpectedTargetDate": expected_target,
         "StrongSingle": f"{single:02d}",
         "SingleInLatest": single in latest_numbers,
         "Top9": fmt(top9),
@@ -50,16 +70,32 @@ def main() -> int:
         "HitRatePromoted": fmt(optimizer.get("promoted_numbers", [])),
         "HitRateDemoted": fmt(optimizer.get("demoted_numbers", [])),
         "HighConfidenceGate": high_gate.get("status"),
+        "UltraConfidenceStatus": ultra.get("status"),
+        "UltraConfidenceSingle": f"{int(ultra.get('number')):02d}" if ultra.get("number") else "-",
+        "UltraLogicChecks": len(ultra.get("logic_checks") or []),
         "ExternalMethodShift": external.get("status"),
+        "SelfRepairDeadline": repair.get("self_repair_deadline_taiwan"),
+        "SelfRepairMobileRefresh": repair.get("mobile_refresh_seconds"),
+        "IronlawAuditStatus": audit.get("status"),
+        "IronlawAuditFailed": audit.get("failed_count"),
+        "IronlawAuditReportStatus": audit_report.get("status"),
         "DataGate": analysis["data_integrity_gate"]["status"],
         "Engine": analysis["engine_version"],
         "HasLatestDate": latest_date in html,
         "HasTop9": fmt(top9) in html,
+        "HasSpecLayout": ("標準戰報規格導覽" in html) and ("強牌組" in html) and ("逐號解析" in html) and ("系統檢修" in html),
         "HasRolling": ("錯誤模組" in html) or ("滾動修正" in html),
         "HasLowHit": ("低命中" in html) and (("漏抓回補" in html) or ("權重轉換" in html)),
         "HasFront9Escape": (("9名後" in html) or ("第10到15" in html)) and (("外溢" in html) or ("拉回前九" in html)),
         "HasHitRateOptimizer": ("命中率強化" in html) and (("整組命中率" in html) or ("高機率校準" in html)),
+        "HasUltraConfidence": ("超高信心高機率推薦" in html) and ("強烈推薦單號" in html),
         "HasExternalMethodShift": ("外部模式" in html) and (("配對" in html) or ("companion" in html)),
+        "HasSelfRepair": ("自主修復" in html) and ("19:30" in html),
+        "HasDailyIronlawSchedule": ("539鐵律同級" in html) and ("每日更新鐵律時間表" in html) and ("17:30" in html) and ("17:31" in html),
+        "HasDecisiveAnswers": ("本期明確作戰答案" in html) and ("明確獨支" in html) and ("明確2中1" in html) and ("明確3中1" in html) and ("明確5中2" in html) and ("明確9中3" in html) and ("防守避開" in html),
+        "HasFullAudit": ("全系統稽核結果" in html) and ("發布封鎖" in html or "failed_count" in html or "稽核未過" in html),
+        "HasTargetDateCorrection": ("預測目標開獎日" in html) and ("官方最新開獎日" in html) and ("官方資料缺口" in html),
+        "HasMobilePageShowRefresh": "pageshow" in mobile_html and "autoRefreshIfStale" in mobile_html,
         "HasDataGate": "資料真實性" in html,
         "HasSingleGuard": "獨隻守門" in html,
         "H2Count": len(re.findall("<h2", html)),
@@ -75,6 +111,7 @@ def main() -> int:
     for key, value in checks.items():
         print(f"{key}: {value}")
     assert latest_date == summary.get("latest_draw_date")
+    assert analysis["target_draw_date"] == expected_target
     assert single not in latest_numbers
     assert analysis["rolling_error_adjustment"]["status"] == "applied"
     assert low_hit.get("status") in {"critical_shift", "watch_shift", "normal", "no_settled_history"}
@@ -82,13 +119,30 @@ def main() -> int:
     assert front9.get("status") in {"applied", "reviewed_no_swap", "inactive"}
     assert optimizer.get("status") in {"applied", "reviewed_no_change", "inactive"}
     assert high_gate.get("status") in {"passed", "blocked"}
+    assert ultra.get("number") == single
+    assert ultra.get("status") in {"ultra_high_confidence_recommendation", "strongest_research_signal"}
+    assert len(ultra.get("logic_checks") or []) >= 6
     assert external.get("status") in {"applied", "not_applied"}
+    assert repair.get("self_repair_deadline_taiwan") == "19:30"
+    assert int(repair.get("mobile_refresh_seconds") or 0) <= 30
+    assert audit.get("status") in {"passed", "pending"}
+    if audit_report:
+        assert audit_report.get("status") == "passed"
+        assert int(audit_report.get("failed_count") or 0) == 0
     assert analysis["data_integrity_gate"]["status"] == "passed"
     assert checks["HasRolling"]
+    assert checks["HasSpecLayout"]
     assert checks["HasLowHit"]
     assert checks["HasFront9Escape"]
     assert checks["HasHitRateOptimizer"]
+    assert checks["HasUltraConfidence"]
     assert checks["HasExternalMethodShift"]
+    assert checks["HasSelfRepair"]
+    assert checks["HasDailyIronlawSchedule"]
+    assert checks["HasDecisiveAnswers"]
+    assert checks["HasFullAudit"]
+    assert checks["HasTargetDateCorrection"]
+    assert checks["HasMobilePageShowRefresh"]
     assert checks["HasDataGate"]
     assert checks["HasSingleGuard"]
     assert not checks["HasOldText"]

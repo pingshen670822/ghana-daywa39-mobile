@@ -50,6 +50,9 @@ PRECISION_HTML = REPORT_DIR / "ghana39_precision_battle_report.html"
 DESIGN_MD = REPORT_DIR / "system_design.md"
 MOBILE_INDEX = SITE_DIR / "index.html"
 MOBILE_JSON = SITE_DIR / "latest_analysis.json"
+SYNC_STATUS_JSON = DATA_DIR / "sync_status.json"
+SELF_REPAIR_STATUS_JSON = DATA_DIR / "self_repair_status.json"
+IRONLAW_AUDIT_JSON = REPORT_DIR / "ghana39_ironlaw_full_audit.json"
 
 
 @dataclass(frozen=True)
@@ -312,6 +315,18 @@ def fetch_draws(conn: sqlite3.Connection) -> list[dict]:
 
 def next_draw_date(draw_date: str) -> str:
     return (datetime.strptime(draw_date, "%Y-%m-%d").date() + timedelta(days=1)).isoformat()
+
+
+def expected_current_draw_date() -> str:
+    return now_draw_timezone().date().isoformat()
+
+
+def prediction_target_draw_date(latest_draw_date: str) -> str:
+    latest = datetime.strptime(latest_draw_date, "%Y-%m-%d").date()
+    expected = now_draw_timezone().date()
+    if latest >= expected:
+        return (latest + timedelta(days=1)).isoformat()
+    return expected.isoformat()
 
 
 def target_taiwan_safe_time(target_date: str) -> str:
@@ -1599,6 +1614,123 @@ def calibrated_high_confidence_gate(backtest_result: dict, low_hit_review: dict,
     }
 
 
+def pass_flag(passed: bool) -> str:
+    return "passed" if passed else "blocked"
+
+
+def build_ultra_confidence_pick(
+    candidates: list[dict],
+    high_gate: dict,
+    external_shift: dict,
+    optimizer_audit: dict,
+    front9_audit: dict,
+) -> dict:
+    if not candidates:
+        return {
+            "status": "blocked",
+            "number": None,
+            "numbers": [],
+            "score": 0.0,
+            "label": "本期最強超高信心高機率號碼",
+            "logic_checks": [],
+            "rule": "沒有候選號時禁止產生強烈推薦。",
+        }
+    top9 = {int(item["number"]) for item in candidates[:9]}
+    selected_numbers = {int(number) for number in optimizer_audit.get("selected_numbers", [])}
+
+    def score_item(item: dict) -> float:
+        model_scores = item.get("model_scores") or {}
+        pair = float(model_scores.get("pair_lift") or 0.0)
+        shape = float(model_scores.get("shape_follow") or 0.0)
+        trend = float(model_scores.get("trend_break") or 0.0)
+        sum_band = float(model_scores.get("sum_band_neighbor") or 0.0)
+        support = min(1.0, float(item.get("support_models") or 0.0) / max(len(MODEL_LABELS), 1))
+        rank_bonus = clamp((10 - min(int(item.get("rank") or 99), 10)) / 9, 0.0, 1.0)
+        optimizer_bonus = 0.08 if int(item["number"]) in selected_numbers else 0.0
+        gate_bonus = 0.08 if high_gate.get("status") == "passed" else 0.0
+        external_bonus = 0.05 if external_shift.get("status") == "applied" else 0.0
+        repeat_penalty = 0.18 if item.get("last_draw_repeat") else 0.0
+        return clamp(
+            float(item.get("score") or 0.0) * 0.30
+            + float(item.get("confidence_index") or 0.0) / 100 * 0.16
+            + support * 0.13
+            + pair * 0.13
+            + shape * 0.07
+            + trend * 0.06
+            + sum_band * 0.05
+            + float(item.get("low_hit_recovery_score") or 0.0) * 0.05
+            + float(item.get("front9_escape_score") or 0.0) * 0.04
+            + rank_bonus * 0.08
+            + optimizer_bonus
+            + gate_bonus
+            + external_bonus
+            - repeat_penalty,
+            0.0,
+            1.0,
+        )
+
+    strict_eligible = [
+        item
+        for item in candidates[:9]
+        if not item.get("last_draw_repeat")
+        and int(item.get("support_models") or 0) >= 3
+        and float((item.get("model_scores") or {}).get("pair_lift") or 0.0) >= 0.40
+    ]
+    eligible = strict_eligible or [item for item in candidates[:15] if not item.get("last_draw_repeat")]
+    selected = max(eligible or candidates[:15], key=score_item)
+    number = int(selected["number"])
+    model_scores = selected.get("model_scores") or {}
+    support = int(selected.get("support_models") or 0)
+    pair_score = float(model_scores.get("pair_lift") or 0.0)
+    high_passed = high_gate.get("status") == "passed"
+    in_top9 = number in top9
+    optimizer_selected = number in selected_numbers if selected_numbers else in_top9
+    support_passed = support >= 3
+    pair_passed = pair_score >= 0.40
+    status = (
+        "ultra_high_confidence_recommendation"
+        if high_passed and in_top9 and not selected.get("last_draw_repeat") and support_passed and pair_passed and optimizer_selected
+        else "strongest_research_signal"
+    )
+    logic_checks = [
+        {
+            "item": "高機率校準",
+            "status": pass_flag(high_passed),
+            "value": f"Top9 {high_gate.get('top9_avg_hits', '-')} / 隨機 {high_gate.get('random_top9_expectation', '-')}",
+        },
+        {"item": "配對共現", "status": pass_flag(pair_passed), "value": round(pair_score, 4)},
+        {"item": "交叉模型", "status": pass_flag(support_passed), "value": f"{support}/{len(MODEL_LABELS)}"},
+        {"item": "非最新開獎號", "status": pass_flag(not selected.get("last_draw_repeat")), "value": selected.get("strict_guard", "-")},
+        {"item": "前九核心", "status": pass_flag(in_top9), "value": f"排名 {selected.get('rank', '-')}"},
+        {
+            "item": "整組命中率優化",
+            "status": pass_flag(optimizer_selected),
+            "value": f"{optimizer_audit.get('status', '-')} / 組合分 {optimizer_audit.get('portfolio_score', '-')}",
+        },
+        {
+            "item": "外溢修正",
+            "status": pass_flag(front9_audit.get("status") in {"applied", "reviewed_no_swap", "inactive"}),
+            "value": selected.get("front9_escape_status", "-"),
+        },
+    ]
+    return {
+        "status": status,
+        "number": number,
+        "numbers": [number],
+        "score": round(score_item(selected), 4),
+        "label": "本期最強超高信心高機率號碼",
+        "gate_status": high_gate.get("status"),
+        "selected_rank": selected.get("rank"),
+        "selected_score": selected.get("score"),
+        "confidence_index": selected.get("confidence_index"),
+        "model_probability_index": selected.get("model_probability_index"),
+        "support_models": support,
+        "pair_lift_score": round(pair_score, 4),
+        "logic_checks": logic_checks,
+        "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心與回測正向；未全數通過只列最強研究訊號。",
+    }
+
+
 def backtest(draws: list[dict], rounds: int, weights: dict[str, float]) -> dict:
     if len(draws) < 80:
         return {"rounds": 0, "status": "history_too_short"}
@@ -1669,6 +1801,47 @@ def history_metadata() -> dict:
     return {
         "fetch_summary": summary,
         "gap_audit": audit or compact_audit,
+    }
+
+
+def self_repair_policy_status() -> dict:
+    sync_status = load_json_object(SYNC_STATUS_JSON)
+    repair_status = load_json_object(SELF_REPAIR_STATUS_JSON)
+    return {
+        "daily_draw_time_taiwan": SPEC.draw_time_taiwan,
+        "auto_update_task_time_taiwan": "17:31",
+        "self_repair_deadline_taiwan": "19:30",
+        "self_repair_task_time_taiwan": "19:31",
+        "mobile_refresh_seconds": 30,
+        "mobile_open_behavior": "手機開啟、回到前景、恢復連線時立即檢查version.json；版本不同就清除快取並重載最新雲端頁。",
+        "sync_status": sync_status,
+        "repair_status": repair_status,
+        "rule": "每日台灣時間17:30開獎後立即更新；若兩小時內未產生當日新版本，19:30後自主修復檢查會重新抓官方資料、重算戰報並同步手機雲端版。",
+    }
+
+
+def ironlaw_full_audit_status() -> dict:
+    audit = load_json_object(IRONLAW_AUDIT_JSON)
+    if not audit:
+        return {
+            "status": "pending",
+            "generated_at_taiwan": None,
+            "passed_count": 0,
+            "failed_count": 0,
+            "warning_count": 0,
+            "rule": "539鐵律同級全系統稽核尚未完成；正式發布前必須執行。",
+        }
+    return {
+        "status": audit.get("status", "unknown"),
+        "generated_at_taiwan": audit.get("generated_at_taiwan"),
+        "latest_draw_date": audit.get("latest_draw_date"),
+        "target_draw_date": audit.get("target_draw_date"),
+        "passed_count": audit.get("passed_count", 0),
+        "failed_count": audit.get("failed_count", 0),
+        "warning_count": audit.get("warning_count", 0),
+        "public_cloud_url": audit.get("public_cloud_url"),
+        "public_github_url": audit.get("public_github_url"),
+        "rule": "539鐵律同級全系統稽核：資料、戰報、手機雲端、排程、自主修復、禁用舊內容全部過關才允許發布。",
     }
 
 
@@ -1750,6 +1923,13 @@ def freshness(latest_draw_date: str, target_date: str) -> dict:
     draw_today = now_draw_timezone().date()
     age_days = (draw_today - latest).days
     status = "fresh" if age_days <= 1 else ("watch" if age_days <= 3 else "stale")
+    expected = expected_current_draw_date()
+    missing_dates = []
+    cursor = latest + timedelta(days=1)
+    expected_date = datetime.strptime(expected, "%Y-%m-%d").date()
+    while cursor <= expected_date:
+        missing_dates.append(cursor.isoformat())
+        cursor += timedelta(days=1)
     return {
         "status": status,
         "draw_timezone_today": draw_today.isoformat(),
@@ -1758,6 +1938,11 @@ def freshness(latest_draw_date: str, target_date: str) -> dict:
         "age_days": age_days,
         "target_draw_date": target_date,
         "target_taiwan_safe_update_time": target_taiwan_safe_time(target_date),
+        "expected_current_draw_date": expected,
+        "official_missing_draw_dates": missing_dates,
+        "official_gap_days": len(missing_dates),
+        "is_official_result_lagging": latest.isoformat() < expected,
+        "target_basis": "taiwan_current_draw_date" if latest.isoformat() < expected else "official_latest_plus_one",
         "daily_draw_time_taiwan": SPEC.draw_time_taiwan,
     }
 
@@ -1898,7 +2083,7 @@ def store_prediction(conn: sqlite3.Connection, analysis: dict) -> str:
     target = analysis["target_draw_date"]
     candidates_json = json.dumps(analysis["candidates"], ensure_ascii=False)
     packs_json = json.dumps(analysis["strong_packs"], ensure_ascii=False)
-    existing = conn.execute("SELECT id FROM predictions WHERE based_on_date=?", (based_on,)).fetchone()
+    existing = conn.execute("SELECT id,target_date,status FROM predictions WHERE based_on_date=?", (based_on,)).fetchone()
     if existing:
         conn.execute(
             """
@@ -1909,6 +2094,17 @@ def store_prediction(conn: sqlite3.Connection, analysis: dict) -> str:
             """,
             (based_on, target, candidates_json, packs_json, stamp(), "rerun_snapshot_official_preserved"),
         )
+        if existing[2] == "pending" and existing[1] != target:
+            conn.execute(
+                """
+                UPDATE predictions
+                SET target_date=?, candidates_json=?, strong_packs_json=?, created_at=?
+                WHERE id=?
+                """,
+                (target, candidates_json, packs_json, stamp(), existing[0]),
+            )
+            conn.commit()
+            return "updated_pending_target_date_snapshot_preserved"
         conn.commit()
         return "snapshot_preserved_existing_prediction"
     conn.execute(
@@ -1935,7 +2131,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     if not draws:
         raise RuntimeError("No draw data is available.")
     latest = draws[-1]
-    target_date = next_draw_date(latest["draw_date"])
+    target_date = prediction_target_draw_date(latest["draw_date"])
     base_weights, model_backtest = model_backtest_weights(draws, rounds=min(rounds, 120))
     low_hit_review = low_hit_regime_review(settled_history_rows)
     failure_memory = failure_memory_from_settled(settled_history_rows)
@@ -1954,6 +2150,26 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     packs = build_packs(candidates)
     backtest_result = backtest(draws, rounds=rounds, weights=weights)
     high_confidence_gate = calibrated_high_confidence_gate(backtest_result, low_hit_review, hit_rate_optimizer)
+    ultra_confidence_pick = build_ultra_confidence_pick(
+        candidates,
+        high_confidence_gate,
+        external_method_shift,
+        hit_rate_optimizer,
+        front9_escape_correction,
+    )
+    if ultra_confidence_pick.get("number"):
+        packs["strong_single"]["numbers"] = [int(ultra_confidence_pick["number"])]
+        packs["strong_single"].setdefault("selection_audit", {}).update(
+            {
+                "status": ultra_confidence_pick.get("status"),
+                "selected_rank": ultra_confidence_pick.get("selected_rank"),
+                "selected_score": ultra_confidence_pick.get("selected_score"),
+                "selected_confidence": ultra_confidence_pick.get("confidence_index"),
+                "ultra_confidence_score": ultra_confidence_pick.get("score"),
+                "logic_checks": ultra_confidence_pick.get("logic_checks", []),
+                "rule": ultra_confidence_pick.get("rule"),
+            }
+        )
     metadata = history_metadata()
     completeness = history_completeness(len(draws), metadata)
     fresh = freshness(latest["draw_date"], target_date)
@@ -1990,7 +2206,10 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         "low_hit_regime_shift": low_hit_review,
         "hit_rate_optimizer": hit_rate_optimizer,
         "high_confidence_gate": high_confidence_gate,
+        "ultra_confidence_pick": ultra_confidence_pick,
         "front9_escape_correction": front9_escape_correction,
+        "self_repair_status": self_repair_policy_status(),
+        "ironlaw_full_audit": ironlaw_full_audit_status(),
         "data_integrity_gate": integrity,
         "backtest": backtest_result,
         "candidates": candidates,
@@ -2007,7 +2226,15 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
             "low_hit_regime_shift": "近期實戰命中低於隨機基準或零命中偏高時，啟動漏抓回補、落空降權與模型權重轉換。",
             "external_method_shift": "參考外部預測系統常用的 companion/pair、hot/cold、overdue、balance、backtest，近期勝出模型自動升權。",
             "hit_rate_portfolio": "前九改用整組命中率優化：單號分數、共現配對、區間平衡、錯誤回饋與回測門檻共同決定。",
+            "ultra_confidence_pick": "每期必定輸出1顆最強單號；須由高機率校準、配對共現、交叉模型、非最新開獎號、前九核心與命中率優化共同審核。",
             "front9_escape_correction": "每期檢測命中是否掉到第10到15名；若有外溢，立即將第二層強訊號壓回前九。",
+            "self_repair_after_draw": "每日17:30開獎後立即更新；19:30檢查未更新時啟動自主修復並重跑手機雲端同步。",
+            "daily_ironlaw_schedule": "每日17:30開獎、17:31正式重算發布、19:30兩小時故障門檻、19:31自主修復。",
+            "full_system_audit": "發布前執行ghana39_ironlaw_full_audit.py，檢查CSV、SQLite、JSON、桌面戰報、手機站、雲端來源、排程與自主修復。",
+            "mobile_cloud_pointer": "手機獨立雲端版以version.json與no-store快取守門；開啟、回前景、恢復連線立即檢查新版。",
+            "publish_block_gate": "全系統稽核失敗時，停止公開發布；不得把舊資料、缺區塊戰報或未同步手機頁推上雲端。",
+            "no_post_draw_backfill": "開獎後只能用官方新資料重新計算，不得用上期開獎號倒填假命中。",
+            "monthly_preservation": "每月命中、低機率、強牌組、逐期檢討完整保留，不覆蓋歷史檢討。",
             "strong_single_guard": "最強獨隻1中1不得直接使用最新開獎號，必須通過獨立守門。",
             "transparent_report": "輸出JSON、Markdown與HTML戰報。",
             "no_single_model": "至少8個模型來源合成，不讓單一條件主導。",

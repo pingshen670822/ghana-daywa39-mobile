@@ -153,6 +153,28 @@ def strong_single_candidate(analysis: dict) -> dict:
     return (analysis.get("candidates") or [{}])[0]
 
 
+def ultra_pick(analysis: dict) -> dict:
+    pick = analysis.get("ultra_confidence_pick") or {}
+    if pick.get("number"):
+        return pick
+    single = strong_single_numbers(analysis)
+    return {
+        "status": "strongest_research_signal",
+        "number": single[0] if single else None,
+        "numbers": single,
+        "score": None,
+        "label": "本期最強超高信心高機率號碼",
+        "logic_checks": [],
+        "rule": "以強牌獨隻作為最強研究訊號。",
+    }
+
+
+def ultra_numbers(analysis: dict) -> list[int]:
+    pick = ultra_pick(analysis)
+    numbers = pick.get("numbers") or ([pick.get("number")] if pick.get("number") else [])
+    return [int(number) for number in numbers if number not in (None, "")]
+
+
 def latest_label(analysis: dict) -> str:
     fresh = analysis.get("freshness") or {}
     latest = (analysis.get("latest_draw") or {}).get("draw_date", "-")
@@ -163,6 +185,16 @@ def target_label(analysis: dict) -> str:
     fresh = analysis.get("freshness") or {}
     target = analysis.get("target_draw_date", "-")
     return taiwan_time_label(fresh.get("target_taiwan_safe_update_time") or f"{target} {fresh.get('daily_draw_time_taiwan', '17:30')}")
+
+
+def official_gap_label(analysis: dict) -> str:
+    fresh = analysis.get("freshness") or {}
+    dates = fresh.get("official_missing_draw_dates") or []
+    if not dates:
+        return "無缺口"
+    if len(dates) <= 6:
+        return "、".join(str(date) for date in dates)
+    return f"{dates[0]}..{dates[-1]}（共 {len(dates)} 天）"
 
 
 def route_label(reasons: list[str]) -> str:
@@ -259,6 +291,7 @@ def decorate_analysis(analysis: dict) -> dict:
     }
     analysis["latest_ironlaw"] = {
         "primary_single": (packs.get("strong_single") or {}).get("numbers", top_numbers(analysis, 1)),
+        "ultra_confidence_single": ultra_numbers(analysis),
         "nine_hit_three": top9,
         "high_confidence_numbers": high,
     }
@@ -633,26 +666,154 @@ def current_month_items(analysis: dict, history: list[dict]) -> list[dict]:
 
 def date_ribbon_html(analysis: dict) -> str:
     latest = analysis.get("latest_draw") or {}
+    fresh = analysis.get("freshness") or {}
     history_info = analysis.get("history_completeness") or {}
     date_text = history_info.get("date_range") or history_info.get("range") or history_info.get("status") or "完整"
     rows = [
         ["全歷史資料範圍", compact_status(date_text)],
         ["資料依據台灣可確認時間", latest_label(analysis)],
         ["最新開獎號碼", fmt_numbers(latest.get("numbers", [])) or "-"],
-        ["資料對應開獎日", latest.get("draw_date", "-")],
-        ["下期預測台灣時間", target_label(analysis)],
-        ["下期對應開獎日", analysis.get("target_draw_date", "-")],
+        ["官方最新開獎日", latest.get("draw_date", "-")],
+        ["預測目標台灣開獎時間", target_label(analysis)],
+        ["預測目標開獎日", analysis.get("target_draw_date", "-")],
+        ["日期校正規則", "官方最新日落後時，預測目標改用台灣當前17:30開獎日；官方最新日只作資料依據。"],
+        ["官方資料缺口", official_gap_label(analysis)],
+        ["官方資料狀態", f"{compact_status(fresh.get('status'))} / 落後 {fresh.get('age_days', '-')} 天"],
         ["戰報產生時間", display_time(analysis.get("generated_at_taiwan", "-"))],
     ]
     return '<div class="band date-ribbon"><h2>本報表日期對照</h2>' + table(["項目", "數據"], rows) + "</div>"
 
 
+def report_spec_layout_html(analysis: dict) -> str:
+    rows = [
+        ["01", "開獎資料", "全歷史範圍、最新開獎日、最新號碼、下期台灣時間", "已置頂"],
+        ["02", "539鐵律同級", "每日更新鐵律時間表、全系統稽核、發布封鎖門檻", "硬性置頂"],
+        ["03", "本期明確作戰答案", "明確獨支、2中1、3中1、5中2、9中3、防守避開", "硬性置頂"],
+        ["04", "超高信心推薦", "本期最強單號、強烈推薦狀態、多條件審核", "已置頂"],
+        ["05", "核心決策", "資料狀態、獨隻、九碼核心、高機率信心牌", "固定欄位"],
+        ["06", "強牌組", "獨隻1中1、2中1、3中1、5中2、9中3", "固定欄位"],
+        ["07", "候選分層", "前九核心、第10到第15名第二層備查", "分層清楚"],
+        ["08", "逐號解析", "排名、版路、來源證據、交叉驗算、守門結論", "逐號列出"],
+        ["09", "命中檢討", "上期命中、未命中原因、錯誤模組滾動重算", "開獎後更新"],
+        ["10", "低機率暫避", "5不中、10不中、15不中與誤中檢討", "獨立區塊"],
+        ["11", "月總整理", "每月明細、號碼效率、強牌與低機率月統計", "獨立區塊"],
+        ["12", "系統檢修", "17:30更新、19:30自主修復、手機雲端同步", "固定稽核"],
+    ]
+    return (
+        '<div class="band spec-layout">'
+        "<h2>標準戰報規格導覽</h2>"
+        "<p>本戰報已切到539鐵律同級排列，所有區塊固定分類，不把預測、檢討、低機率與系統稽核混在一起。</p>"
+        f'{table(["順序", "區塊", "必備內容", "狀態"], rows)}'
+        "</div>"
+    )
+
+
+def daily_ironlaw_schedule_html(analysis: dict) -> str:
+    status = analysis.get("self_repair_status") or {}
+    audit = analysis.get("ironlaw_full_audit") or {}
+    rows = [
+        ["每日開獎時間", status.get("daily_draw_time_taiwan", "17:30"), "台灣時間", "開獎後立即抓官方資料，不用舊資料混充。"],
+        ["正式更新時間", status.get("auto_update_task_time_taiwan", "17:31"), "自動排程", "更新CSV、SQLite、JSON、桌面戰報、手機獨立版與雲端來源。"],
+        ["兩小時故障門檻", status.get("self_repair_deadline_taiwan", "19:30"), "自主修復", "若開獎後2小時仍未更新，立即啟動重抓、重算、重同步。"],
+        ["自主修復排程", status.get("self_repair_task_time_taiwan", "19:31"), "每日檢修", "重新檢查官方資料、戰報完整度、手機頁與雲端來源。"],
+        ["手機同步鐵律", f"{status.get('mobile_refresh_seconds', 30)}秒檢查", "version.json", "手機開啟、回到前景、恢復連線時立即重讀最新雲端頁。"],
+        ["發布封鎖", audit.get("status", "pending"), "全系統稽核", "稽核未過不得發布公開版；禁止舊戰報、缺區塊、假資料。"],
+    ]
+    return (
+        '<div class="band ultra-card">'
+        "<h2>539鐵律同級：每日更新鐵律時間表</h2>"
+        "<p><strong>硬規則：</strong>每日17:30開獎後立即更新；19:30仍未更新就啟動自主修復；手機雲端開啟必須直接讀到最新版本。</p>"
+        f'{table(["項目", "時間/狀態", "觸發", "鐵律處理"], rows)}'
+        "</div>"
+    )
+
+
+def decisive_battle_answer_html(analysis: dict) -> str:
+    packs = analysis.get("strong_packs") or {}
+    low = analysis.get("low_probability") or {}
+    pick = ultra_pick(analysis)
+    pack_map = [
+        ("明確獨支 / 獨隻1中1", "strong_single", "超高信心高機率推薦", "必須通過多模型、配對共現、前九核心、非最新開獎號與命中率優化守門。"),
+        ("明確2中1", "two_hit_one", "強牌短包", "以單號強度與拖牌關聯壓縮，列為短包命中觀察。"),
+        ("明確3中1", "three_hit_one", "強牌短包", "多模型交叉與區間平衡共同篩選，避免單一條件主導。"),
+        ("明確5中2", "five_hit_two", "強牌中包", "依回測、近況、漏抓回補與落空降權重排。"),
+        ("明確9中3", "nine_hit_three", "前九核心", "前九為本期主攻層；第10到15名只做外溢備查。"),
+    ]
+    rows = []
+    for label, key, status, rule in pack_map:
+        pack = packs.get(key) or {}
+        numbers = ultra_numbers(analysis) if key == "strong_single" else pack.get("numbers", [])
+        rows.append([label, fmt_numbers(numbers) or "-", status, pack.get("rule") or rule])
+    rows.append(["防守避開", fmt_numbers(low.get("avoid_10") or []) or "-", "低機率10不中", "獨立風控層；低機率不等於絕對不開，誤中會回灌檢討。"])
+    card_rows = [
+        ["最強超高機率號碼", fmt_numbers(ultra_numbers(analysis)) or "-", pick.get("status", "-")],
+        ["前九核心", fmt_numbers(top_numbers(analysis, 9)) or "-", "主攻層"],
+        ["第二層備查", fmt_numbers(top_numbers(analysis, 15)[9:15]) or "-", "只供外溢檢查"],
+    ]
+    return (
+        '<div class="band ultra-card">'
+        "<h2>本期明確作戰答案</h2>"
+        "<p><strong>超高信心高機率強烈推薦</strong>只放多項邏輯共同通過的結果；本區直接列本期主攻與防守答案，不混入檢討文字。</p>"
+        f'{table(["答案", "號碼", "層級", "判定邏輯"], rows)}'
+        "<h3>本期作戰摘要</h3>"
+        f'{table(["項目", "號碼/狀態", "定位"], card_rows)}'
+        "</div>"
+    )
+
+
+def ironlaw_full_audit_html(analysis: dict) -> str:
+    audit = analysis.get("ironlaw_full_audit") or {}
+    rows = [
+        ["全系統稽核狀態", audit.get("status", "pending"), audit.get("rule", "正式發布前必須執行全系統鐵律稽核。")],
+        ["稽核時間", display_time(audit.get("generated_at_taiwan", "-")), "比對資料庫、JSON、戰報、手機頁、雲端來源、排程與自主修復。"],
+        ["通過/失敗/警示", f"{audit.get('passed_count', 0)} / {audit.get('failed_count', 0)} / {audit.get('warning_count', 0)}", "failed_count 必須為0才允許正式公開發布。"],
+        ["最新開獎日", audit.get("latest_draw_date") or (analysis.get("latest_draw") or {}).get("draw_date", "-"), fmt_numbers((analysis.get("latest_draw") or {}).get("numbers", [])) or "-"],
+        ["下期目標日", audit.get("target_draw_date") or analysis.get("target_draw_date", "-"), target_label(analysis)],
+        ["公開手機雲端", audit.get("public_cloud_url", "-"), "手機獨立使用，不依賴本機電腦頁面。"],
+    ]
+    return '<div class="band"><h2>539鐵律同級：全系統稽核結果</h2>' + table(["項目", "結果", "說明"], rows) + "</div>"
+
+
+def ultra_confidence_html(analysis: dict) -> str:
+    pick = ultra_pick(analysis)
+    number = fmt_numbers(ultra_numbers(analysis)) or "-"
+    checks = pick.get("logic_checks") or []
+    rows = [
+        ["強烈推薦單號", number],
+        ["推薦標籤", pick.get("label", "本期最強超高信心高機率號碼")],
+        ["推薦狀態", pick.get("status", "-")],
+        ["綜合分", pick.get("score", "-")],
+        ["候選排名", pick.get("selected_rank", "-")],
+        ["信心指標", pick.get("confidence_index", "-")],
+        ["校準單號強度", f"{pick.get('model_probability_index', '-')}%"],
+        ["配對共現分", pick.get("pair_lift_score", "-")],
+        ["交叉模型數", f"{pick.get('support_models', '-')}/{len(MODEL_LABELS)}"],
+    ]
+    check_rows = [
+        [check.get("item", "-"), check.get("status", "-"), check.get("value", "-")]
+        for check in checks
+    ]
+    return (
+        '<div class="band ultra-card">'
+        "<h2>超高信心高機率推薦</h2>"
+        "<p><strong>本期強烈標註推薦：</strong>只在高機率校準、配對共現、交叉模型、非最新開獎號、前九核心與命中率優化同時進表後才顯示。</p>"
+        f'{table(["項目", "結果"], rows)}'
+        "<h3>推薦邏輯審核</h3>"
+        f'{table(["審核項目", "狀態", "數據"], check_rows, "目前沒有審核資料")}'
+        f'<p><strong>規則：</strong>{esc(pick.get("rule", "-"))}</p>'
+        "</div>"
+    )
+
+
 def core_decision_html(analysis: dict) -> str:
     high_numbers = [item.get("number") for item in (analysis.get("latest_ironlaw") or {}).get("high_confidence_numbers", [])]
+    pick = ultra_pick(analysis)
     rows = [
         ["資料狀態", compact_status((analysis.get("freshness") or {}).get("status"))],
         ["檢查", "已重算"],
         ["下期預測台灣時間", target_label(analysis)],
+        ["最強超高信心高機率", fmt_numbers(ultra_numbers(analysis)) or "-"],
+        ["強烈推薦狀態", f"{pick.get('status', '-')} / 守門 {pick.get('gate_status', '-')}"],
         ["獨隻", fmt_numbers(strong_single_numbers(analysis)) or "-"],
         ["九碼核心", fmt_numbers(top_numbers(analysis, 9)) or "-"],
         ["高機率信心牌", fmt_numbers(high_numbers) or "本期未過正式高信心守門"],
@@ -925,6 +1086,21 @@ def hit_rate_optimizer_html(analysis: dict) -> str:
     return '<div class="band warn"><h2>命中率強化優化</h2><p>本區檢查高機率是否真的通過回測與整組命中率門檻；未通過不再硬標高機率。</p>' + table(["項目", "內容", "數據", "處理"], rows) + "</div>"
 
 
+def self_repair_html(analysis: dict) -> str:
+    status = analysis.get("self_repair_status") or {}
+    sync = status.get("sync_status") or {}
+    repair = status.get("repair_status") or {}
+    rows = [
+        ["每日開獎", status.get("daily_draw_time_taiwan", "17:30"), "台灣時間", "開獎後立即抓官方資料並重算"],
+        ["正式更新", status.get("auto_update_task_time_taiwan", "17:31"), "排程", "重建桌面戰報、手機獨立頁與雲端資料"],
+        ["自主修復門檻", status.get("self_repair_deadline_taiwan", "19:30"), "兩小時未更新", "立即啟動故障檢查與重跑"],
+        ["自主修復排程", status.get("self_repair_task_time_taiwan", "19:31"), repair.get("status", "待首次紀錄"), repair.get("message", status.get("rule", "-"))],
+        ["手機同步", f"{status.get('mobile_refresh_seconds', 30)}秒檢查", "開啟/回前景/恢復連線", status.get("mobile_open_behavior", "-")],
+        ["最近同步狀態", sync.get("status", "待首次紀錄"), sync.get("official_latest_draw_date", "-"), sync.get("updated_at_taiwan", "-")],
+    ]
+    return '<div class="band"><h2>每日更新與自主修復系統</h2>' + table(["項目", "時間/狀態", "觸發", "處理"], rows) + "</div>"
+
+
 def dual_track_standard_html(analysis: dict, history: list[dict]) -> str:
     front9 = analysis.get("front9_escape_correction") or {}
     rows = [
@@ -979,9 +1155,16 @@ def standard_full_body(analysis: dict, settled: dict, history: list[dict]) -> st
     decorate_analysis(analysis)
     return (
         date_ribbon_html(analysis)
+        + report_spec_layout_html(analysis)
+        + daily_ironlaw_schedule_html(analysis)
+        + decisive_battle_answer_html(analysis)
+        + ironlaw_full_audit_html(analysis)
+        + ultra_confidence_html(analysis)
         + core_decision_html(analysis)
         + super_single_html(analysis)
         + standard_candidate_html(analysis, history)
+        + hit_rate_optimizer_html(analysis)
+        + dual_track_standard_html(analysis, history)
         + standard_verification_html(analysis)
         + standard_pack_html(analysis)
         + hits_html(settled, history)
@@ -998,8 +1181,6 @@ def standard_full_body(analysis: dict, settled: dict, history: list[dict]) -> st
         + "</div>"
         + formula_standard_html(analysis)
         + prediction_rebuild_standard_html(analysis, settled)
-        + hit_rate_optimizer_html(analysis)
-        + dual_track_standard_html(analysis, history)
         + original_rank_html(analysis)
         + recent_period_compare_html(history)
         + model_effectiveness_html(analysis)
@@ -1007,7 +1188,9 @@ def standard_full_body(analysis: dict, settled: dict, history: list[dict]) -> st
         + model_lifecycle_html(analysis, history)
         + similarity_audit_standard_html(analysis, history)
         + hard_iron_html(analysis)
+        + ironlaw_full_audit_html(analysis)
         + stability_governor_html(analysis, settled)
+        + self_repair_html(analysis)
         + reality_gate_html(analysis)
         + monthly_breakthrough_html(analysis, history)
     )
@@ -1181,8 +1364,11 @@ def stability_governor_html(analysis: dict, settled: dict) -> str:
     optimizer = analysis.get("hit_rate_optimizer") or {}
     gate = analysis.get("high_confidence_gate") or {}
     external = analysis.get("external_method_weight_shift") or {}
+    repair = analysis.get("self_repair_status") or {}
     rows = [
         ["已套用修正", "最新開獎後已重新排序、回測、同步手機獨立頁"],
+        ["已套用修正", f"每日更新：{repair.get('auto_update_task_time_taiwan', '17:31')}；自主修復：{repair.get('self_repair_deadline_taiwan', '19:30')}後檢查"],
+        ["已套用修正", f"手機雲端：開啟即檢查版本，每 {repair.get('mobile_refresh_seconds', 30)} 秒自動確認一次"],
         ["已套用修正", f"外部模式權重：{external.get('status', '-')}；配對Top9 {external.get('pair_lift_top9_avg', '-')}"],
         ["已套用修正", f"命中率強化：拉進 {fmt_numbers(optimizer.get('promoted_numbers', [])) or '-'}；降下 {fmt_numbers(optimizer.get('demoted_numbers', [])) or '-'}"],
         ["已套用修正", f"高機率校準：{gate.get('status', '-')}；Top9 {gate.get('top9_avg_hits', '-')} / 隨機 {gate.get('random_top9_expectation', '-')}"],
@@ -1250,22 +1436,28 @@ def monthly_breakthrough_html(analysis: dict, history: list[dict]) -> str:
 def super_single_html(analysis: dict) -> str:
     single = strong_single_numbers(analysis)
     item = strong_single_candidate(analysis)
+    pick = ultra_pick(analysis)
     pack = ((analysis.get("strong_packs") or {}).get("strong_single") or {})
     audit = pack.get("selection_audit") or {}
     support = f"{item.get('support_models', '-')}/{item.get('verification_denominator', len(MODEL_LABELS))}"
+    check_rows = [
+        [check.get("item", "-"), check.get("status", "-"), check.get("value", "-")]
+        for check in (pick.get("logic_checks") or [])
+    ]
     return f"""
     <div class="band singlebox">
-      <h2>最強獨隻1中1</h2>
+      <h2>最強獨隻1中1 / 超高信心單號</h2>
       <div class="grid">
-        <div class="card hot-card"><div class="label">獨隻號碼</div><div class="value num">{esc(fmt_numbers(single) or "-")}</div></div>
-        <div class="card"><div class="label">判定</div><div class="value">獨立守門獨隻</div></div>
+        <div class="card hot-card"><div class="label">強烈推薦單號</div><div class="value num">{esc(fmt_numbers(ultra_numbers(analysis) or single) or "-")}</div></div>
+        <div class="card"><div class="label">判定</div><div class="value">{esc(pick.get("status", "獨立守門獨隻"))}</div></div>
         <div class="card"><div class="label">獨隻總分</div><div class="value">{esc(score_percent(item))}</div></div>
         <div class="card"><div class="label">模型機率</div><div class="value">{esc(probability_percent(item))}</div></div>
         <div class="card"><div class="label">交叉層數</div><div class="value">{esc(support)}</div></div>
       </div>
-      <p><strong>運算邏輯：</strong>官方歷史資料庫、多模型交叉驗算、前九名核心壓縮、12/30/90期錯誤模組滾動修正。</p>
+      <p><strong>運算邏輯：</strong>官方歷史資料庫、多模型交叉驗算、前九名核心壓縮、配對共現、命中率優化、12/30/90期錯誤模組滾動修正。</p>
       <p><strong>來源模型：</strong>{esc("、".join((item.get("reasons") or [])[:8]))}</p>
       <p><strong>獨隻守門：</strong>{esc(audit.get("rule", "禁止直接用最新開獎號混充"))}；狀態 {esc(audit.get("status", "-"))}；候選排名 {esc(audit.get("selected_rank", "-"))}</p>
+      {table(["審核項目", "狀態", "數據"], check_rows, "目前沒有審核資料")}
       <p><strong>風控：</strong>未過正式門檻時只列觀察，不包裝成保證。</p>
     </div>
     """
@@ -1286,6 +1478,7 @@ def desktop_css() -> str:
     .card{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fbfdff;}
     .hot-card{border-color:#fecaca;background:#fff1f2;}
     .singlebox{border-color:#fecaca;background:#fffafa;}
+    .ultra-card{border:3px solid #b91c1c;background:#fff1f2;}
     .warn{background:#fff7ed;border-color:#fed7aa;}
     .date-ribbon{background:#ecfeff;border-color:#67e8f9;}
     .label{font-size:13px;color:#64748b;font-weight:700;}
@@ -1457,6 +1650,7 @@ def build_markdown(analysis: dict, settled: dict, history: list[dict]) -> str:
         "## 核心決策",
         f"- 資料狀態：{compact_status((analysis.get('freshness') or {}).get('status'))}",
         "- 檢查：已重算",
+        f"- 超高信心高機率推薦：{fmt_numbers(ultra_numbers(analysis)) or '-'}（{ultra_pick(analysis).get('status', '-')}）",
         f"- 獨隻：{fmt_numbers(strong_single_numbers(analysis))}",
         f"- 九碼核心：{fmt_numbers(top_numbers(analysis, 9))}",
         f"- 高機率信心牌：{fmt_numbers([item.get('number') for item in (analysis.get('latest_ironlaw') or {}).get('high_confidence_numbers', [])]) or '本期未過正式高信心守門'}",
@@ -1493,6 +1687,7 @@ def mobile_css() -> str:
     main{padding:12px;max-width:720px;margin:0 auto}
     .band,.card,.number-card,.pack-card{background:white;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;overflow:auto}
     .launch-panel{border:3px solid #166534;background:#f0fdf4}
+    .ultra-card{border:3px solid #b91c1c;background:#fff1f2}
     .warn{background:#fff7ed;border-color:#fed7aa}
     .grid{display:grid;gap:10px}
     .label{color:var(--muted);font-size:13px;font-weight:800}
@@ -1586,7 +1781,7 @@ def mobile_script(version: str, home: str = "home.html") -> str:
     }}
     async function autoRefreshIfStale() {{
       try {{
-        const res = await fetch('version.json?check=' + Date.now(), {{ cache: 'no-store' }});
+        const res = await fetch('version.json?check=' + Date.now(), {{ cache: 'no-store', headers: {{ 'Cache-Control': 'no-cache' }} }});
         if (!res.ok) return;
         const data = await res.json();
         const stamp = String(data.version || data.generated_at_taiwan || '').replace(/\\D/g, '').slice(0, 14);
@@ -1597,6 +1792,8 @@ def mobile_script(version: str, home: str = "home.html") -> str:
         }}
       }} catch (err) {{}}
     }}
+    autoRefreshIfStale();
+    window.addEventListener('pageshow', autoRefreshIfStale);
     if ('serviceWorker' in navigator) {{
       window.addEventListener('load', function(){{
         navigator.serviceWorker.register('service-worker.js?v={esc(version)}', {{ updateViaCache: 'none' }}).then(function(reg){{ reg.update(); }}).catch(function(){{}});
@@ -1649,7 +1846,8 @@ def mobile_shell(title: str, active: str, analysis: dict, body: str) -> str:
 <header>
   <h1>{esc(title)}</h1>
   <p>非洲迦納彩 Daywa 5/39 Direct / 版本 {esc(version)}</p>
-  <p>最新 {esc(latest.get('draw_date', '-'))}：{esc(fmt_numbers(latest.get('numbers', [])))}；預測 {esc(analysis.get('target_draw_date', '-'))}</p>
+  <p>官方最新 {esc(latest.get('draw_date', '-'))}：{esc(fmt_numbers(latest.get('numbers', [])))}；預測目標 {esc(analysis.get('target_draw_date', '-'))} 17:30 台灣時間</p>
+  <p>官方資料缺口：{esc(official_gap_label(analysis))}</p>
   <p>歷史資料：{esc(history_status)} / 共 {esc(analysis.get('draw_count', '-'))} 筆</p>
 </header>
 <main>
@@ -1679,11 +1877,17 @@ def mobile_prediction_body(analysis: dict, history: list[dict]) -> str:
     latest_tw = latest_label(analysis)
     target_tw = target_label(analysis)
     high = [item.get("number") for item in (analysis.get("latest_ironlaw") or {}).get("high_confidence_numbers", [])]
+    pick = ultra_pick(analysis)
     return f"""
+    {daily_ironlaw_schedule_html(analysis)}
+    {decisive_battle_answer_html(analysis)}
+    {ultra_confidence_html(analysis)}
     <section class="band">
       <h2>核心決策</h2>
       <div class="grid">
-        <div class="card hot-card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(strong_single_numbers(analysis)))}</div></div>
+        <div class="card hot-card"><div class="label">最強超高信心</div><div class="value">{esc(fmt_numbers(ultra_numbers(analysis)) or "-")}</div></div>
+        <div class="card"><div class="label">推薦狀態</div><div class="value">{esc(pick.get("status", "-"))}</div></div>
+        <div class="card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(strong_single_numbers(analysis)))}</div></div>
         <div class="card"><div class="label">九碼核心</div><div class="value">{esc(fmt_numbers(top_numbers(analysis, 9)))}</div></div>
         <div class="card"><div class="label">資料依據台灣時間</div><div class="value">{esc(latest_tw)}</div></div>
         <div class="card"><div class="label">預測台灣時間</div><div class="value">{esc(target_tw)}</div></div>
@@ -1692,9 +1896,12 @@ def mobile_prediction_body(analysis: dict, history: list[dict]) -> str:
     </section>
     {super_single_html(analysis)}
     <section class="band"><h2>下期研究候選前9名</h2>{table(["號碼", "資料依據台灣時間", "預測台灣時間", "排名", "分數", "信心", "機率", "遺漏", "驗算數", "驗算來源"], [[row[0], latest_tw, target_tw] + row[1:] for row in candidate_rows(analysis, 9)])}</section>
+    {hit_rate_optimizer_html(analysis)}
     <section class="band warn"><h2>第10到第15名第二層備查</h2>{table(["排名", "號碼", "分數", "信心", "機率", "交叉驗算", "穩定與遺漏", "成熟度", "定位"], backup_rank_rows(analysis))}</section>
     <section class="band"><h2>生成號碼逐號驗算</h2>{table(["號碼", "資料依據台灣時間", "預測台灣時間", "排名", "版路分類", "來源證據", "交叉驗算", "穩定與遺漏", "守門驗證", "結論"], verification_rows(analysis, 9))}</section>
     <section class="band"><h2>強牌組精算</h2>{table(["類型", "號碼", "狀態", "回測期", "達標率", "平均命中", "判定"], pack_rows(analysis))}</section>
+    {ironlaw_full_audit_html(analysis)}
+    {self_repair_html(analysis)}
     """
 
 
@@ -1713,7 +1920,7 @@ def build_mobile_pages(analysis: dict, settled: dict, history: list[dict]) -> di
     )
     monthly_body = monthly_html(analysis, history)
     models_body = formula_lab_html(analysis) + prediction_rebuild_html(analysis, settled) + dual_track_html(analysis, history) + '<section class="band">' + table(["模型", "回測期", "前五平均", "前十平均", "前十五平均", "前十優勢"], model_rows(analysis)) + "</section>"
-    system_body = similarity_audit_html(analysis, history) + hard_iron_html(analysis) + stability_governor_html(analysis, settled) + reality_gate_html(analysis) + monthly_breakthrough_html(analysis, history)
+    system_body = similarity_audit_html(analysis, history) + hard_iron_html(analysis) + ironlaw_full_audit_html(analysis) + stability_governor_html(analysis, settled) + self_repair_html(analysis) + reality_gate_html(analysis) + monthly_breakthrough_html(analysis, history)
     full_body = standard_full_body(analysis, settled, history)
     pages = {
         "index.html": mobile_shell("迦納彩39 完整戰報", "full", analysis, full_body),
@@ -1792,6 +1999,11 @@ def version_payload(analysis: dict) -> dict:
         "latest_draw_date": latest.get("draw_date"),
         "latest_numbers": latest.get("numbers"),
         "target_draw_date": analysis.get("target_draw_date"),
+        "ultra_confidence_pick": analysis.get("ultra_confidence_pick"),
+        "high_confidence_gate": analysis.get("high_confidence_gate"),
+        "hit_rate_optimizer": analysis.get("hit_rate_optimizer"),
+        "self_repair_status": analysis.get("self_repair_status"),
+        "ironlaw_full_audit": analysis.get("ironlaw_full_audit"),
         "independent_mobile": True,
         "standard": "ghana39",
     }

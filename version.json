@@ -1,6 +1,6 @@
 {
-  "version": "20261006082422",
-  "generated_at_taiwan": "2026-10-06T08:24:22+08:00",
+  "version": "20261006084402",
+  "generated_at_taiwan": "2026-10-06T08:44:02+08:00",
   "latest_draw_date": "2026-09-30",
   "latest_numbers": [
     3,
@@ -9,7 +9,7 @@
     32,
     33
   ],
-  "target_draw_date": "2026-10-01",
+  "target_draw_date": "2026-10-06",
   "ultra_confidence_pick": {
     "status": "strongest_research_signal",
     "number": 22,
@@ -155,7 +155,7 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-06T08:22:42+08:00",
+    "generated_at_taiwan": "2026-10-06T08:24:35+08:00",
     "latest_draw_date": "2026-09-30",
     "target_draw_date": "2026-10-01",
     "passed_count": 33,

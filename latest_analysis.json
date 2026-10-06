@@ -1,7 +1,7 @@
 {
   "engine_version": "ghana_daywa39_precision_spec_v5_hit_rate_portfolio_20260804",
-  "generated_at_taiwan": "2026-10-06T08:24:22+08:00",
-  "generated_at_draw_timezone": "2026-10-06T08:24:22+08:00",
+  "generated_at_taiwan": "2026-10-06T08:44:02+08:00",
+  "generated_at_draw_timezone": "2026-10-06T08:44:02+08:00",
   "game_spec": {
     "code": "GH_DAYWA39",
     "display_name": "非洲迦納彩 Daywa 5/39 Direct",
@@ -26,7 +26,7 @@
     ],
     "source": "NLA official winning-numbers:5/39 Direct Tuesday:draw#265"
   },
-  "target_draw_date": "2026-10-01",
+  "target_draw_date": "2026-10-06",
   "draw_count": 756,
   "history_metadata": {
     "fetch_summary": {
@@ -641,8 +641,20 @@
     "taiwan_today": "2026-10-06",
     "latest_draw_date": "2026-09-30",
     "age_days": 6,
-    "target_draw_date": "2026-10-01",
-    "target_taiwan_safe_update_time": "2026-10-01 17:30",
+    "target_draw_date": "2026-10-06",
+    "target_taiwan_safe_update_time": "2026-10-06 17:30",
+    "expected_current_draw_date": "2026-10-06",
+    "official_missing_draw_dates": [
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-03",
+      "2026-10-04",
+      "2026-10-05",
+      "2026-10-06"
+    ],
+    "official_gap_days": 6,
+    "is_official_result_lagging": true,
+    "target_basis": "taiwan_current_draw_date",
     "daily_draw_time_taiwan": "17:30",
     "latest_taiwan_safe_update_time": "2026-09-30 17:30"
   },
@@ -1754,12 +1766,12 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-06T08:24:35+08:00",
-    "passed_count": 33,
+    "generated_at_taiwan": "2026-10-06T08:44:10+08:00",
+    "passed_count": 34,
     "failed_count": 0,
     "warning_count": 0,
     "latest_draw_date": "2026-09-30",
-    "target_draw_date": "2026-10-01",
+    "target_draw_date": "2026-10-06",
     "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
     "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
     "rule": "539鐵律同級全系統稽核：資料、戰報、手機雲端、排程、自主修復、禁用舊內容全部過關才允許發布。"
@@ -3925,11 +3937,11 @@
   "date_cycle_numbers": [
     37,
     10,
-    1,
-    26,
-    12,
-    11,
-    9
+    6,
+    31,
+    17,
+    16,
+    14
   ],
   "ironlaw_spec": {
     "data_first": "SQLite與CSV先更新，才產生候選號。",

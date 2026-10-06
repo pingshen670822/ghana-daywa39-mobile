@@ -1,0 +1,41 @@
+name: Ghana39 Cloud Self Repair
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "35 9 * * *"
+    - cron: "35 11 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ghana39-cloud-self-repair
+  cancel-in-progress: false
+
+jobs:
+  update-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout public cloud repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Ghana39 cloud self repair
+        run: python system/cloud_self_repair.py
+
+      - name: Commit repaired cloud report
+        run: |
+          git config user.name "Ghana39 Cloud Self Repair"
+          git config user.email "ghana39-cloud-self-repair@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No cloud report changes."
+          else
+            git commit -m "Cloud self repair Ghana39 report $(date -u +'%Y%m%d%H%M%S')"
+            git push
+          fi
