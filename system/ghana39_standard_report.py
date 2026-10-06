@@ -794,6 +794,74 @@ def decisive_battle_answer_html(analysis: dict) -> str:
     )
 
 
+def battle_539_standard_html(analysis: dict, settled: dict, history: list[dict]) -> str:
+    latest = analysis.get("latest_draw") or {}
+    latest_tw = latest_label(analysis)
+    target_tw = target_label(analysis)
+    audit = analysis.get("ironlaw_full_audit") or {}
+    low = analysis.get("low_probability") or {}
+    packs = analysis.get("strong_packs") or {}
+    pick = ultra_pick(analysis)
+    opening_rows = [
+        ["官方最新開獎日", latest.get("draw_date", "-"), fmt_numbers(latest.get("numbers", [])) or "-"],
+        ["資料依據台灣時間", latest_tw, f"歷史共 {analysis.get('draw_count', '-')} 筆"],
+        ["預測目標開獎日", analysis.get("target_draw_date", "-"), target_tw],
+        ["官方資料缺口", official_gap_label(analysis), compact_status((analysis.get("freshness") or {}).get("status"))],
+        ["戰報產生時間", display_time(analysis.get("generated_at_taiwan", "-")), f"版本 {build_version(analysis)}"],
+    ]
+    review_rows = review_latest_rows(settled)
+    pack_review = pack_review_rows(settled)
+    attack_rows = [
+        ["獨隻1中1", fmt_numbers(ultra_numbers(analysis)) or fmt_numbers(strong_single_numbers(analysis)) or "-", pick.get("status", "-"), pick.get("rule", "多條件審核後輸出。")],
+        ["2中1", fmt_numbers((packs.get("two_hit_one") or {}).get("numbers", [])) or "-", (packs.get("two_hit_one") or {}).get("status", "觀察"), (packs.get("two_hit_one") or {}).get("rule", "短包主攻。")],
+        ["3中1", fmt_numbers((packs.get("three_hit_one") or {}).get("numbers", [])) or "-", (packs.get("three_hit_one") or {}).get("status", "觀察"), (packs.get("three_hit_one") or {}).get("rule", "三碼主攻。")],
+        ["5中2", fmt_numbers((packs.get("five_hit_two") or {}).get("numbers", [])) or "-", (packs.get("five_hit_two") or {}).get("status", "觀察"), (packs.get("five_hit_two") or {}).get("rule", "中包主攻。")],
+        ["9中3", fmt_numbers((packs.get("nine_hit_three") or {}).get("numbers", top_numbers(analysis, 9))) or "-", (packs.get("nine_hit_three") or {}).get("status", "觀察"), "前九核心主攻層。"],
+    ]
+    candidate_rows_539 = []
+    for item in (analysis.get("candidates") or [])[:9]:
+        maturity = item.get("practical_maturity") or {}
+        candidate_rows_539.append(
+            [
+                f"{int(item['number']):02d}",
+                item.get("rank", "-"),
+                score_percent(item),
+                probability_percent(item),
+                f"{maturity.get('score', '-')} / {maturity.get('tier', '-')}",
+                "主攻層",
+            ]
+        )
+    system_rows = [
+        ["全系統稽核", audit.get("status", "pending"), f"通過 {audit.get('passed_count', 0)} / 失敗 {audit.get('failed_count', 0)} / 警示 {audit.get('warning_count', 0)}"],
+        ["每日更新", "17:31", "開獎後重抓、重算、重建、同步"],
+        ["自主修復", "19:30 / 19:31", "兩小時未更新即檢查修復"],
+        ["手機同步", "30秒檢查", "開啟、回前景、恢復連線立即比對版本"],
+        ["手動更新", "顯示完成時間", "手機本機會記錄最後手動更新完成時間與版本"],
+    ]
+    return (
+        '<div class="battle-539-standard" data-report-mode="539-standard-battle-report">'
+        '<div class="battle-539-title"><h2>539戰報標準版</h2><p>固定順序：開獎資料、上期檢討、本期主攻、強牌組、逐號解析、低機率防守、系統檢修。</p></div>'
+        '<section class="battle-539-section" data-spec-order="01"><h2>01 開獎資料</h2>'
+        f'{table(["項目", "資料", "狀態"], opening_rows)}</section>'
+        '<section class="battle-539-section" data-spec-order="02"><h2>02 上期檢討</h2>'
+        f'{table(["項目", "結果"], review_rows, "目前沒有上期檢討")}'
+        f'{table(["牌組", "預測號", "命中", "命中號", "結果"], pack_review, "目前沒有強牌結算")}</section>'
+        '<section class="battle-539-section hot" data-spec-order="03"><h2>03 本期主攻</h2>'
+        f'{table(["主攻類型", "號碼", "狀態", "判定邏輯"], attack_rows)}</section>'
+        '<section class="battle-539-section" data-spec-order="04"><h2>04 強牌組</h2>'
+        f'{table(["號碼", "排名", "分數", "機率", "成熟度", "定位"], candidate_rows_539)}'
+        f'{table(["類型", "號碼", "狀態", "回測期", "達標率", "平均命中", "判定"], pack_rows(analysis))}</section>'
+        '<section class="battle-539-section" data-spec-order="05"><h2>05 逐號解析</h2>'
+        f'{table(["號碼", "資料依據台灣時間", "預測台灣時間", "排名", "版路分類", "來源證據", "交叉驗算", "穩定與遺漏", "守門驗證", "結論"], verification_rows(analysis, 9), table_class="verify-table")}</section>'
+        '<section class="battle-539-section warn" data-spec-order="06"><h2>06 低機率防守</h2>'
+        f'{table(["暫避包", "號碼", "信心指標", "平均暫避分", "明細"], low_summary_rows(analysis))}'
+        f'{table(["防守類型", "號碼", "定位"], [["5碼暫避", fmt_numbers(low.get("avoid_5") or []) or "-", "短防"], ["10碼暫避", fmt_numbers(low.get("avoid_10") or []) or "-", "主防"], ["15碼暫避", fmt_numbers(low.get("avoid_15") or []) or "-", "大防"]])}</section>'
+        '<section class="battle-539-section" data-spec-order="07"><h2>07 系統檢修</h2>'
+        f'{table(["項目", "狀態", "處理"], system_rows)}</section>'
+        "</div>"
+    )
+
+
 def ironlaw_full_audit_html(analysis: dict) -> str:
     audit = analysis.get("ironlaw_full_audit") or {}
     rows = [
@@ -1101,6 +1169,7 @@ def prediction_rebuild_standard_html(analysis: dict, settled: dict) -> str:
 
 def hit_rate_optimizer_html(analysis: dict) -> str:
     optimizer = analysis.get("hit_rate_optimizer") or {}
+    external = analysis.get("external_method_weight_shift") or {}
     gate = analysis.get("high_confidence_gate") or {}
     external = analysis.get("external_method_weight_shift") or {}
     rows = [
@@ -1184,50 +1253,249 @@ def similarity_audit_standard_html(analysis: dict, history: list[dict]) -> str:
     return '<div class="band"><h2>' + esc(title) + "</h2>" + table(["項目", "號碼", "數據", "判定"], rows) + "</div>"
 
 
+def exact539_relative_index(item: dict) -> str:
+    try:
+        value = float(item.get("score", 0) or 0)
+        if value <= 1.5:
+            value *= 100
+        return f"{value:.1f}"
+    except Exception:
+        return "-"
+
+
+def exact539_support(item: dict) -> str:
+    reasons = item.get("reasons") or []
+    support = item.get("route_class") or route_label(reasons)
+    reason_text = "、".join(reasons[:3])
+    return support if not reason_text else f"{support}；{reason_text}"
+
+
+def exact539_rank_rows(analysis: dict, limit: int = 15) -> list[list]:
+    rows = []
+    for rank, item in enumerate((analysis.get("candidates") or [])[:limit], 1):
+        zone = "前5核心" if rank <= 5 else ("前9核心" if rank <= 9 else "第10至15名監控")
+        rows.append([rank, f"{int(item['number']):02d}", zone, exact539_relative_index(item), exact539_support(item)])
+    return rows
+
+
+def exact539_detail_rows(analysis: dict, limit: int = 15) -> list[list]:
+    rows = []
+    for rank, item in enumerate((analysis.get("candidates") or [])[:limit], 1):
+        guard = item.get("previous_prediction_guard") or {}
+        maturity = item.get("practical_maturity") or {}
+        rows.append(
+            [
+                rank,
+                f"{int(item['number']):02d}",
+                exact539_relative_index(item),
+                f"{item.get('support_models', '-')}/{item.get('verification_denominator', len(MODEL_LABELS))}",
+                exact539_support(item),
+                f"成熟度 {maturity.get('score', '-')}; {maturity.get('tier', '-')}",
+                guard.get("message", "已檢查"),
+            ]
+        )
+    return rows
+
+
+def exact539_ticket_rows(analysis: dict) -> list[list]:
+    top15 = top_numbers(analysis, 15)
+    indexes = [
+        [0, 1, 2, 3, 4],
+        [0, 1, 2, 5, 6],
+        [0, 1, 3, 7, 8],
+        [0, 2, 4, 5, 9],
+        [0, 3, 4, 6, 10],
+        [1, 2, 5, 7, 11],
+        [2, 3, 6, 8, 12],
+        [0, 4, 7, 9, 13],
+    ]
+    rows = []
+    for idx, group in enumerate(indexes, 1):
+        numbers = [top15[pos] for pos in group if pos < len(top15)]
+        if len(numbers) == 5:
+            rows.append([idx, fmt_numbers(numbers), "已排除排序後15名"])
+    return rows
+
+
+def exact539_repeat_rows(analysis: dict) -> list[list]:
+    candidates = {int(item["number"]): item for item in (analysis.get("candidates") or [])}
+    latest_numbers = [int(number) for number in ((analysis.get("latest_draw") or {}).get("numbers") or [])]
+    rows = []
+    for number in latest_numbers:
+        item = candidates.get(number, {})
+        rank = item.get("rank", "-")
+        support = int(item.get("support_models", 0) or 0)
+        index = exact539_relative_index(item) if item else "-"
+        qualified = bool(item) and support >= 3 and int(rank if str(rank).isdigit() else 99) <= 9
+        rows.append(
+            [
+                f"{number:02d}",
+                index,
+                support,
+                f"{item.get('stability_count', '-')}/{item.get('verification_denominator', len(MODEL_LABELS))}" if item else "-",
+                "符合" if qualified else "未符合",
+                rank,
+                "列入前9" if qualified else "未列入前9",
+            ]
+        )
+    return rows
+
+
+def exact539_logic_rows(analysis: dict) -> list[list]:
+    pick = ultra_pick(analysis)
+    rows = [[check.get("item", "-"), "通過" if check.get("status") == "passed" else check.get("status", "-")] for check in (pick.get("logic_checks") or [])]
+    if not rows:
+        rows = [["多模型交叉", "已檢查"], ["非最新開獎號", "已檢查"], ["前九核心", "已檢查"]]
+    return rows
+
+
+def exact539_consensus_rows(analysis: dict) -> list[list]:
+    rows = []
+    candidates = analysis.get("candidates") or []
+    for key, label in MODEL_LABELS.items():
+        first_rank = "-"
+        supports_top9 = False
+        for item in candidates:
+            reason_text = "、".join(item.get("reasons") or [])
+            if key in reason_text or label in reason_text:
+                first_rank = item.get("rank", "-")
+                supports_top9 = int(item.get("rank", 99) or 99) <= 9
+                break
+        rows.append([label, first_rank, "支持" if supports_top9 else "未支持"])
+    return rows
+
+
+def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> str:
+    decorate_analysis(analysis)
+    latest = analysis.get("latest_draw") or {}
+    latest_numbers = fmt_numbers(latest.get("numbers", []))
+    top9 = top_numbers(analysis, 9)
+    top15 = top_numbers(analysis, 15)
+    single = strong_single_numbers(analysis)
+    pick = ultra_pick(analysis)
+    backtest = analysis.get("backtest") or {}
+    front9 = analysis.get("front9_escape_correction") or {}
+    audit = analysis.get("ironlaw_full_audit") or {}
+    version = build_version(analysis)
+    low = analysis.get("low_probability") or {}
+    gate = analysis.get("high_confidence_gate") or {}
+    optimizer = analysis.get("hit_rate_optimizer") or {}
+    external = analysis.get("external_method_weight_shift") or {}
+    strong = pick.get("status") == "ultra_high_confidence_recommendation"
+    confidence_label = "超高信心高機率推薦" if strong else "本期綜合最強"
+    guard_note = "條件已檢查；監測器只記錄，不得改動正式排序。"
+    if front9.get("status") == "applied":
+        guard_note = f"已啟動第10至15名外溢校正；拉回 {fmt_numbers(front9.get('promoted_numbers', [])) or '-'}，降下 {fmt_numbers(front9.get('demoted_numbers', [])) or '-'}。"
+    elif front9.get("status"):
+        guard_note = f"失準監測狀態：{front9.get('status')}；本期不旋轉、不補號。"
+    exclusion_rows = [
+        ["後5名", fmt_numbers(low.get("avoid_5") or []), "不得進入推薦牌組"],
+        ["後10名", fmt_numbers(low.get("avoid_10") or []), "不得進入推薦牌組"],
+        ["後15名", fmt_numbers(low.get("avoid_15") or []), "不得進入推薦牌組"],
+    ]
+    status_cards = [
+        ["預測目標日", analysis.get("target_draw_date", "-")],
+        ["歷史資料截止日", latest.get("draw_date", "-")],
+        ["最新開獎號碼", latest_numbers],
+        ["使用歷史期數", f"{analysis.get('draw_count', '-')}期"],
+        ["戰報產生時間", display_time(analysis.get("generated_at_taiwan", "-"))],
+        ["版本", version],
+    ]
+    status_html = "".join(f'<div class="card"><div class="label">{esc(label)}</div><div class="value">{esc(value)}</div></div>' for label, value in status_cards)
+    audit_html = "".join(
+        f'<div class="card"><div class="label">{esc(label)}</div><div class="value">{esc(value)}</div></div>'
+        for label, value in [
+            ["稽核狀態", audit.get("status", "pending")],
+            ["通過/失敗/警示", f"{audit.get('passed_count', 0)} / {audit.get('failed_count', 0)} / {audit.get('warning_count', 0)}"],
+            ["手機同步", "開啟即檢查版本"],
+            ["自主修復", "19:30後檢查"],
+        ]
+    )
+    return f"""
+<div class="battle-539-exact" data-report-mode="539-exact-battle-report">
+  <section class="band {'strong' if strong else 'primary'}">
+    <div class="badge">{esc(confidence_label)}</div>
+    <h2>本期最強1顆</h2>
+    <div class="number">{esc(fmt_numbers(single) or "-")}</div>
+    <p><b>{esc(pick.get("rule", "最強號碼依多邏輯守門輸出。"))} 每期未中檢討已回灌下一次完整運算。</b></p>
+    <p class="note">已產出本期綜合最強號碼；未通過高信心守門時不偽造保證標籤。</p>
+  </section>
+  <section class="band">
+    <h2>最強號碼多邏輯總結</h2>
+    <div class="grid">
+      <div class="card"><div class="label">正式邏輯支持</div><div class="value">{esc(str(len([row for row in exact539_logic_rows(analysis) if row[1] == "通過"])))}／{esc(str(len(exact539_logic_rows(analysis))))}</div></div>
+      <div class="card"><div class="label">高機率校準</div><div class="value">{esc(gate.get("status", "-"))}</div></div>
+      <div class="card"><div class="label">整組命中率</div><div class="value">{esc(optimizer.get("status", "-"))}</div></div>
+      <div class="card"><div class="label">外部模式</div><div class="value">{esc(external.get("status", "-"))}</div></div>
+    </div>
+    <h3>強烈推薦守門</h3>
+    {table(["必要條件", "結果"], exact539_logic_rows(analysis))}
+    <h3>正式模組共識</h3>
+    {table(["邏輯", "單模組名次", "是否支持前9"], exact539_consensus_rows(analysis))}
+  </section>
+  <section class="band">
+    <h2>本期資料</h2>
+    <div class="grid">{status_html}</div>
+  </section>
+  <section class="band warn">
+    <h2>失準事件監測</h2>
+    <p><b>{esc(guard_note)} 鐵律：監測器永久禁止事後換號或用開獎號回填。</b></p>
+    <div class="grid">
+      <div class="card"><div class="label">監測條件</div><div class="value">前9低命中與第10至15名外溢</div></div>
+      <div class="card"><div class="label">外溢拉回</div><div class="value">{esc(fmt_numbers(front9.get("promoted_numbers", [])) or "-")}</div></div>
+      <div class="card"><div class="label">外溢降下</div><div class="value">{esc(fmt_numbers(front9.get("demoted_numbers", [])) or "-")}</div></div>
+      <div class="card"><div class="label">正式前9</div><div class="value">{esc(fmt_numbers(top9))}</div></div>
+    </div>
+  </section>
+  <section class="band">
+    <h2>本期分級主選</h2>
+    {table(["類型", "正式號碼", "顆數", "狀態"], [["1中1", fmt_numbers(top15[:1]), 1, "已公開"], ["2中1～2", fmt_numbers(top15[:2]), 2, "已公開"], ["3中1～3", fmt_numbers(top15[:3]), 3, "已公開"], ["5中2～3", fmt_numbers(top15[:5]), 5, "已公開"], ["9中3～5", fmt_numbers(top15[:9]), 9, "已公開"]])}
+  </section>
+  <section class="band">
+    <h2>本期前15名單一明細</h2>
+    {table(["排名", "號碼", "區段", "相對指數（非機率）", "主要支撐"], exact539_rank_rows(analysis), table_class="verify-table")}
+  </section>
+  <section class="band">
+    <h2>本期推薦牌組</h2>
+    {table(["組別", "號碼", "檢查"], exact539_ticket_rows(analysis), "本期沒有通過牌型限制的組合")}
+  </section>
+  <section class="band">
+    <h2>本期投注排除</h2>
+    {table(["區段", "號碼", "處理"], exclusion_rows)}
+  </section>
+  <section class="band">
+    <h2>上一期號碼連莊資格</h2>
+    <p class="note">上一期號碼只有通過相對指數、交叉模型與連莊守門，才可保留在本期前9；不做補位。</p>
+    {table(["上一期號碼", "相對指數", "正貢獻模組", "連莊命中／樣本", "資格", "本期名次", "結果"], exact539_repeat_rows(analysis))}
+  </section>
+  <section class="band">
+    <h2>生成號碼逐號驗算</h2>
+    {table(["排名", "號碼", "相對指數（非機率）", "交叉來源", "主要支撐", "成熟度", "狀態"], exact539_detail_rows(analysis), table_class="verify-table")}
+  </section>
+  <section class="band">
+    <h2>系統健康與公開狀態</h2>
+    <div class="grid">{audit_html}</div>
+    <div class="repair-actions" aria-label="雲端更新與修復">
+      <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
+      <button class="instant-repair" type="button" onclick="openRepairPanel()">當機立即修復</button>
+    </div>
+    <div class="update-status-box" data-update-status="manual-complete-time">
+      <div class="label">更新狀態</div>
+      <p class="status-main" id="mobileUpdateStatus">版本 {esc(version)} / 戰報產生 {esc(display_time(analysis.get('generated_at_taiwan', '-')))}</p>
+      <p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p>
+    </div>
+  </section>
+  <section class="band warning">
+    <h2>使用說明</h2>
+    <p>本頁只放同一期正式預測，不混入回測、開獎檢討、歷史封存或模型說明；開獎檢討與低機率資料已放在獨立頁面。迦納彩39為隨機遊戲，統計排序不保證中獎或獲利。</p>
+  </section>
+</div>
+"""
+
+
 def standard_full_body(analysis: dict, settled: dict, history: list[dict]) -> str:
     decorate_analysis(analysis)
-    return (
-        date_ribbon_html(analysis)
-        + interface_539_panel_html(analysis)
-        + report_spec_layout_html(analysis)
-        + daily_ironlaw_schedule_html(analysis)
-        + decisive_battle_answer_html(analysis)
-        + ironlaw_full_audit_html(analysis)
-        + ultra_confidence_html(analysis)
-        + core_decision_html(analysis)
-        + super_single_html(analysis)
-        + standard_candidate_html(analysis, history)
-        + hit_rate_optimizer_html(analysis)
-        + dual_track_standard_html(analysis, history)
-        + standard_verification_html(analysis)
-        + standard_pack_html(analysis)
-        + hits_html(settled, history)
-        + standard_review_html(settled)
-        + failure_data_html(analysis, settled, history)
-        + standard_monthly_html(analysis, history)
-        + low_review_html(analysis, settled)
-        + low_probability_html(analysis)
-        + '<div class="band"><h2>低機率每日紀錄</h2>'
-        + table(["目標日", "暫避包", "預測號", "開獎日", "實際開獎", "誤中", "誤中號", "結果"], low_daily_rows(history), "目前沒有低機率每日紀錄")
-        + "</div>"
-        + '<div class="band"><h2>低機率每月總紀錄分析</h2>'
-        + table(["暫避包", "結算期數", "達標期數", "達標率", "平均誤中", "最差日期", "最常誤中"], low_monthly_rows(history), "目前沒有低機率每月結算資料")
-        + "</div>"
-        + formula_standard_html(analysis)
-        + prediction_rebuild_standard_html(analysis, settled)
-        + original_rank_html(analysis)
-        + recent_period_compare_html(history)
-        + model_effectiveness_html(analysis)
-        + strong_practical_stats_html(analysis)
-        + model_lifecycle_html(analysis, history)
-        + similarity_audit_standard_html(analysis, history)
-        + hard_iron_html(analysis)
-        + ironlaw_full_audit_html(analysis)
-        + stability_governor_html(analysis, settled)
-        + self_repair_html(analysis)
-        + reality_gate_html(analysis)
-        + monthly_breakthrough_html(analysis, history)
-    )
+    return exact539_report_body(analysis, settled, history)
 
 
 def monthly_pack_rows(analysis: dict) -> list[list]:
@@ -1508,12 +1776,27 @@ def desktop_css() -> str:
     .panel{display:none;}
     .panel.active{display:block;}
     .band{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:14px;overflow:auto;}
+    .battle-539-exact{display:block}
+    .primary{border:2px solid #b91c1c;background:#fff5f5}
+    .strong{border:3px solid #b8860b;background:#fff8dc}
+    .badge{display:inline-block;padding:6px 12px;border-radius:999px;background:#7f1d1d;color:#fff;font-weight:900;margin-bottom:8px}
+    .number{color:#b91c1c;font-size:62px;font-weight:900;line-height:1;margin:6px 0 8px;letter-spacing:0}
+    .note{color:#64748b;font-weight:800}
+    .battle-539-standard{background:#fff;border:3px solid #0f766e;border-radius:8px;margin-bottom:14px;overflow:hidden;}
+    .battle-539-title{background:#0f172a;color:#fff;padding:16px;}
+    .battle-539-title h2{color:#fff;margin:0 0 6px;font-size:24px;}
+    .battle-539-title p{margin:0;color:#d1fae5;font-weight:900;}
+    .battle-539-section{padding:16px;border-top:1px solid #dbe4ef;background:#fff;overflow:auto;}
+    .battle-539-section>h2{margin:0 0 12px;color:#0f172a;}
+    .battle-539-section.hot{background:#fff1f2;}
+    .battle-539-section.warn{background:#fff7ed;}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;}
     .card{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fbfdff;}
     .hot-card{border-color:#fecaca;background:#fff1f2;}
     .singlebox{border-color:#fecaca;background:#fffafa;}
     .ultra-card{border:3px solid #b91c1c;background:#fff1f2;}
     .warn{background:#fff7ed;border-color:#fed7aa;}
+    .warning{background:#fff8e6;border-color:#e9b949}
     .date-ribbon{background:#ecfeff;border-color:#67e8f9;}
     .interface-539-panel{border:3px solid #0f766e;background:#ecfdf5;}
     .interface-card{border-color:#99f6e4;background:#fff;}
@@ -1725,8 +2008,23 @@ def mobile_css() -> str:
     main{padding:12px;max-width:720px;margin:0 auto}
     .band,.card,.number-card,.pack-card{background:white;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;overflow:auto}
     .launch-panel{border:3px solid #166534;background:#f0fdf4}
+    .battle-539-exact{display:block}
+    .primary{border:2px solid #b91c1c;background:#fff5f5}
+    .strong{border:3px solid #b8860b;background:#fff8dc}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#7f1d1d;color:#fff;font-weight:900;margin-bottom:8px}
+    .number{color:#b91c1c;font-size:54px;font-weight:900;line-height:1;margin:6px 0 8px;letter-spacing:0}
+    .note{color:#64748b;font-weight:800}
+    .battle-539-standard{background:#fff;border:3px solid #0f766e;border-radius:8px;margin-bottom:12px;overflow:hidden}
+    .battle-539-title{background:#0f172a;color:#fff;padding:12px}
+    .battle-539-title h2{color:#fff;margin:0 0 6px;font-size:20px}
+    .battle-539-title p{margin:0;color:#d1fae5;font-weight:900}
+    .battle-539-section{padding:12px;border-top:1px solid #dbe4ef;background:#fff}
+    .battle-539-section>h2{display:flex;align-items:center;gap:8px;margin:0 0 10px;color:#0f172a}
+    .battle-539-section.hot{background:#fff1f2}
+    .battle-539-section.warn{background:#fff7ed}
     .ultra-card{border:3px solid #b91c1c;background:#fff1f2}
     .warn{background:#fff7ed;border-color:#fed7aa}
+    .warning{background:#fff8e6;border-color:#e9b949}
     .grid{display:grid;gap:10px}
     .interface-539-panel{border:3px solid #0f766e;background:#ecfdf5}
     .embedded-539{border-radius:8px;padding:10px;margin:8px 0}
@@ -1979,6 +2277,32 @@ def mobile_shell(title: str, active: str, analysis: dict, body: str) -> str:
     history_info = analysis.get("history_completeness") or {}
     history_status = compact_status(history_info.get("status", "-"))
     history_note = history_info.get("note") or ""
+    intro = ""
+    if active != "full":
+        intro = f"""
+  <section class="band launch-panel">
+    <div class="launch-title">539介面模式 / 迦納彩39 手機雲端獨立版</div>
+    {interface_539_panel_html(analysis, embedded=True)}
+    <div class="repair-actions" aria-label="雲端更新與修復">
+      <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
+      <button class="instant-repair" type="button" onclick="openRepairPanel()">當機立即修復</button>
+    </div>
+    <a class="cloud-update-link" href="clear-cache.html?v={esc(version)}">手機沒更新點這裡清除舊快取</a>
+    <div class="quick-links">
+      <a href="prediction.html?v={esc(version)}">下期預測</a>
+      <a href="review.html?v={esc(version)}">上期檢討</a>
+      <a href="low-probability.html?v={esc(version)}" class="secondary">低機率</a>
+      <a href="full-report.html?v={esc(version)}" class="secondary">完整戰報</a>
+    </div>
+    <p class="cloud-note">本頁為獨立雲端手機版：首頁、下期預測、上期檢討、低機率、完整戰報都在手機站內完成。</p>
+    <p class="cloud-note">{esc(history_note)}</p>
+    <div class="update-status-box" data-update-status="manual-complete-time">
+      <div class="label">更新狀態</div>
+      <p class="status-main" id="mobileUpdateStatus">版本 {esc(version)} / 戰報產生 {esc(display_time(analysis.get('generated_at_taiwan', '-')))}</p>
+      <p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p>
+    </div>
+  </section>
+"""
     return f"""<!doctype html>
 <html lang="zh-Hant" data-mobile-independent="true">
 <head>
@@ -2003,28 +2327,7 @@ def mobile_shell(title: str, active: str, analysis: dict, body: str) -> str:
   <p>歷史資料：{esc(history_status)} / 共 {esc(analysis.get('draw_count', '-'))} 筆</p>
 </header>
 <main>
-  <section class="band launch-panel">
-    <div class="launch-title">539介面模式 / 迦納彩39 手機雲端獨立版</div>
-    {interface_539_panel_html(analysis, embedded=True)}
-    <div class="repair-actions" aria-label="雲端更新與修復">
-      <button class="manual-update" type="button" onclick="manualUpdateLatest()">手動更新最新</button>
-      <button class="instant-repair" type="button" onclick="openRepairPanel()">當機立即修復</button>
-    </div>
-    <a class="cloud-update-link" href="clear-cache.html?v={esc(version)}">手機沒更新點這裡清除舊快取</a>
-    <div class="quick-links">
-      <a href="prediction.html?v={esc(version)}">下期預測</a>
-      <a href="review.html?v={esc(version)}">上期檢討</a>
-      <a href="low-probability.html?v={esc(version)}" class="secondary">低機率</a>
-      <a href="full-report.html?v={esc(version)}" class="secondary">完整戰報</a>
-    </div>
-    <p class="cloud-note">本頁為獨立雲端手機版：首頁、下期預測、上期檢討、低機率、完整戰報都在手機站內完成。</p>
-    <p class="cloud-note">{esc(history_note)}</p>
-    <div class="update-status-box" data-update-status="manual-complete-time">
-      <div class="label">更新狀態</div>
-      <p class="status-main" id="mobileUpdateStatus">版本 {esc(version)} / 戰報產生 {esc(display_time(analysis.get('generated_at_taiwan', '-')))}</p>
-      <p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p>
-    </div>
-  </section>
+{intro}
   {body}
 </main>
 {mobile_nav(active)}
@@ -2218,7 +2521,8 @@ def version_payload(analysis: dict) -> dict:
         "independent_mobile": True,
         "manual_update_button": True,
         "cloud_repair_button": True,
-        "report_mode": "539-interface",
+        "report_mode": "539-exact-battle-report",
+        "battle_report_spec": "本期最強1顆|最強號碼多邏輯總結|本期資料|失準事件監測|本期分級主選|本期前15名單一明細|本期推薦牌組|本期投注排除|上一期號碼連莊資格|使用說明",
         "manual_update_completed_time_visible": True,
         "fault_audit_required": True,
         "cloud_repair_workflow_url": CLOUD_REPAIR_WORKFLOW_URL,

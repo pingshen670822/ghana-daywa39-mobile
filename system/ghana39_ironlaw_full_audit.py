@@ -189,6 +189,22 @@ def update_analysis_with_audit(payload: dict) -> None:
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def refresh_generated_reports_with_audit() -> None:
+    try:
+        import california_gana39_system as system
+    except Exception as exc:
+        raise RuntimeError(f"cannot load report generator: {exc}") from exc
+
+    analysis = load_json(ANALYSIS_PATH)
+    if not analysis:
+        raise RuntimeError("latest_analysis.json is missing after audit update")
+
+    with sqlite3.connect(DB_PATH) as conn:
+        settled = system.latest_settled(conn)
+        history = system.settled_history(conn)
+    system.save_outputs(analysis, settled, history)
+
+
 def write_pointer_files(payload: dict) -> None:
     version = payload.get("version") or ""
     report_url = f"{PUBLIC_CLOUD_URL}?v={version}" if version else PUBLIC_CLOUD_URL
@@ -322,37 +338,40 @@ def main() -> int:
     add(checks, "上期結算沒有過期待處理", "passed" if not db_stale_pending(latest_date) else "failed", "pending target_date不得小於等於最新開獎日", db_stale_pending(latest_date)[:20])
     add(checks, "鐵律規格欄位", "passed" if all(key in ironlaw for key in ("data_first", "settlement", "front9_escape_correction", "self_repair_after_draw", "publish_block_gate")) else "failed", "539鐵律同級規格鍵值")
 
-    required_html = [
-        "標準戰報規格導覽",
-        "539鐵律同級",
-        "每日更新鐵律時間表",
-        "本期明確作戰答案",
-        "明確獨支",
-        "明確2中1",
-        "明確3中1",
-        "明確5中2",
-        "明確9中3",
-        "防守避開",
-        "超高信心高機率推薦",
-        "強烈推薦單號",
-        "強牌組",
-        "逐號解析",
-        "命中率強化",
+    exact_539_sections = [
+        "本期最強1顆",
+        "最強號碼多邏輯總結",
+        "本期資料",
+        "失準事件監測",
+        "本期分級主選",
+        "本期前15名單一明細",
+        "本期推薦牌組",
+        "本期投注排除",
+        "上一期號碼連莊資格",
+        "使用說明",
+    ]
+    required_html = exact_539_sections + [
+        "生成號碼逐號驗算",
+        "系統健康與公開狀態",
+        "手動更新最新",
+        "當機立即修復",
         "自主修復",
         "19:30",
-        "資料真實性",
-        "獨隻守門",
+        "稽核狀態",
     ]
     required_mobile_html = required_html + ["手動更新最新", "當機立即修復"]
-    add(checks, "桌面戰報規格", "passed" if all(text in report_html for text in required_html) else "failed", "必含539鐵律同級戰報區塊")
-    add(checks, "手機完整戰報規格", "passed" if all(text in site_html for text in required_mobile_html) else "failed", "手機獨立頁必含完整戰報")
+    exact_recommendation_label = ("超高信心高機率推薦" in report_html) or ("本期綜合最強" in report_html)
+    exact_mobile_recommendation_label = ("超高信心高機率推薦" in site_html) or ("本期綜合最強" in site_html)
+    add(checks, "桌面戰報規格", "passed" if all(text in report_html for text in required_html) and exact_recommendation_label else "failed", "必含539固定排列戰報區塊")
+    add(checks, "手機完整戰報規格", "passed" if all(text in site_html for text in required_mobile_html) and exact_mobile_recommendation_label else "failed", "手機獨立頁必含完整戰報")
     add(checks, "手機即時刷新", "passed" if all(text in mobile_html for text in ("version.json", "pageshow", "autoRefreshIfStale", "clearMobileCaches", "manualUpdateLatest")) else "failed", "手機開啟、回前景、恢復連線立即檢查版本")
     add(checks, "雲端手動修復入口", "passed" if all(text in mobile_html for text in ("手動更新最新", "當機立即修復", "repair.html", "ghana39-cloud-self-repair.yml")) else "failed", "手機頁必須提供手動更新與當機修復按鈕")
-    add(checks, "539介面模式", "passed" if all(text in site_html for text in ("539介面模式", 'data-report-mode="539-interface"', "開獎依據", "預測目標", "最強獨隻", "前九核心")) else "failed", "戰報第一屏必須為539操作介面")
+    add(checks, "539介面模式", "passed" if all(text in site_html + mobile_html for text in ("539介面模式", 'data-report-mode="539-interface"', "開獎依據", "預測目標", "最強獨隻", "前九核心")) else "failed", "手機入口必須保留539操作介面")
+    add(checks, "539戰報固定規格", "passed" if 'data-report-mode="539-exact-battle-report"' in site_html and all(text in site_html for text in exact_539_sections) else "failed", "完整戰報必須依539主頁固定順序排列")
     add(checks, "手動更新完成時間", "passed" if all(text in mobile_html for text in ("最後手動更新完成", "finalizeManualUpdateIfNeeded", "ghana39_last_manual_update", 'data-update-status="manual-complete-time"')) else "failed", "手動更新完成後必須顯示完成時間與版本")
     add(checks, "禁用舊品牌字樣", "passed" if FORBIDDEN_OLD_TEXT not in report_html + site_html else "failed", "戰報與手機頁不得出現舊字樣")
     add(checks, "站台JSON同步", "passed" if site_analysis and site_analysis.get("generated_at_taiwan") == analysis.get("generated_at_taiwan") else "failed", "site/latest_analysis.json 必須與 reports/latest_analysis.json 同版")
-    add(checks, "版本JSON同步", "passed" if version.get("latest_draw_date") == latest_date and version.get("independent_mobile") is True and version.get("manual_update_button") is True and version.get("cloud_repair_button") is True and version.get("report_mode") == "539-interface" and version.get("manual_update_completed_time_visible") is True else "failed", "version.json 必須指向最新獨立手機版、539模式與手動修復入口")
+    add(checks, "版本JSON同步", "passed" if version.get("latest_draw_date") == latest_date and version.get("independent_mobile") is True and version.get("manual_update_button") is True and version.get("cloud_repair_button") is True and version.get("report_mode") == "539-exact-battle-report" and version.get("manual_update_completed_time_visible") is True else "failed", "version.json 必須指向最新獨立手機版、539固定排列戰報與手動修復入口")
     scripts = package_json.get("scripts") or {}
     script_text = " ".join(str(value) for value in scripts.values())
     add(checks, "雲端建置腳本跨平台", "passed" if package_json and "WRANGLER_LOG_PATH=" not in script_text and "'WRANGLER_LOG_PATH'" not in cloud_package_text else "failed", "移除會讓Windows建置失敗的Linux環境變數寫法")
@@ -384,6 +403,7 @@ def main() -> int:
     AUDIT_JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     AUDIT_MD_PATH.write_text(build_markdown(payload), encoding="utf-8")
     update_analysis_with_audit(payload)
+    refresh_generated_reports_with_audit()
     write_pointer_files(payload)
     mirror_to_site()
     print(json.dumps(compact_audit_payload(payload), ensure_ascii=False, indent=2))

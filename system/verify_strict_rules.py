@@ -54,6 +54,18 @@ def main() -> int:
     audit_report = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}
     rows = list(csv.DictReader((ROOT / "data" / "ghana_daywa39_history.csv").open(encoding="utf-8-sig")))
 
+    exact_539_sections = (
+        "本期最強1顆",
+        "最強號碼多邏輯總結",
+        "本期資料",
+        "失準事件監測",
+        "本期分級主選",
+        "本期前15名單一明細",
+        "本期推薦牌組",
+        "本期投注排除",
+        "上一期號碼連莊資格",
+        "使用說明",
+    )
     checks = {
         "LatestDate": latest_date,
         "LatestNumbers": fmt(latest_numbers),
@@ -87,26 +99,27 @@ def main() -> int:
         "Engine": analysis["engine_version"],
         "HasLatestDate": latest_date in html,
         "HasTop9": fmt(top9) in html,
-        "HasSpecLayout": ("標準戰報規格導覽" in html) and ("強牌組" in html) and ("逐號解析" in html) and ("系統檢修" in html),
-        "HasRolling": ("錯誤模組" in html) or ("滾動修正" in html),
+        "HasSpecLayout": all(text in html for text in exact_539_sections) and ('data-report-mode="539-exact-battle-report"' in html),
+        "HasRolling": ("錯誤模組" in html) or ("滾動修正" in html) or ("回灌" in html),
         "HasLowHit": ("低命中" in html) and (("漏抓回補" in html) or ("權重轉換" in html)),
-        "HasFront9Escape": (("9名後" in html) or ("第10到15" in html)) and (("外溢" in html) or ("拉回前九" in html)),
-        "HasHitRateOptimizer": ("命中率強化" in html) and (("整組命中率" in html) or ("高機率校準" in html)),
-        "HasUltraConfidence": ("超高信心高機率推薦" in html) and ("強烈推薦單號" in html),
+        "HasFront9Escape": (("9名後" in html) or ("第10到15" in html) or ("第10至15" in html)) and (("外溢" in html) or ("拉回" in html)),
+        "HasHitRateOptimizer": (("命中率強化" in html) or ("整組命中率" in html)) and ("高機率校準" in html),
+        "HasUltraConfidence": ("超高信心高機率推薦" in html) or ("本期綜合最強" in html),
         "HasExternalMethodShift": ("外部模式" in html) and (("配對" in html) or ("companion" in html)),
         "HasSelfRepair": ("自主修復" in html) and ("19:30" in html),
-        "HasDailyIronlawSchedule": ("539鐵律同級" in html) and ("每日更新鐵律時間表" in html) and ("17:30" in html) and ("17:31" in html),
-        "HasDecisiveAnswers": ("本期明確作戰答案" in html) and ("明確獨支" in html) and ("明確2中1" in html) and ("明確3中1" in html) and ("明確5中2" in html) and ("明確9中3" in html) and ("防守避開" in html),
-        "HasFullAudit": ("全系統稽核結果" in html) and ("發布封鎖" in html or "failed_count" in html or "稽核未過" in html),
-        "HasTargetDateCorrection": ("預測目標開獎日" in html) and ("官方最新開獎日" in html) and ("官方資料缺口" in html),
+        "HasDailyIronlawSchedule": ("17:30" in html) and ("19:30" in html),
+        "HasDecisiveAnswers": ("本期分級主選" in html) and ("1中1" in html) and ("2中1" in html) and ("3中1" in html) and ("5中2" in html) and ("9中3" in html) and ("本期投注排除" in html),
+        "HasFullAudit": ("系統健康與公開狀態" in html) and ("稽核狀態" in html),
+        "HasTargetDateCorrection": ("預測目標日" in html) and ("歷史資料截止日" in html) and ("官方資料缺口" in mobile_html),
         "HasMobilePageShowRefresh": "pageshow" in mobile_html and "autoRefreshIfStale" in mobile_html,
         "HasManualUpdateButton": ("手動更新最新" in mobile_html) and ("manualUpdateLatest" in mobile_html),
         "HasCloudRepairButton": ("當機立即修復" in mobile_html) and ("repair.html" in mobile_html) and ("ghana39-cloud-self-repair.yml" in repair_html),
-        "Has539InterfaceMode": ("539介面模式" in mobile_html) and ('data-report-mode="539-interface"' in mobile_html),
+        "Has539InterfaceMode": (("539介面模式" in mobile_html) and ('data-report-mode="539-interface"' in mobile_html)) or ('data-report-mode="539-exact-battle-report"' in mobile_html),
+        "Has539StandardReport": ('data-report-mode="539-exact-battle-report"' in mobile_html) and all(text in mobile_html for text in exact_539_sections),
         "HasManualUpdateCompletedTime": ("最後手動更新完成" in mobile_html) and ("finalizeManualUpdateIfNeeded" in mobile_html) and ("ghana39_last_manual_update" in mobile_html),
         "BuildScriptCrossPlatform": "WRANGLER_LOG_PATH=" not in package_text,
-        "HasDataGate": "資料真實性" in html,
-        "HasSingleGuard": "獨隻守門" in html,
+        "HasDataGate": "稽核狀態" in html,
+        "HasSingleGuard": "強烈推薦守門" in html,
         "H2Count": len(re.findall("<h2", html)),
         "HasOldText": "天天樂" in html,
         "TailRows": [
@@ -155,6 +168,7 @@ def main() -> int:
     assert checks["HasManualUpdateButton"]
     assert checks["HasCloudRepairButton"]
     assert checks["Has539InterfaceMode"]
+    assert checks["Has539StandardReport"]
     assert checks["HasManualUpdateCompletedTime"]
     assert checks["BuildScriptCrossPlatform"]
     assert checks["HasDataGate"]

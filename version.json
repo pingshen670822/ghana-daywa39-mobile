@@ -1,6 +1,6 @@
 {
-  "version": "20261006142900",
-  "generated_at_taiwan": "2026-10-06T14:29:00+08:00",
+  "version": "20261006152015",
+  "generated_at_taiwan": "2026-10-06T15:20:15+08:00",
   "latest_draw_date": "2026-09-30",
   "latest_numbers": [
     3,
@@ -155,12 +155,12 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-06T13:57:24+08:00",
-    "latest_draw_date": "2026-09-30",
-    "target_draw_date": "2026-10-06",
-    "passed_count": 35,
+    "generated_at_taiwan": "2026-10-06T15:21:16+08:00",
+    "passed_count": 39,
     "failed_count": 0,
     "warning_count": 0,
+    "latest_draw_date": "2026-09-30",
+    "target_draw_date": "2026-10-06",
     "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
     "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
     "rule": "539鐵律同級全系統稽核：資料、戰報、手機雲端、排程、自主修復、禁用舊內容全部過關才允許發布。"
@@ -168,7 +168,8 @@
   "independent_mobile": true,
   "manual_update_button": true,
   "cloud_repair_button": true,
-  "report_mode": "539-interface",
+  "report_mode": "539-exact-battle-report",
+  "battle_report_spec": "本期最強1顆|最強號碼多邏輯總結|本期資料|失準事件監測|本期分級主選|本期前15名單一明細|本期推薦牌組|本期投注排除|上一期號碼連莊資格|使用說明",
   "manual_update_completed_time_visible": true,
   "fault_audit_required": true,
   "cloud_repair_workflow_url": "https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml",

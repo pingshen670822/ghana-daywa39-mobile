@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "generated_at_taiwan": "2026-10-06T14:29:28+08:00",
+  "generated_at_taiwan": "2026-10-06T15:21:16+08:00",
   "latest_draw_date": "2026-09-30",
   "latest_numbers": [
     3,
@@ -10,10 +10,10 @@
     33
   ],
   "target_draw_date": "2026-10-06",
-  "version": "20261006142900",
+  "version": "20261006152015",
   "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
   "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
-  "passed_count": 38,
+  "passed_count": 39,
   "failed_count": 0,
   "warning_count": 0,
   "checks": [
@@ -178,7 +178,7 @@
       "item": "桌面戰報規格",
       "status": "passed",
       "passed": true,
-      "message": "必含539鐵律同級戰報區塊",
+      "message": "必含539固定排列戰報區塊",
       "detail": null
     },
     {
@@ -206,7 +206,14 @@
       "item": "539介面模式",
       "status": "passed",
       "passed": true,
-      "message": "戰報第一屏必須為539操作介面",
+      "message": "手機入口必須保留539操作介面",
+      "detail": null
+    },
+    {
+      "item": "539戰報固定規格",
+      "status": "passed",
+      "passed": true,
+      "message": "完整戰報必須依539主頁固定順序排列",
       "detail": null
     },
     {
@@ -234,7 +241,7 @@
       "item": "版本JSON同步",
       "status": "passed",
       "passed": true,
-      "message": "version.json 必須指向最新獨立手機版、539模式與手動修復入口",
+      "message": "version.json 必須指向最新獨立手機版、539固定排列戰報與手動修復入口",
       "detail": null
     },
     {
