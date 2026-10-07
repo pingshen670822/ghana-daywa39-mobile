@@ -1,16 +1,16 @@
 {
   "status": "passed",
-  "generated_at_taiwan": "2026-10-06T15:21:16+08:00",
-  "latest_draw_date": "2026-09-30",
+  "generated_at_taiwan": "2026-10-07T09:06:07+08:00",
+  "latest_draw_date": "2026-10-06",
   "latest_numbers": [
     3,
-    20,
-    24,
-    32,
-    33
+    11,
+    18,
+    23,
+    32
   ],
-  "target_draw_date": "2026-10-06",
-  "version": "20261006152015",
+  "target_draw_date": "2026-10-07",
+  "version": "20261007090454",
   "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
   "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
   "passed_count": 39,
@@ -21,7 +21,7 @@
       "item": "CSV歷史資料存在",
       "status": "passed",
       "passed": true,
-      "message": "CSV rows=756",
+      "message": "CSV rows=764",
       "detail": null
     },
     {
@@ -45,7 +45,7 @@
       "item": "CSV與SQLite最新一致",
       "status": "passed",
       "passed": true,
-      "message": "CSV 2026-09-30 / DB 2026-09-30",
+      "message": "CSV 2026-10-06 / DB 2026-10-06",
       "detail": null
     },
     {
@@ -66,56 +66,56 @@
       "item": "最新開獎號碼合法",
       "status": "passed",
       "passed": true,
-      "message": "03 20 24 32 33",
+      "message": "03 11 18 23 32",
       "detail": null
     },
     {
       "item": "分析與CSV最新一致",
       "status": "passed",
       "passed": true,
-      "message": "analysis 2026-09-30 03 20 24 32 33",
+      "message": "analysis 2026-10-06 03 11 18 23 32",
       "detail": null
     },
     {
       "item": "預測目標開獎日校正",
       "status": "passed",
       "passed": true,
-      "message": "target=2026-10-06 expected=2026-10-06; 官方最新日只作資料依據，預測目標依台灣當前17:30開獎日校正",
+      "message": "target=2026-10-07 expected=2026-10-07; 官方最新日只作資料依據，預測目標依台灣當前17:30開獎日校正",
       "detail": null
     },
     {
       "item": "官方抓取摘要一致",
       "status": "passed",
       "passed": true,
-      "message": "fetch_summary=2026-09-30 analysis=2026-09-30",
+      "message": "fetch_summary=2026-10-06 analysis=2026-10-06",
       "detail": null
     },
     {
       "item": "官方公開資料更新時間",
       "status": "passed",
       "passed": true,
-      "message": "latest=2026-09-30 updated=2026-10-06T08:15:37+08:00",
+      "message": "official_latest=2026-10-06 merged_latest=2026-10-06 external補齊=3 updated=2026-10-07T09:03:30+08:00",
       "detail": null
     },
     {
       "item": "候選前九完整",
       "status": "passed",
       "passed": true,
-      "message": "22 16 13 02 35 17 37 01 30",
+      "message": "13 34 09 22 17 27 05 25 39",
       "detail": null
     },
     {
       "item": "候選前十五完整",
       "status": "passed",
       "passed": true,
-      "message": "22 16 13 02 35 17 37 01 30 19 39 34 10 25 23",
+      "message": "13 34 09 22 17 27 05 25 39 35 23 31 10 29 02",
       "detail": null
     },
     {
       "item": "最強獨隻守門",
       "status": "passed",
       "passed": true,
-      "message": "single=22",
+      "message": "single=34",
       "detail": null
     },
     {
@@ -136,7 +136,7 @@
       "item": "資料真實性守門",
       "status": "passed",
       "passed": true,
-      "message": "禁止假資料、空來源、重複日期、錯誤號碼與官方最新日期不一致時產生正式高信心。",
+      "message": "禁止假資料、空來源、重複日期、錯誤號碼；外部補齊只能補缺口且必須保留來源標註。",
       "detail": null
     },
     {

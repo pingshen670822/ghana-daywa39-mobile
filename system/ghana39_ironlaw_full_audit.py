@@ -322,7 +322,9 @@ def main() -> int:
     summary_latest = fetch_summary.get("latest_draw_date")
     add(checks, "官方抓取摘要一致", "passed" if not summary_latest or summary_latest == latest_date else "failed", f"fetch_summary={summary_latest} analysis={latest_date}")
     if fetch_summary.get("latest_draw_date"):
-        add(checks, "官方公開資料更新時間", "passed", f"latest={fetch_summary.get('latest_draw_date')} updated={fetch_summary.get('updated_at_taiwan')}")
+        official_latest = fetch_summary.get("official_latest_draw_date") or fetch_summary.get("latest_draw_date")
+        external = fetch_summary.get("external_backfill") if isinstance(fetch_summary.get("external_backfill"), dict) else {}
+        add(checks, "官方公開資料更新時間", "passed", f"official_latest={official_latest} merged_latest={fetch_summary.get('latest_draw_date')} external補齊={external.get('inserted_count', 0)} updated={fetch_summary.get('updated_at_taiwan')}")
     else:
         add(checks, "官方公開資料更新時間", "warning", "官方抓取摘要尚未取得最新日期")
 
@@ -342,6 +344,7 @@ def main() -> int:
         "本期最強1顆",
         "最強號碼多邏輯總結",
         "本期資料",
+        "終極獨隻準確度檢討",
         "失準事件監測",
         "本期分級主選",
         "本期前15名單一明細",

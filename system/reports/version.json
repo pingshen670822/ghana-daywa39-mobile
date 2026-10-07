@@ -1,45 +1,50 @@
 {
-  "version": "20261006152015",
-  "generated_at_taiwan": "2026-10-06T15:20:15+08:00",
-  "latest_draw_date": "2026-09-30",
+  "version": "20261007090454",
+  "generated_at_taiwan": "2026-10-07T09:04:54+08:00",
+  "latest_draw_date": "2026-10-06",
   "latest_numbers": [
     3,
-    20,
-    24,
-    32,
-    33
+    11,
+    18,
+    23,
+    32
   ],
-  "target_draw_date": "2026-10-06",
+  "latest_source": "NLA official winning-numbers:5/39 Direct Monday:draw#526",
+  "official_latest_draw_date": "2026-10-06",
+  "external_backfill_inserted_count": 3,
+  "target_draw_date": "2026-10-07",
   "ultra_confidence_pick": {
     "status": "strongest_research_signal",
-    "number": 22,
+    "number": 34,
     "numbers": [
-      22
+      34
     ],
-    "score": 1.0,
+    "score": 0.9632,
     "label": "本期最強超高信心高機率號碼",
     "gate_status": "blocked",
-    "selected_rank": 1,
-    "selected_score": 1.0,
-    "confidence_index": 98.4,
-    "model_probability_index": 16.82,
-    "support_models": 3,
-    "pair_lift_score": 0.7475,
+    "selected_rank": 2,
+    "selected_score": 0.943577,
+    "confidence_index": 95.4,
+    "model_probability_index": 16.34,
+    "support_models": 4,
+    "pair_lift_score": 0.8093,
+    "single_accuracy_status": "critical_rebuild",
+    "single_accuracy_penalty": 0.0,
     "logic_checks": [
       {
         "item": "高機率校準",
         "status": "blocked",
-        "value": "Top9 1.2 / 隨機 1.1538"
+        "value": "Top9 1.2167 / 隨機 1.1538"
       },
       {
         "item": "配對共現",
         "status": "passed",
-        "value": 0.7475
+        "value": 0.8093
       },
       {
         "item": "交叉模型",
         "status": "passed",
-        "value": "3/8"
+        "value": "4/8"
       },
       {
         "item": "非最新開獎號",
@@ -49,29 +54,201 @@
       {
         "item": "前九核心",
         "status": "passed",
-        "value": "排名 1"
+        "value": "排名 2"
       },
       {
         "item": "整組命中率優化",
         "status": "passed",
-        "value": "reviewed_no_change / 組合分 0.519999"
+        "value": "reviewed_no_change / 組合分 0.498216"
       },
       {
         "item": "外溢修正",
         "status": "passed",
         "value": "前九守門"
+      },
+      {
+        "item": "獨隻實戰檢討",
+        "status": "blocked",
+        "value": "0/8 / 命中率 0.0"
       }
     ],
-    "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心與回測正向；未全數通過只列最強研究訊號。"
+    "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率與獨隻實戰檢討；未全數通過只列最強研究訊號。"
+  },
+  "strong_single_accuracy_review": {
+    "status": "critical_rebuild",
+    "mode": "strict_penalty",
+    "sample_size": 8,
+    "hit_count": 0,
+    "miss_count": 8,
+    "hit_rate": 0.0,
+    "random_single_expectation": 0.1282,
+    "missed_single_numbers": [
+      {
+        "number": 22,
+        "misses": 1
+      },
+      {
+        "number": 1,
+        "misses": 1
+      },
+      {
+        "number": 18,
+        "misses": 1
+      },
+      {
+        "number": 32,
+        "misses": 1
+      },
+      {
+        "number": 7,
+        "misses": 1
+      },
+      {
+        "number": 30,
+        "misses": 1
+      },
+      {
+        "number": 31,
+        "misses": 1
+      },
+      {
+        "number": 11,
+        "misses": 1
+      }
+    ],
+    "hit_single_numbers": [],
+    "recent_rows": [
+      {
+        "based_on_date": "2026-09-30",
+        "actual_date": "2026-10-01",
+        "numbers": [
+          22
+        ],
+        "passed": false,
+        "actual_numbers": [
+          13,
+          21,
+          26,
+          33,
+          39
+        ]
+      },
+      {
+        "based_on_date": "2026-08-02",
+        "actual_date": "2026-08-04",
+        "numbers": [
+          1
+        ],
+        "passed": false,
+        "actual_numbers": [
+          2,
+          9,
+          18,
+          22,
+          34
+        ]
+      },
+      {
+        "based_on_date": "2026-07-28",
+        "actual_date": "2026-07-29",
+        "numbers": [
+          18
+        ],
+        "passed": false,
+        "actual_numbers": [
+          11,
+          12,
+          17,
+          30,
+          32
+        ]
+      },
+      {
+        "based_on_date": "2026-07-26",
+        "actual_date": "2026-07-28",
+        "numbers": [
+          32
+        ],
+        "passed": false,
+        "actual_numbers": [
+          9,
+          28,
+          36,
+          37,
+          38
+        ]
+      },
+      {
+        "based_on_date": "2026-07-21",
+        "actual_date": "2026-07-22",
+        "numbers": [
+          7
+        ],
+        "passed": false,
+        "actual_numbers": [
+          5,
+          6,
+          10,
+          18,
+          27
+        ]
+      },
+      {
+        "based_on_date": "2026-07-16",
+        "actual_date": "2026-07-17",
+        "numbers": [
+          30
+        ],
+        "passed": false,
+        "actual_numbers": [
+          1,
+          11,
+          19,
+          33,
+          35
+        ]
+      },
+      {
+        "based_on_date": "2026-07-14",
+        "actual_date": "2026-07-15",
+        "numbers": [
+          31
+        ],
+        "passed": false,
+        "actual_numbers": [
+          3,
+          17,
+          18,
+          29,
+          32
+        ]
+      },
+      {
+        "based_on_date": "2026-07-12",
+        "actual_date": "2026-07-14",
+        "numbers": [
+          11
+        ],
+        "passed": false,
+        "actual_numbers": [
+          7,
+          10,
+          14,
+          20,
+          25
+        ]
+      }
+    ],
+    "rule": "獨隻結算低於隨機基準時，近期落空獨隻加重降權；本期必須通過配對、交叉模型、前九核心與實戰檢討才可強標。"
   },
   "high_confidence_gate": {
     "status": "blocked",
-    "top9_edge_vs_random": 0.0462,
-    "top9_avg_hits": 1.2,
+    "top9_edge_vs_random": 0.0629,
+    "top9_avg_hits": 1.2167,
     "random_top9_expectation": 1.1538,
-    "nine_pack_zero_rate": 0.2708,
+    "nine_pack_zero_rate": 0.2542,
     "low_hit_severity": 0.2865,
-    "portfolio_score": 0.52,
+    "portfolio_score": 0.4982,
     "rule": "只有回測前九高於隨機基準、零命中率低於30%且整組優化分數通過時，才允許標成高機率；未通過只列強化候選。"
   },
   "hit_rate_optimizer": {
@@ -80,36 +257,36 @@
     "pool_size": 16,
     "target_size": 9,
     "previous_top9": [
-      16,
-      22,
       13,
-      19,
-      2,
-      35,
+      37,
       34,
+      9,
+      22,
       17,
-      23
+      27,
+      35,
+      29
     ],
     "selected_numbers": [
-      22,
-      16,
-      17,
+      9,
       13,
-      35,
-      2,
       34,
-      19,
-      23
+      37,
+      22,
+      17,
+      27,
+      35,
+      29
     ],
     "promoted_numbers": [],
     "demoted_numbers": [],
-    "portfolio_score": 0.519999,
-    "portfolio_score_before": 0.519999,
-    "portfolio_improvement": 0.006088,
-    "avg_signal": 0.634841,
-    "floor_signal": 0.515665,
-    "pair_score": 0.079959,
-    "balance_score": 0.817222,
+    "portfolio_score": 0.498216,
+    "portfolio_score_before": 0.498216,
+    "portfolio_improvement": 0.01132,
+    "avg_signal": 0.618629,
+    "floor_signal": 0.431326,
+    "pair_score": 0.144382,
+    "balance_score": 0.741667,
     "latest_repeat_count": 0,
     "adopted_external_modes": [
       "多窗口頻率",
@@ -155,12 +332,12 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-06T15:21:16+08:00",
+    "generated_at_taiwan": "2026-10-07T09:06:07+08:00",
     "passed_count": 39,
     "failed_count": 0,
     "warning_count": 0,
-    "latest_draw_date": "2026-09-30",
-    "target_draw_date": "2026-10-06",
+    "latest_draw_date": "2026-10-06",
+    "target_draw_date": "2026-10-07",
     "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
     "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
     "rule": "539鐵律同級全系統稽核：資料、戰報、手機雲端、排程、自主修復、禁用舊內容全部過關才允許發布。"

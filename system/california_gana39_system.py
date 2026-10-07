@@ -806,6 +806,70 @@ def low_hit_regime_review(history: list[dict] | None) -> dict:
     }
 
 
+def strong_single_accuracy_review(history: list[dict] | None, limit: int = 30) -> dict:
+    rows = list(history or [])[:limit]
+    expected_rate = SPEC.draw_size / SPEC.number_max
+    if not rows:
+        return {
+            "status": "no_settled_history",
+            "sample_size": 0,
+            "hit_count": 0,
+            "hit_rate": None,
+            "random_single_expectation": round(expected_rate, 4),
+            "missed_single_numbers": [],
+            "rule": "尚無已結算獨隻紀錄，先用一般守門。",
+        }
+    hit_count = 0
+    missed = Counter()
+    hit_numbers = Counter()
+    recent_rows = []
+    for item in rows:
+        pack_hits = item.get("strong_pack_hits") or {}
+        single_hit = pack_hits.get("strong_single") or {}
+        numbers = [int(number) for number in single_hit.get("numbers") or []]
+        hits = int(single_hit.get("hits") or 0)
+        passed = hits >= 1
+        if passed:
+            hit_count += 1
+            for number in numbers:
+                hit_numbers[number] += 1
+        else:
+            for number in numbers:
+                missed[number] += 1
+        recent_rows.append(
+            {
+                "based_on_date": item.get("based_on_date"),
+                "actual_date": item.get("actual_date"),
+                "numbers": numbers,
+                "passed": passed,
+                "actual_numbers": item.get("actual_numbers") or [],
+            }
+        )
+    hit_rate = hit_count / len(rows)
+    if len(rows) >= 5 and hit_rate < expected_rate * 0.65:
+        status = "critical_rebuild"
+        mode = "strict_penalty"
+    elif len(rows) >= 5 and hit_rate < expected_rate:
+        status = "watch_rebuild"
+        mode = "guarded_penalty"
+    else:
+        status = "normal"
+        mode = "standard"
+    return {
+        "status": status,
+        "mode": mode,
+        "sample_size": len(rows),
+        "hit_count": hit_count,
+        "miss_count": len(rows) - hit_count,
+        "hit_rate": round(hit_rate, 4),
+        "random_single_expectation": round(expected_rate, 4),
+        "missed_single_numbers": [{"number": number, "misses": count} for number, count in missed.most_common(10)],
+        "hit_single_numbers": [{"number": number, "hits": count} for number, count in hit_numbers.most_common(10)],
+        "recent_rows": recent_rows[:12],
+        "rule": "獨隻結算低於隨機基準時，近期落空獨隻加重降權；本期必須通過配對、交叉模型、前九核心與實戰檢討才可強標。",
+    }
+
+
 def failure_memory_from_settled(history: list[dict] | None, limit: int = 20) -> dict:
     rows = list(history or [])[:limit]
     if not rows:
@@ -1624,6 +1688,7 @@ def build_ultra_confidence_pick(
     external_shift: dict,
     optimizer_audit: dict,
     front9_audit: dict,
+    single_accuracy: dict | None = None,
 ) -> dict:
     if not candidates:
         return {
@@ -1638,6 +1703,20 @@ def build_ultra_confidence_pick(
     top9 = {int(item["number"]) for item in candidates[:9]}
     selected_numbers = {int(number) for number in optimizer_audit.get("selected_numbers", [])}
 
+    single_accuracy = single_accuracy or {}
+    missed_single_counts = {
+        int(row.get("number")): int(row.get("misses") or 0)
+        for row in (single_accuracy.get("missed_single_numbers") or [])
+        if row.get("number") is not None
+    }
+    single_accuracy_passed = single_accuracy.get("status") in {"normal", "no_settled_history"} or int(single_accuracy.get("sample_size") or 0) < 5
+
+    def single_review_penalty(item: dict) -> float:
+        misses = missed_single_counts.get(int(item["number"]), 0)
+        mode = single_accuracy.get("mode")
+        factor = 0.075 if mode == "strict_penalty" else 0.045
+        return min(0.22, misses * factor)
+
     def score_item(item: dict) -> float:
         model_scores = item.get("model_scores") or {}
         pair = float(model_scores.get("pair_lift") or 0.0)
@@ -1650,6 +1729,7 @@ def build_ultra_confidence_pick(
         gate_bonus = 0.08 if high_gate.get("status") == "passed" else 0.0
         external_bonus = 0.05 if external_shift.get("status") == "applied" else 0.0
         repeat_penalty = 0.18 if item.get("last_draw_repeat") else 0.0
+        review_penalty = single_review_penalty(item)
         return clamp(
             float(item.get("score") or 0.0) * 0.30
             + float(item.get("confidence_index") or 0.0) / 100 * 0.16
@@ -1667,6 +1747,13 @@ def build_ultra_confidence_pick(
             - repeat_penalty,
             0.0,
             1.0,
+        ) * (1.0 - review_penalty)
+
+    def final_score(item: dict) -> float:
+        return clamp(
+            score_item(item),
+            0.0,
+            1.0,
         )
 
     strict_eligible = [
@@ -1677,7 +1764,7 @@ def build_ultra_confidence_pick(
         and float((item.get("model_scores") or {}).get("pair_lift") or 0.0) >= 0.40
     ]
     eligible = strict_eligible or [item for item in candidates[:15] if not item.get("last_draw_repeat")]
-    selected = max(eligible or candidates[:15], key=score_item)
+    selected = max(eligible or candidates[:15], key=final_score)
     number = int(selected["number"])
     model_scores = selected.get("model_scores") or {}
     support = int(selected.get("support_models") or 0)
@@ -1689,7 +1776,13 @@ def build_ultra_confidence_pick(
     pair_passed = pair_score >= 0.40
     status = (
         "ultra_high_confidence_recommendation"
-        if high_passed and in_top9 and not selected.get("last_draw_repeat") and support_passed and pair_passed and optimizer_selected
+        if high_passed
+        and in_top9
+        and not selected.get("last_draw_repeat")
+        and support_passed
+        and pair_passed
+        and optimizer_selected
+        and single_accuracy_passed
         else "strongest_research_signal"
     )
     logic_checks = [
@@ -1712,12 +1805,17 @@ def build_ultra_confidence_pick(
             "status": pass_flag(front9_audit.get("status") in {"applied", "reviewed_no_swap", "inactive"}),
             "value": selected.get("front9_escape_status", "-"),
         },
+        {
+            "item": "獨隻實戰檢討",
+            "status": pass_flag(single_accuracy_passed),
+            "value": f"{single_accuracy.get('hit_count', 0)}/{single_accuracy.get('sample_size', 0)} / 命中率 {single_accuracy.get('hit_rate', '-')}",
+        },
     ]
     return {
         "status": status,
         "number": number,
         "numbers": [number],
-        "score": round(score_item(selected), 4),
+        "score": round(final_score(selected), 4),
         "label": "本期最強超高信心高機率號碼",
         "gate_status": high_gate.get("status"),
         "selected_rank": selected.get("rank"),
@@ -1726,8 +1824,10 @@ def build_ultra_confidence_pick(
         "model_probability_index": selected.get("model_probability_index"),
         "support_models": support,
         "pair_lift_score": round(pair_score, 4),
+        "single_accuracy_status": single_accuracy.get("status"),
+        "single_accuracy_penalty": round(single_review_penalty(selected), 4),
         "logic_checks": logic_checks,
-        "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心與回測正向；未全數通過只列最強研究訊號。",
+        "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率與獨隻實戰檢討；未全數通過只列最強研究訊號。",
     }
 
 
@@ -1853,6 +1953,9 @@ def history_completeness(draw_count: int, metadata: dict | None = None) -> dict:
     gap_audit = metadata.get("gap_audit") if isinstance(metadata.get("gap_audit"), dict) else {}
     earliest = fetch_summary.get("earliest_draw_date")
     latest = fetch_summary.get("latest_draw_date")
+    official_latest = fetch_summary.get("official_latest_draw_date") or latest
+    external = fetch_summary.get("external_backfill") if isinstance(fetch_summary.get("external_backfill"), dict) else {}
+    external_inserted = int(external.get("inserted_count") or 0)
     official_range = gap_audit.get("official_public_range") or (f"{earliest}..{latest}" if earliest and latest else "")
     draw_gap = gap_audit.get("draw_number_gap_summary") if isinstance(gap_audit.get("draw_number_gap_summary"), dict) else {}
     missing_before = int(draw_gap.get("minimum_missing_before_public_range") or 0)
@@ -1862,6 +1965,7 @@ def history_completeness(draw_count: int, metadata: dict | None = None) -> dict:
     if official_range:
         note = (
             f"NLA官方公開接口目前可驗證範圍：{official_range}；"
+            f"外部驗證補齊 {external_inserted} 期；"
             f"2000-01-01..2024-03-31 掃描狀態：{prehistory_status}；"
             f"依官方期號序列推估公開起點前至少缺 {missing_before} 期。"
         )
@@ -1872,7 +1976,9 @@ def history_completeness(draw_count: int, metadata: dict | None = None) -> dict:
         "date_range": official_range,
         "official_public_range": official_range,
         "earliest_official_draw_date": earliest,
-        "latest_official_draw_date": latest,
+        "latest_official_draw_date": official_latest,
+        "external_backfill_inserted_count": external_inserted,
+        "external_backfill_status": external.get("status"),
         "prehistory_audit_range": gap_audit.get("prehistory_audit_range"),
         "prehistory_status": prehistory_status,
         "prehistory_direct_rows": gap_audit.get("prehistory_direct_rows"),
@@ -1887,6 +1993,7 @@ def data_integrity_gate(draws: list[dict], metadata: dict | None = None) -> dict
     seen_dates = set()
     previous = None
     official_source_count = 0
+    external_source_count = 0
     for draw in draws:
         draw_date = str(draw.get("draw_date", ""))
         numbers = draw.get("numbers", [])
@@ -1903,18 +2010,21 @@ def data_integrity_gate(draws: list[dict], metadata: dict | None = None) -> dict
             issues.append(f"missing_source:{draw_date}")
         if "NLA official" in source or "winning-numbers" in source:
             official_source_count += 1
+        if "external" in source.lower():
+            external_source_count += 1
     metadata = metadata or {}
     fetch_summary = metadata.get("fetch_summary") if isinstance(metadata.get("fetch_summary"), dict) else {}
-    official_latest = fetch_summary.get("latest_draw_date")
-    if official_latest and draws and official_latest != draws[-1]["draw_date"]:
-        issues.append(f"latest_mismatch:{official_latest}!={draws[-1]['draw_date']}")
+    official_latest = fetch_summary.get("official_latest_draw_date") or fetch_summary.get("latest_draw_date")
+    if official_latest and draws and official_latest > draws[-1]["draw_date"]:
+        issues.append(f"official_ahead_of_database:{official_latest}>{draws[-1]['draw_date']}")
     status = "passed" if not issues else "blocked"
     return {
         "status": status,
         "draw_count": len(draws),
         "official_source_count": official_source_count,
+        "external_source_count": external_source_count,
         "issues": issues[:30],
-        "rule": "禁止假資料、空來源、重複日期、錯誤號碼與官方最新日期不一致時產生正式高信心。",
+        "rule": "禁止假資料、空來源、重複日期、錯誤號碼；外部補齊只能補缺口且必須保留來源標註。",
     }
 
 
@@ -2134,6 +2244,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     target_date = prediction_target_draw_date(latest["draw_date"])
     base_weights, model_backtest = model_backtest_weights(draws, rounds=min(rounds, 120))
     low_hit_review = low_hit_regime_review(settled_history_rows)
+    single_accuracy_review = strong_single_accuracy_review(settled_history_rows)
     failure_memory = failure_memory_from_settled(settled_history_rows)
     weights, rolling_adjustment = rolling_error_adjusted_weights(draws, base_weights, rounds=rounds)
     weights, low_hit_review = apply_low_hit_regime_shift(weights, low_hit_review)
@@ -2156,6 +2267,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         external_method_shift,
         hit_rate_optimizer,
         front9_escape_correction,
+        single_accuracy_review,
     )
     if ultra_confidence_pick.get("number"):
         packs["strong_single"]["numbers"] = [int(ultra_confidence_pick["number"])]
@@ -2204,6 +2316,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         "rolling_error_adjustment": rolling_adjustment,
         "external_method_weight_shift": external_method_shift,
         "low_hit_regime_shift": low_hit_review,
+        "strong_single_accuracy_review": single_accuracy_review,
         "hit_rate_optimizer": hit_rate_optimizer,
         "high_confidence_gate": high_confidence_gate,
         "ultra_confidence_pick": ultra_confidence_pick,

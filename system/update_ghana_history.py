@@ -6,7 +6,9 @@ from __future__ import annotations
 
 import argparse
 import csv
+import html
 import json
+import re
 import ssl
 import sys
 import time
@@ -36,6 +38,8 @@ GAP_AUDIT_JSON = DATA_DIR / "ghana_daywa39_history_gap_audit.json"
 SERVER_FN_ID = "a326a1cfceda0eb077997216108eb8dd18bb12e3da7300fd63de2cd7bdcbec2e"
 SERVER_FN_URL = f"https://www.nla.com.gh/_serverFn/{SERVER_FN_ID}"
 SOURCE_URL = "https://www.nla.com.gh/winning-numbers"
+EFFI_RESULTS_URL = "https://effi-lotto.com/ghana/results/"
+LOTTERYNGO_RESULTS_URL = "https://lotteryngo.com/ro/results/ghana/daywa-5-39/"
 TAIWAN_TZ = ZoneInfo("Asia/Taipei")
 DEFAULT_START_DATE = "2024-04-01"
 FULL_SCAN_START_DATE = "2000-01-01"
@@ -44,6 +48,34 @@ PREHISTORY_SCAN_NOTE = (
     "Official-interface scan from 2000-01-01 through 2024-03-31 "
     "returned zero Daywa 5/39 Direct rows."
 )
+EN_MONTHS = {
+    "Jan": 1,
+    "Feb": 2,
+    "Mar": 3,
+    "Apr": 4,
+    "May": 5,
+    "Jun": 6,
+    "Jul": 7,
+    "Aug": 8,
+    "Sep": 9,
+    "Oct": 10,
+    "Nov": 11,
+    "Dec": 12,
+}
+RO_MONTHS = {
+    "Ianuarie": 1,
+    "Februarie": 2,
+    "Martie": 3,
+    "Aprilie": 4,
+    "Mai": 5,
+    "Iunie": 6,
+    "Iulie": 7,
+    "August": 8,
+    "Septembrie": 9,
+    "Octombrie": 10,
+    "Noiembrie": 11,
+    "Decembrie": 12,
+}
 
 
 @dataclass(frozen=True)
@@ -147,6 +179,18 @@ def request_range(start_date: str, end_date: str, timeout: int = 45) -> list[dic
     return data
 
 
+def request_text(url: str, timeout: int = 30) -> str:
+    request = urllib.request.Request(
+        url,
+        headers={
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "user-agent": "Mozilla/5.0",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=timeout, context=ssl.create_default_context()) as response:
+        return response.read().decode("utf-8", "ignore")
+
+
 def parse_numbers(value: str) -> list[int]:
     try:
         numbers = [int(part.strip()) for part in str(value).split(",") if part.strip()]
@@ -191,6 +235,163 @@ def normalize_row(row: dict) -> Draw | None:
         product_code=product_code,
         draw_number=draw_number,
     )
+
+
+def external_system_date(local_date: datetime) -> str:
+    # The local CSV is keyed by Taiwan draw date. Ghana evening draws settle on
+    # the following Taiwan date, matching the official UTC conversion above.
+    return (local_date.date() + timedelta(days=1)).isoformat()
+
+
+def external_draw(local_date: datetime, numbers: list[int], source_label: str, source_url: str, product_code: str) -> Draw | None:
+    if not valid_external_numbers(numbers):
+        return None
+    return Draw(
+        draw_date=external_system_date(local_date),
+        n1=sorted(numbers)[0],
+        n2=sorted(numbers)[1],
+        n3=sorted(numbers)[2],
+        n4=sorted(numbers)[3],
+        n5=sorted(numbers)[4],
+        source=f"{source_label}:{source_url}:ghana_local_date={local_date.date().isoformat()}",
+        official_datetime_utc=f"{local_date.date().isoformat()}T19:00:00Z",
+        product_code=product_code,
+        draw_number="external_verified",
+    )
+
+
+def valid_external_numbers(numbers: list[int]) -> bool:
+    return len(numbers) == 5 and len(set(numbers)) == 5 and all(1 <= number <= 39 for number in numbers)
+
+
+def fetch_effi_direct_results() -> tuple[list[Draw], dict]:
+    status = {"source": EFFI_RESULTS_URL, "rows": 0, "direct_rows": 0, "status": "ok", "errors": []}
+    try:
+        raw = request_text(EFFI_RESULTS_URL)
+    except Exception as exc:
+        status["status"] = "error"
+        status["errors"].append(str(exc))
+        return [], status
+    draws: list[Draw] = []
+    for part in raw.split('<div class="el-result-row">')[1:]:
+        row = part.split('<div class="el-result-row">', 1)[0]
+        if "5/39 DIRECT" not in row.upper():
+            continue
+        text = html.unescape(re.sub(r"<[^>]+>", " ", row))
+        text = re.sub(r"\s+", " ", text).strip()
+        match = re.search(
+            r"5/39 DIRECT\s+([A-Z]+).*?([A-Z][a-z]{2})\s+.\s+(\d{1,2})\s+([A-Z][a-z]{2})\s+(\d{4})\s+((?:\d{2}\s+){4}\d{2})",
+            text,
+        )
+        if not match:
+            status["errors"].append(f"unparsed_effi_row:{text[:120]}")
+            continue
+        product_day = match.group(1).title()
+        day = int(match.group(3))
+        month = EN_MONTHS.get(match.group(4))
+        year = int(match.group(5))
+        numbers = [int(part) for part in match.group(6).split()]
+        if not month:
+            status["errors"].append(f"unknown_month:{match.group(4)}")
+            continue
+        draw = external_draw(
+            datetime(year, month, day),
+            numbers,
+            "external verified Effi Lotto 5/39 Direct",
+            EFFI_RESULTS_URL,
+            f"5/39 Direct {product_day} external",
+        )
+        if draw:
+            draws.append(draw)
+    status["rows"] = len(draws)
+    status["direct_rows"] = len(draws)
+    return draws, status
+
+
+def fetch_lotteryngo_daywa_results() -> tuple[list[Draw], dict]:
+    status = {"source": LOTTERYNGO_RESULTS_URL, "rows": 0, "direct_rows": 0, "status": "ok", "errors": []}
+    try:
+        raw = request_text(LOTTERYNGO_RESULTS_URL)
+    except Exception as exc:
+        status["status"] = "error"
+        status["errors"].append(str(exc))
+        return [], status
+    text = html.unescape(re.sub(r"<[^>]+>", " ", raw))
+    text = re.sub(r"\s+", " ", text)
+    start = text.find("Data extragerii Daywa 5/39")
+    end = text.find("Daywa 5/39 Numere calde", start if start >= 0 else 0)
+    results_text = text[start:end if end > start else None]
+    pattern = re.compile(
+        r"(luni|Duminic[ăa]|S[âa]mb[ăa]t[ăa]|Vineri|joi|miercuri|mar[ţț]i)\s+"
+        r"(Ianuarie|Februarie|Martie|Aprilie|Mai|Iunie|Iulie|August|Septembrie|Octombrie|Noiembrie|Decembrie)\s+"
+        r"(\d{2}),\s+(\d{4})\s+((?:\d{2}\s+){4}\d{2})",
+        re.IGNORECASE,
+    )
+    draws: list[Draw] = []
+    for match in pattern.finditer(results_text):
+        month = RO_MONTHS.get(match.group(2))
+        if not month:
+            status["errors"].append(f"unknown_month:{match.group(2)}")
+            continue
+        day = int(match.group(3))
+        year = int(match.group(4))
+        numbers = [int(part) for part in match.group(5).split()]
+        draw = external_draw(
+            datetime(year, month, day),
+            numbers,
+            "external supplemental Lottery n Go Daywa 5/39",
+            LOTTERYNGO_RESULTS_URL,
+            "Daywa 5/39 supplemental external",
+        )
+        if draw:
+            draws.append(draw)
+    status["rows"] = len(draws)
+    status["direct_rows"] = len(draws)
+    return draws, status
+
+
+def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[str, list[Draw], dict]]) -> tuple[list[Draw], dict]:
+    by_date = {draw.draw_date: draw for draw in official_draws}
+    inserted: list[Draw] = []
+    duplicates = 0
+    conflicts = []
+    preferred = {"effi": 0, "lotteryngo": 1}
+    candidates: dict[str, list[tuple[str, Draw]]] = {}
+    for source_key, draws, _status in external_sets:
+        for draw in draws:
+            candidates.setdefault(draw.draw_date, []).append((source_key, draw))
+    for draw_date in sorted(candidates):
+        options = sorted(candidates[draw_date], key=lambda item: preferred.get(item[0], 9))
+        source_key, draw = options[0]
+        existing = by_date.get(draw_date)
+        draw_numbers = [draw.n1, draw.n2, draw.n3, draw.n4, draw.n5]
+        if existing:
+            existing_numbers = [existing.n1, existing.n2, existing.n3, existing.n4, existing.n5]
+            if existing_numbers == draw_numbers:
+                duplicates += 1
+            else:
+                conflicts.append(
+                    {
+                        "draw_date": draw_date,
+                        "official_or_existing": existing_numbers,
+                        "external": draw_numbers,
+                        "external_source": draw.source,
+                    }
+                )
+            continue
+        by_date[draw_date] = draw
+        inserted.append(draw)
+    merged = sorted(by_date.values(), key=lambda draw: (draw.draw_date, draw.product_code, draw.draw_number))
+    return merged, {
+        "status": "applied" if inserted else "no_new_external_rows",
+        "inserted_count": len(inserted),
+        "duplicate_confirmations": duplicates,
+        "conflict_count": len(conflicts),
+        "conflicts": conflicts[:20],
+        "inserted_rows": [draw.__dict__ for draw in inserted],
+        "source_statuses": {source_key: status for source_key, _draws, status in external_sets},
+        "rule": "External rows fill only missing Taiwan draw dates, never overwrite official NLA rows.",
+    }
 
 
 def month_starts(start: datetime, end: datetime):
@@ -331,7 +532,7 @@ def draw_number_gap_summary(draws: list[Draw]) -> dict:
     }
 
 
-def build_gap_audit(draws: list[Draw], batches: list[dict], prehistory_batches: list[dict] | None = None) -> dict:
+def build_gap_audit(draws: list[Draw], batches: list[dict], prehistory_batches: list[dict] | None = None, external_backfill: dict | None = None) -> dict:
     prehistory_batches = prehistory_batches or []
     prehistory_direct_rows = sum(int(batch.get("direct_rows") or 0) for batch in prehistory_batches)
     prehistory_rows = sum(int(batch.get("rows") or 0) for batch in prehistory_batches)
@@ -350,6 +551,7 @@ def build_gap_audit(draws: list[Draw], batches: list[dict], prehistory_batches: 
         "draw_number_gap_summary": draw_number_gap_summary(draws),
         "batch_count": len(batches),
         "prehistory_batches": prehistory_batches,
+        "external_backfill": external_backfill or {},
         "updated_at_taiwan": datetime.now(TAIWAN_TZ).isoformat(timespec="seconds"),
         "note": (
             "The official public winning-numbers interface exposes 5/39 Direct rows only from "
@@ -424,11 +626,20 @@ def main(argv: list[str] | None = None) -> int:
         args.audit_prehistory = True
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     RAW_DIR.mkdir(parents=True, exist_ok=True)
-    draws, batches = fetch_all(args.start, args.end, args.sleep)
+    official_draws, batches = fetch_all(args.start, args.end, args.sleep)
+    effi_draws, effi_status = fetch_effi_direct_results()
+    lotteryngo_draws, lotteryngo_status = fetch_lotteryngo_daywa_results()
+    draws, external_backfill = merge_external_draws(
+        official_draws,
+        [
+            ("effi", effi_draws, effi_status),
+            ("lotteryngo", lotteryngo_draws, lotteryngo_status),
+        ],
+    )
     output = Path(args.output)
     write_csv(draws, output)
     prehistory_batches = scan_prehistory(FULL_SCAN_START_DATE, PREHISTORY_AUDIT_END_DATE, args.audit_sleep) if args.audit_prehistory else previous_prehistory_batches()
-    gap_audit = build_gap_audit(draws, batches, prehistory_batches)
+    gap_audit = build_gap_audit(official_draws, batches, prehistory_batches, external_backfill)
     GAP_AUDIT_JSON.write_text(json.dumps(gap_audit, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
         "source": SOURCE_URL,
@@ -439,6 +650,11 @@ def main(argv: list[str] | None = None) -> int:
         "earliest_draw_date": draws[0].draw_date if draws else None,
         "latest_draw_date": draws[-1].draw_date if draws else None,
         "latest_draw": draws[-1].__dict__ if draws else None,
+        "official_draw_count": len(official_draws),
+        "official_earliest_draw_date": official_draws[0].draw_date if official_draws else None,
+        "official_latest_draw_date": official_draws[-1].draw_date if official_draws else None,
+        "official_latest_draw": official_draws[-1].__dict__ if official_draws else None,
+        "external_backfill": external_backfill,
         "coverage_note": PREHISTORY_SCAN_NOTE,
         "history_gap_audit_json": str(GAP_AUDIT_JSON),
         "history_gap_audit": {

@@ -754,4 +754,12 @@ draw_date,n1,n2,n3,n4,n5,source,official_datetime_utc,product_code,draw_number
 2026-09-25,1,8,21,24,36,NLA official winning-numbers:5/39 Direct Thursday:draw#265,2026-09-24T18:45:00Z,5/39 Direct Thursday,265
 2026-09-26,2,8,25,31,32,NLA official winning-numbers:5/39 Direct Friday:draw#256,2026-09-25T18:45:00Z,5/39 Direct Friday,256
 2026-09-27,1,7,9,23,26,NLA official winning-numbers:5/39 Direct Saturday:draw#265,2026-09-26T18:45:00Z,5/39 Direct Saturday,265
+2026-09-28,4,14,16,33,38,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-27,2026-09-27T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-09-29,9,15,20,30,35,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-28,2026-09-28T19:00:00Z,Daywa 5/39 supplemental external,external_verified
 2026-09-30,3,20,24,32,33,NLA official winning-numbers:5/39 Direct Tuesday:draw#265,2026-09-29T18:45:00Z,5/39 Direct Tuesday,265
+2026-10-01,13,21,26,33,39,NLA official winning-numbers:5/39 Direct Wednesday:draw#266,2026-09-30T18:45:00Z,5/39 Direct Wednesday,266
+2026-10-02,4,9,19,26,33,NLA official winning-numbers:5/39 Direct Thursday:draw#266,2026-10-01T18:45:00Z,5/39 Direct Thursday,266
+2026-10-03,4,10,12,18,38,NLA official winning-numbers:5/39 Direct Friday:draw#257,2026-10-02T18:45:00Z,5/39 Direct Friday,257
+2026-10-04,14,26,29,32,35,NLA official winning-numbers:5/39 Direct Saturday:draw#266,2026-10-03T18:45:00Z,5/39 Direct Saturday,266
+2026-10-05,3,7,14,24,32,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-04,2026-10-04T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-06,3,11,18,23,32,NLA official winning-numbers:5/39 Direct Monday:draw#526,2026-10-05T18:45:00Z,5/39 Direct Monday,526

@@ -1365,6 +1365,26 @@ def exact539_consensus_rows(analysis: dict) -> list[list]:
     return rows
 
 
+def exact539_single_review_rows(analysis: dict) -> list[list]:
+    review = analysis.get("strong_single_accuracy_review") or {}
+    missed = review.get("missed_single_numbers") or []
+    recent_missed = "、".join(f"{int(row.get('number')):02d}({row.get('misses')})" for row in missed[:6] if row.get("number") is not None)
+    hit_rate = review.get("hit_rate")
+    if isinstance(hit_rate, (int, float)):
+        hit_rate_text = f"{hit_rate * 100:.1f}%"
+    else:
+        hit_rate_text = "-"
+    expected = review.get("random_single_expectation")
+    expected_text = f"{float(expected) * 100:.1f}%" if isinstance(expected, (int, float)) else "-"
+    return [
+        ["結算樣本", review.get("sample_size", 0), "只採已開獎可結算預測"],
+        ["命中/落空", f"{review.get('hit_count', 0)} / {review.get('miss_count', 0)}", "獨隻1中1實戰紀錄"],
+        ["命中率", hit_rate_text, f"隨機基準約 {expected_text}"],
+        ["修正狀態", review.get("status", "-"), review.get("rule", "-")],
+        ["近期落空獨隻", recent_missed or "-", "本期已加重降權，不再照抄"],
+    ]
+
+
 def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> str:
     decorate_analysis(analysis)
     latest = analysis.get("latest_draw") or {}
@@ -1381,6 +1401,7 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
     gate = analysis.get("high_confidence_gate") or {}
     optimizer = analysis.get("hit_rate_optimizer") or {}
     external = analysis.get("external_method_weight_shift") or {}
+    single_review = analysis.get("strong_single_accuracy_review") or {}
     strong = pick.get("status") == "ultra_high_confidence_recommendation"
     confidence_label = "超高信心高機率推薦" if strong else "本期綜合最強"
     guard_note = "條件已檢查；監測器只記錄，不得改動正式排序。"
@@ -1400,6 +1421,7 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
         ["使用歷史期數", f"{analysis.get('draw_count', '-')}期"],
         ["戰報產生時間", display_time(analysis.get("generated_at_taiwan", "-"))],
         ["版本", version],
+        ["獨隻檢討", single_review.get("status", "-")],
     ]
     status_html = "".join(f'<div class="card"><div class="label">{esc(label)}</div><div class="value">{esc(value)}</div></div>' for label, value in status_cards)
     audit_html = "".join(
@@ -1432,6 +1454,8 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
     {table(["必要條件", "結果"], exact539_logic_rows(analysis))}
     <h3>正式模組共識</h3>
     {table(["邏輯", "單模組名次", "是否支持前9"], exact539_consensus_rows(analysis))}
+    <h3>終極獨隻準確度檢討</h3>
+    {table(["項目", "結果", "處理"], exact539_single_review_rows(analysis))}
   </section>
   <section class="band">
     <h2>本期資料</h2>
@@ -1760,6 +1784,8 @@ def super_single_html(analysis: dict) -> str:
       <p><strong>來源模型：</strong>{esc("、".join((item.get("reasons") or [])[:8]))}</p>
       <p><strong>獨隻守門：</strong>{esc(audit.get("rule", "禁止直接用最新開獎號混充"))}；狀態 {esc(audit.get("status", "-"))}；候選排名 {esc(audit.get("selected_rank", "-"))}</p>
       {table(["審核項目", "狀態", "數據"], check_rows, "目前沒有審核資料")}
+      <h3>終極獨隻準確度檢討</h3>
+      {table(["項目", "結果", "處理"], exact539_single_review_rows(analysis))}
       <p><strong>風控：</strong>未過正式門檻時只列觀察，不包裝成保證。</p>
     </div>
     """
@@ -2119,7 +2145,10 @@ def mobile_script(version: str, home: str = "home.html") -> str:
         if (raw) {{
           var data = JSON.parse(raw);
           if (data && data.completedAt) {{
-            text = '最後手動更新完成：' + taiwanTimeText(data.completedAt) + ' / 版本 ' + (data.version || window.GHANA39_BUILD_VERSION);
+            var parts = ['最後手動更新完成：' + taiwanTimeText(data.completedAt), '版本 ' + (data.version || window.GHANA39_BUILD_VERSION)];
+            if (data.latest_draw_date) parts.push('資料日 ' + data.latest_draw_date);
+            if (data.message) parts.push(data.message);
+            text = parts.join(' / ');
           }}
         }}
       }} catch (err) {{}}
@@ -2130,11 +2159,16 @@ def mobile_script(version: str, home: str = "home.html") -> str:
         var params = new URLSearchParams(window.location.search || '');
         var pending = localStorage.getItem('ghana39_manual_update_pending');
         if (params.has('manual') || pending) {{
+          var pendingData = {{}};
+          try {{ pendingData = pending ? JSON.parse(pending) : {{}}; }} catch (err) {{ pendingData = {{}}; }}
           var version = params.get('v') || window.GHANA39_BUILD_VERSION;
           localStorage.setItem('ghana39_last_manual_update', JSON.stringify({{
             completedAt: new Date().toISOString(),
             version: version,
-            page: currentMobilePage()
+            page: currentMobilePage(),
+            latest_draw_date: pendingData.latest_draw_date || '',
+            status: pendingData.status || 'completed',
+            message: pendingData.message || '已完成檢查'
           }}));
           localStorage.removeItem('ghana39_manual_update_pending');
         }}
@@ -2186,6 +2220,9 @@ def mobile_script(version: str, home: str = "home.html") -> str:
     function versionStamp(data) {{
       return String((data && (data.version || data.generated_at_taiwan)) || '').replace(/\\D/g, '').slice(0, 14);
     }}
+    function latestDrawText(data) {{
+      return String((data && (data.latest_draw_date || data.official_latest_draw_date)) || '');
+    }}
     async function fetchLiveVersion() {{
       try {{
         const live = await fetch(window.GHANA39_GITHUB_LIVE_BASE + '/version.json?manual=' + Date.now(), {{ cache: 'no-store', mode: 'cors', headers: {{ 'Cache-Control': 'no-cache' }} }});
@@ -2196,19 +2233,34 @@ def mobile_script(version: str, home: str = "home.html") -> str:
       return local.json();
     }}
     async function manualUpdateLatest() {{
-      setMobileStatus('手動更新最新 ' + new Date().toLocaleTimeString());
+      setMobileStatus('手動更新檢查中 ' + taiwanTimeText());
       var stamp = '';
+      var latestDraw = '';
+      var status = 'completed';
+      var message = '已完成檢查：目前雲端已是最新版本';
       try {{
         const data = await fetchLiveVersion();
         stamp = versionStamp(data);
-      }} catch (err) {{}}
+        latestDraw = latestDrawText(data);
+        var currentStamp = versionStamp({{ version: window.GHANA39_BUILD_VERSION }});
+        if (stamp && stamp !== currentStamp) {{
+          message = '發現雲端新版，已清除快取並重新載入';
+          status = 'new_version_loaded';
+        }}
+      }} catch (err) {{
+        status = 'version_check_failed';
+        message = '版本檢查失敗，已清除快取並重新載入本頁';
+      }}
       await clearMobileCaches();
       var nextVersion = stamp || window.GHANA39_BUILD_VERSION;
       try {{
         localStorage.setItem('ghana39_manual_update_pending', JSON.stringify({{
           startedAt: new Date().toISOString(),
           version: nextVersion,
-          page: currentMobilePage()
+          page: currentMobilePage(),
+          latest_draw_date: latestDraw,
+          status: status,
+          message: message
         }}));
       }} catch (err) {{}}
       location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
@@ -2507,13 +2559,19 @@ self.addEventListener('fetch', event => {{
 
 def version_payload(analysis: dict) -> dict:
     latest = analysis.get("latest_draw") or {}
+    summary = ((analysis.get("history_metadata") or {}).get("fetch_summary") or {})
+    external = summary.get("external_backfill") or {}
     return {
         "version": build_version(analysis),
         "generated_at_taiwan": analysis.get("generated_at_taiwan"),
         "latest_draw_date": latest.get("draw_date"),
         "latest_numbers": latest.get("numbers"),
+        "latest_source": latest.get("source"),
+        "official_latest_draw_date": summary.get("official_latest_draw_date") or summary.get("latest_draw_date"),
+        "external_backfill_inserted_count": external.get("inserted_count"),
         "target_draw_date": analysis.get("target_draw_date"),
         "ultra_confidence_pick": analysis.get("ultra_confidence_pick"),
+        "strong_single_accuracy_review": analysis.get("strong_single_accuracy_review"),
         "high_confidence_gate": analysis.get("high_confidence_gate"),
         "hit_rate_optimizer": analysis.get("hit_rate_optimizer"),
         "self_repair_status": analysis.get("self_repair_status"),
