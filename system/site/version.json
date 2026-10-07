@@ -1,50 +1,50 @@
 {
-  "version": "20261007090454",
-  "generated_at_taiwan": "2026-10-07T09:04:54+08:00",
+  "version": "20261007174132",
+  "generated_at_taiwan": "2026-10-07T17:41:32+08:00",
   "latest_draw_date": "2026-10-06",
   "latest_numbers": [
-    3,
-    11,
-    18,
-    23,
-    32
+    6,
+    17,
+    20,
+    24,
+    35
   ],
-  "latest_source": "NLA official winning-numbers:5/39 Direct Monday:draw#526",
+  "latest_source": "external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-06; corrected_previous=NLA official winning-numbers:5/39 Direct Monday:draw#526",
   "official_latest_draw_date": "2026-10-06",
-  "external_backfill_inserted_count": 3,
+  "external_backfill_inserted_count": 4,
   "target_draw_date": "2026-10-07",
   "ultra_confidence_pick": {
     "status": "strongest_research_signal",
-    "number": 34,
+    "number": 10,
     "numbers": [
-      34
+      10
     ],
-    "score": 0.9632,
+    "score": 1.0,
     "label": "本期最強超高信心高機率號碼",
-    "gate_status": "blocked",
-    "selected_rank": 2,
-    "selected_score": 0.943577,
-    "confidence_index": 95.4,
-    "model_probability_index": 16.34,
-    "support_models": 4,
-    "pair_lift_score": 0.8093,
+    "gate_status": "passed",
+    "selected_rank": 1,
+    "selected_score": 1.0,
+    "confidence_index": 99.0,
+    "model_probability_index": 16.92,
+    "support_models": 6,
+    "pair_lift_score": 0.6553,
     "single_accuracy_status": "critical_rebuild",
     "single_accuracy_penalty": 0.0,
     "logic_checks": [
       {
         "item": "高機率校準",
-        "status": "blocked",
-        "value": "Top9 1.2167 / 隨機 1.1538"
+        "status": "passed",
+        "value": "Top9 1.2333 / 隨機 1.1538"
       },
       {
         "item": "配對共現",
         "status": "passed",
-        "value": 0.8093
+        "value": 0.6553
       },
       {
         "item": "交叉模型",
         "status": "passed",
-        "value": "4/8"
+        "value": "6/12"
       },
       {
         "item": "非最新開獎號",
@@ -54,12 +54,12 @@
       {
         "item": "前九核心",
         "status": "passed",
-        "value": "排名 2"
+        "value": "排名 1"
       },
       {
         "item": "整組命中率優化",
         "status": "passed",
-        "value": "reviewed_no_change / 組合分 0.498216"
+        "value": "reviewed_no_change / 組合分 0.561928"
       },
       {
         "item": "外溢修正",
@@ -70,9 +70,14 @@
         "item": "獨隻實戰檢討",
         "status": "blocked",
         "value": "0/8 / 命中率 0.0"
+      },
+      {
+        "item": "90%目標檢查",
+        "status": "blocked",
+        "value": "目標 0.9 / 狀態 failed"
       }
     ],
-    "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率與獨隻實戰檢討；未全數通過只列最強研究訊號。"
+    "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率、獨隻實戰檢討與90%目標檢查；未全數通過只列最強研究訊號。"
   },
   "strong_single_accuracy_review": {
     "status": "critical_rebuild",
@@ -82,6 +87,8 @@
     "miss_count": 8,
     "hit_rate": 0.0,
     "random_single_expectation": 0.1282,
+    "target_hit_rate": 0.9,
+    "target_status": "failed",
     "missed_single_numbers": [
       {
         "number": 22,
@@ -242,13 +249,13 @@
     "rule": "獨隻結算低於隨機基準時，近期落空獨隻加重降權；本期必須通過配對、交叉模型、前九核心與實戰檢討才可強標。"
   },
   "high_confidence_gate": {
-    "status": "blocked",
-    "top9_edge_vs_random": 0.0629,
-    "top9_avg_hits": 1.2167,
+    "status": "passed",
+    "top9_edge_vs_random": 0.0795,
+    "top9_avg_hits": 1.2333,
     "random_top9_expectation": 1.1538,
-    "nine_pack_zero_rate": 0.2542,
+    "nine_pack_zero_rate": 0.2042,
     "low_hit_severity": 0.2865,
-    "portfolio_score": 0.4982,
+    "portfolio_score": 0.5619,
     "rule": "只有回測前九高於隨機基準、零命中率低於30%且整組優化分數通過時，才允許標成高機率；未通過只列強化候選。"
   },
   "hit_rate_optimizer": {
@@ -257,36 +264,36 @@
     "pool_size": 16,
     "target_size": 9,
     "previous_top9": [
-      13,
-      37,
-      34,
-      9,
-      22,
-      17,
-      27,
-      35,
-      29
+      10,
+      7,
+      32,
+      25,
+      16,
+      3,
+      18,
+      5,
+      13
     ],
     "selected_numbers": [
-      9,
-      13,
-      34,
-      37,
-      22,
-      17,
-      27,
-      35,
-      29
+      10,
+      7,
+      32,
+      25,
+      3,
+      18,
+      16,
+      5,
+      13
     ],
     "promoted_numbers": [],
     "demoted_numbers": [],
-    "portfolio_score": 0.498216,
-    "portfolio_score_before": 0.498216,
-    "portfolio_improvement": 0.01132,
-    "avg_signal": 0.618629,
-    "floor_signal": 0.431326,
-    "pair_score": 0.144382,
-    "balance_score": 0.741667,
+    "portfolio_score": 0.561928,
+    "portfolio_score_before": 0.561928,
+    "portfolio_improvement": 0.002926,
+    "avg_signal": 0.648417,
+    "floor_signal": 0.53627,
+    "pair_score": 0.312156,
+    "balance_score": 0.746111,
     "latest_repeat_count": 0,
     "adopted_external_modes": [
       "多窗口頻率",
@@ -332,7 +339,7 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-07T09:06:07+08:00",
+    "generated_at_taiwan": "2026-10-07T17:41:44+08:00",
     "passed_count": 39,
     "failed_count": 0,
     "warning_count": 0,

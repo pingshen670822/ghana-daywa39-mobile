@@ -80,6 +80,10 @@ MODEL_LABELS = {
     "omission_phase": "遺漏相位",
     "pair_lift": "拖牌關聯",
     "shape_follow": "牌型跟隨",
+    "trajectory_resonance": "軌跡共振",
+    "weekday_regularity": "週期規律",
+    "drag_chain": "拖牌鏈",
+    "single_precision_memory": "獨隻精度記憶",
     "tail_zone_balance": "尾數區間平衡",
     "sum_band_neighbor": "和值鄰近",
     "trend_break": "趨勢轉折",
@@ -87,14 +91,18 @@ MODEL_LABELS = {
 }
 
 BASE_WEIGHTS = {
-    "multi_window_frequency": 0.18,
-    "omission_phase": 0.14,
-    "pair_lift": 0.16,
-    "shape_follow": 0.14,
-    "tail_zone_balance": 0.12,
-    "sum_band_neighbor": 0.10,
-    "trend_break": 0.10,
-    "date_cycle": 0.06,
+    "multi_window_frequency": 0.12,
+    "omission_phase": 0.10,
+    "pair_lift": 0.14,
+    "shape_follow": 0.11,
+    "trajectory_resonance": 0.11,
+    "weekday_regularity": 0.08,
+    "drag_chain": 0.12,
+    "single_precision_memory": 0.09,
+    "tail_zone_balance": 0.07,
+    "sum_band_neighbor": 0.06,
+    "trend_break": 0.06,
+    "date_cycle": 0.04,
 }
 
 ROLLING_REVIEW_WINDOWS = (12, 30, 90)
@@ -217,6 +225,35 @@ def clean_numbers(numbers) -> list[int]:
 def upsert_draw(conn: sqlite3.Connection, draw_date: str, numbers, source: str) -> bool:
     numbers = clean_numbers(numbers)
     if not valid_numbers(numbers):
+        return False
+    existing = conn.execute(
+        "SELECT n1,n2,n3,n4,n5,source FROM draws WHERE draw_date=?",
+        (draw_date,),
+    ).fetchone()
+    if existing:
+        existing_numbers = [int(number) for number in existing[:5]]
+        existing_source = str(existing[5] or "")
+        source_text = str(source or "")
+        if existing_numbers == numbers:
+            return False
+        external_daywa_correction = "external" in source_text.lower() and (
+            "Daywa 5/39" in source_text or "5/39 Direct" in source_text
+        )
+        if external_daywa_correction:
+            conn.execute(
+                """
+                UPDATE draws
+                SET n1=?,n2=?,n3=?,n4=?,n5=?,source=?,created_at=?
+                WHERE draw_date=?
+                """,
+                (
+                    *numbers,
+                    f"{source_text}; corrected_previous={existing_source}",
+                    stamp(),
+                    draw_date,
+                ),
+            )
+            return True
         return False
     cursor = conn.execute(
         """
@@ -544,6 +581,151 @@ def trend_break_scores(draws: list[dict]) -> dict[int, float]:
     return normalize(values)
 
 
+def trajectory_resonance_scores(draws: list[dict], window: int = 520) -> dict[int, float]:
+    subset = draws[-window:] if len(draws) > window else draws
+    if len(subset) < 8:
+        return {number: 0.0 for number in NUMBERS}
+    latest = sorted(int(number) for number in draws[-1]["numbers"])
+    latest_tails = Counter(number % 10 for number in latest)
+    latest_zones = Counter(zone_label(number) for number in latest)
+    latest_deltas = Counter(abs(a - b) for a, b in combinations(latest, 2))
+    values = {number: 0.0 for number in NUMBERS}
+    for index in range(len(subset) - 1):
+        current = sorted(int(number) for number in subset[index]["numbers"])
+        tails = Counter(number % 10 for number in current)
+        zones = Counter(zone_label(number) for number in current)
+        deltas = Counter(abs(a - b) for a, b in combinations(current, 2))
+        tail_overlap = sum((latest_tails & tails).values()) / SPEC.draw_size
+        zone_overlap = sum((latest_zones & zones).values()) / SPEC.draw_size
+        delta_overlap = sum((latest_deltas & deltas).values()) / max(1, len(latest_deltas))
+        neighbor_overlap = sum(
+            1 for number in current if any(abs(number - latest_number) <= 2 for latest_number in latest)
+        ) / SPEC.draw_size
+        score = tail_overlap * 0.24 + zone_overlap * 0.20 + delta_overlap * 0.32 + neighbor_overlap * 0.24
+        if score >= 0.48:
+            for number in subset[index + 1]["numbers"]:
+                values[int(number)] += score
+    return normalize(values)
+
+
+def weekday_regularity_scores(draws: list[dict], target_date: str, window: int = 720) -> dict[int, float]:
+    subset = draws[-window:] if len(draws) > window else draws
+    target_weekday = datetime.strptime(target_date, "%Y-%m-%d").date().weekday()
+    values = {number: 0.0 for number in NUMBERS}
+    weekday_rows = []
+    for draw in subset:
+        try:
+            draw_weekday = datetime.strptime(str(draw["draw_date"]), "%Y-%m-%d").date().weekday()
+        except (KeyError, ValueError):
+            continue
+        if draw_weekday == target_weekday:
+            weekday_rows.append(draw)
+    for weight, rows in ((1.0, weekday_rows[-80:]), (0.55, weekday_rows[-24:])):
+        counts = frequency(rows)
+        for number in NUMBERS:
+            values[number] += counts.get(number, 0) * weight
+    latest = set(int(number) for number in draws[-1]["numbers"])
+    for number in NUMBERS:
+        if any(abs(number - latest_number) in (1, 2, 10) for latest_number in latest):
+            values[number] += 0.28
+    return normalize(values)
+
+
+def drag_chain_scores(draws: list[dict], window: int = 520) -> dict[int, float]:
+    subset = draws[-window:] if len(draws) > window else draws
+    if len(subset) < 12:
+        return {number: 0.0 for number in NUMBERS}
+    latest = set(int(number) for number in draws[-1]["numbers"])
+    chain_hits: dict[int, Counter] = defaultdict(Counter)
+    chain_total = Counter()
+    baseline = Counter()
+    for index in range(len(subset) - 1):
+        current = set(int(number) for number in subset[index]["numbers"])
+        following = set(int(number) for number in subset[index + 1]["numbers"])
+        baseline.update(following)
+        anchors = set(current)
+        anchors.update(normalize_number(number + 1) for number in current)
+        anchors.update(normalize_number(number - 1) for number in current)
+        anchors.update(normalize_number(number + 10) for number in current)
+        anchors.update(normalize_number(number - 10) for number in current)
+        for anchor in anchors:
+            chain_total[anchor] += 1
+            chain_hits[anchor].update(following)
+    values = {number: 0.0 for number in NUMBERS}
+    anchors = set(latest)
+    anchors.update(normalize_number(number + 1) for number in latest)
+    anchors.update(normalize_number(number - 1) for number in latest)
+    anchors.update(normalize_number(number + 10) for number in latest)
+    anchors.update(normalize_number(number - 10) for number in latest)
+    baseline_total = max(len(subset) - 1, 1)
+    for anchor in anchors:
+        support = chain_total.get(anchor, 0)
+        if support < 8:
+            continue
+        for number in NUMBERS:
+            conditional = chain_hits[anchor].get(number, 0) / support
+            base = baseline.get(number, 0) / baseline_total
+            lift = conditional - base
+            if lift > 0:
+                values[number] += lift
+    return normalize(values)
+
+
+def core_model_suite(draws: list[dict], target_date: str) -> dict[str, dict[int, float]]:
+    return {
+        "multi_window_frequency": multi_window_frequency_scores(draws),
+        "omission_phase": omission_phase_scores(draws),
+        "pair_lift": pair_lift_scores(draws),
+        "shape_follow": shape_follow_scores(draws),
+        "trajectory_resonance": trajectory_resonance_scores(draws),
+        "weekday_regularity": weekday_regularity_scores(draws, target_date),
+        "drag_chain": drag_chain_scores(draws),
+        "tail_zone_balance": tail_zone_balance_scores(draws),
+        "sum_band_neighbor": sum_band_neighbor_scores(draws),
+        "trend_break": trend_break_scores(draws),
+        "date_cycle": date_cycle_scores(target_date),
+    }
+
+
+def single_precision_memory_scores(
+    draws: list[dict],
+    target_date: str,
+    current_models: dict[str, dict[int, float]],
+    lookback: int = 8,
+) -> dict[int, float]:
+    if len(draws) < 720:
+        return {number: 0.0 for number in NUMBERS}
+    start = max(50, len(draws) - lookback - 1)
+    model_hits: dict[str, list[dict[str, int]]] = {name: [] for name in current_models}
+    for index in range(start, len(draws) - 1):
+        train = draws[: index + 1]
+        actual = set(int(number) for number in draws[index + 1]["numbers"])
+        actual_date = draws[index + 1]["draw_date"]
+        models = core_model_suite(train, actual_date)
+        for name, scores in models.items():
+            ranked = rank_values(scores)
+            model_hits.setdefault(name, []).append(
+                {
+                    "top1": 1 if ranked and ranked[0] in actual else 0,
+                    "top3": 1 if set(ranked[:3]) & actual else 0,
+                    "top5": 1 if set(ranked[:5]) & actual else 0,
+                }
+            )
+    values = {number: 0.0 for number in NUMBERS}
+    for name, scores in current_models.items():
+        rows = model_hits.get(name, [])
+        if not rows:
+            continue
+        top1_rate = sum(row["top1"] for row in rows) / len(rows)
+        top3_rate = sum(row["top3"] for row in rows) / len(rows)
+        top5_rate = sum(row["top5"] for row in rows) / len(rows)
+        model_quality = top1_rate * 0.54 + top3_rate * 0.28 + top5_rate * 0.18
+        ranked = rank_values(scores)
+        for rank, number in enumerate(ranked[:12], 1):
+            values[number] += model_quality * (13 - rank) / 12
+    return normalize(values)
+
+
 def normalize_number(value: int) -> int:
     value = abs(int(value))
     if value == 0:
@@ -577,16 +759,9 @@ def date_cycle_scores(target_date: str) -> dict[int, float]:
 
 
 def model_suite(draws: list[dict], target_date: str) -> dict[str, dict[int, float]]:
-    return {
-        "multi_window_frequency": multi_window_frequency_scores(draws),
-        "omission_phase": omission_phase_scores(draws),
-        "pair_lift": pair_lift_scores(draws),
-        "shape_follow": shape_follow_scores(draws),
-        "tail_zone_balance": tail_zone_balance_scores(draws),
-        "sum_band_neighbor": sum_band_neighbor_scores(draws),
-        "trend_break": trend_break_scores(draws),
-        "date_cycle": date_cycle_scores(target_date),
-    }
+    models = core_model_suite(draws, target_date)
+    models["single_precision_memory"] = single_precision_memory_scores(draws, target_date, models)
+    return models
 
 
 def combine_models(models: dict[str, dict[int, float]], weights: dict[str, float]) -> dict[int, float]:
@@ -609,7 +784,7 @@ def model_backtest_weights(draws: list[dict], rounds: int = 90) -> tuple[dict[st
         train = draws[: index + 1]
         actual = set(draws[index + 1]["numbers"])
         target_date = draws[index + 1]["draw_date"]
-        models = model_suite(train, target_date)
+        models = core_model_suite(train, target_date)
         for name, scores in models.items():
             ranked = rank_values(scores)[:9]
             totals[name] += len(set(ranked) & actual)
@@ -618,7 +793,9 @@ def model_backtest_weights(draws: list[dict], rounds: int = 90) -> tuple[dict[st
     adjusted = {}
     metrics = {}
     for name, base in BASE_WEIGHTS.items():
-        avg_hits = totals[name] / count if count else 0
+        avg_hits = totals[name] / count if count else RANDOM_TOP9
+        if name == "single_precision_memory":
+            avg_hits = RANDOM_TOP9
         edge = avg_hits - random_avg
         multiplier = 1.0 + max(-0.35, min(0.55, edge / max(random_avg, 1e-9)))
         adjusted[name] = max(0.025, base * multiplier)
@@ -648,7 +825,7 @@ def rolling_error_adjusted_weights(draws: list[dict], base_weights: dict[str, fl
         train = draws[: index + 1]
         actual = set(draws[index + 1]["numbers"])
         target_date = draws[index + 1]["draw_date"]
-        models = model_suite(train, target_date)
+        models = core_model_suite(train, target_date)
         for name, scores in models.items():
             ranked = rank_values(scores)
             top5_hits = len(set(ranked[:5]) & actual)
@@ -809,6 +986,7 @@ def low_hit_regime_review(history: list[dict] | None) -> dict:
 def strong_single_accuracy_review(history: list[dict] | None, limit: int = 30) -> dict:
     rows = list(history or [])[:limit]
     expected_rate = SPEC.draw_size / SPEC.number_max
+    target_rate = 0.90
     if not rows:
         return {
             "status": "no_settled_history",
@@ -816,6 +994,8 @@ def strong_single_accuracy_review(history: list[dict] | None, limit: int = 30) -
             "hit_count": 0,
             "hit_rate": None,
             "random_single_expectation": round(expected_rate, 4),
+            "target_hit_rate": target_rate,
+            "target_status": "not_measurable",
             "missed_single_numbers": [],
             "rule": "尚無已結算獨隻紀錄，先用一般守門。",
         }
@@ -863,6 +1043,8 @@ def strong_single_accuracy_review(history: list[dict] | None, limit: int = 30) -
         "miss_count": len(rows) - hit_count,
         "hit_rate": round(hit_rate, 4),
         "random_single_expectation": round(expected_rate, 4),
+        "target_hit_rate": target_rate,
+        "target_status": "passed" if hit_rate >= target_rate else "failed",
         "missed_single_numbers": [{"number": number, "misses": count} for number, count in missed.most_common(10)],
         "hit_single_numbers": [{"number": number, "hits": count} for number, count in hit_numbers.most_common(10)],
         "recent_rows": recent_rows[:12],
@@ -1261,13 +1443,17 @@ def apply_external_method_weight_shift(
     pair_recent = float((((rolling_pair.get("windows") or {}).get("12") or {}).get("top9_avg_hits")) or 0.0)
     template = {
         "multi_window_frequency": 0.02,
-        "omission_phase": 0.05,
-        "pair_lift": 0.45,
-        "shape_follow": 0.19,
-        "tail_zone_balance": 0.04,
-        "sum_band_neighbor": 0.12,
-        "trend_break": 0.11,
-        "date_cycle": 0.02,
+        "omission_phase": 0.04,
+        "pair_lift": 0.27,
+        "shape_follow": 0.13,
+        "trajectory_resonance": 0.14,
+        "weekday_regularity": 0.05,
+        "drag_chain": 0.18,
+        "single_precision_memory": 0.08,
+        "tail_zone_balance": 0.03,
+        "sum_band_neighbor": 0.04,
+        "trend_break": 0.03,
+        "date_cycle": 0.01,
     }
     should_shift = pair_avg >= RANDOM_TOP9 and (best_model == "pair_lift" or pair_recent >= RANDOM_TOP9)
     if not should_shift:
@@ -1315,9 +1501,14 @@ def candidate_reasons(number: int, models: dict[str, dict[int, float]], limit: i
     return [label for _, _, label in support[:limit]] or ["綜合模型"]
 
 
-def score_numbers(draws: list[dict], weights: dict[str, float] | None = None, failure_memory: dict | None = None) -> dict:
+def score_numbers(
+    draws: list[dict],
+    weights: dict[str, float] | None = None,
+    failure_memory: dict | None = None,
+    include_single_precision: bool = True,
+) -> dict:
     target_date = next_draw_date(draws[-1]["draw_date"])
-    models = model_suite(draws, target_date)
+    models = model_suite(draws, target_date) if include_single_precision else core_model_suite(draws, target_date)
     active_weights = weights or dict(BASE_WEIGHTS)
     ensemble = combine_models(models, active_weights)
     latest_numbers = set(draws[-1]["numbers"])
@@ -1760,7 +1951,7 @@ def build_ultra_confidence_pick(
         item
         for item in candidates[:9]
         if not item.get("last_draw_repeat")
-        and int(item.get("support_models") or 0) >= 3
+        and int(item.get("support_models") or 0) >= 4
         and float((item.get("model_scores") or {}).get("pair_lift") or 0.0) >= 0.40
     ]
     eligible = strict_eligible or [item for item in candidates[:15] if not item.get("last_draw_repeat")]
@@ -1772,7 +1963,8 @@ def build_ultra_confidence_pick(
     high_passed = high_gate.get("status") == "passed"
     in_top9 = number in top9
     optimizer_selected = number in selected_numbers if selected_numbers else in_top9
-    support_passed = support >= 3
+    support_passed = support >= 4
+    target90_passed = single_accuracy.get("target_status") == "passed"
     pair_passed = pair_score >= 0.40
     status = (
         "ultra_high_confidence_recommendation"
@@ -1783,6 +1975,7 @@ def build_ultra_confidence_pick(
         and pair_passed
         and optimizer_selected
         and single_accuracy_passed
+        and target90_passed
         else "strongest_research_signal"
     )
     logic_checks = [
@@ -1810,6 +2003,11 @@ def build_ultra_confidence_pick(
             "status": pass_flag(single_accuracy_passed),
             "value": f"{single_accuracy.get('hit_count', 0)}/{single_accuracy.get('sample_size', 0)} / 命中率 {single_accuracy.get('hit_rate', '-')}",
         },
+        {
+            "item": "90%目標檢查",
+            "status": pass_flag(target90_passed),
+            "value": f"目標 {single_accuracy.get('target_hit_rate', 0.9)} / 狀態 {single_accuracy.get('target_status', '-')}",
+        },
     ]
     return {
         "status": status,
@@ -1827,7 +2025,7 @@ def build_ultra_confidence_pick(
         "single_accuracy_status": single_accuracy.get("status"),
         "single_accuracy_penalty": round(single_review_penalty(selected), 4),
         "logic_checks": logic_checks,
-        "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率與獨隻實戰檢討；未全數通過只列最強研究訊號。",
+        "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率、獨隻實戰檢討與90%目標檢查；未全數通過只列最強研究訊號。",
     }
 
 
@@ -1841,7 +2039,7 @@ def backtest(draws: list[dict], rounds: int, weights: dict[str, float]) -> dict:
     for index in range(start, len(draws) - 1):
         train = draws[: index + 1]
         actual = set(draws[index + 1]["numbers"])
-        scored = score_numbers(train, weights)
+        scored = score_numbers(train, weights, include_single_precision=False)
         optimized_candidates, _ = optimize_hit_rate_portfolio(scored["candidates"], train, pool_size=14)
         ranked = [item["number"] for item in optimized_candidates]
         totals["top5"] += len(set(ranked[:5]) & actual)

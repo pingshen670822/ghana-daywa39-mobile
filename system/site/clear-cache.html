@@ -79,9 +79,9 @@
       .repair-actions{grid-template-columns:1fr}
       .interface-grid{grid-template-columns:1fr 1fr}
     }
-    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><div class="update-status-box" data-update-status="manual-complete-time"><div class="label">更新狀態</div><p class="status-main" id="mobileUpdateStatus">版本 20261007090454</p><p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p></div></section></main>
+    </style></head><body><main><section class="band launch-panel"><h1>清除手機舊快取</h1><p>按下後會清除舊版雲端頁，重新回到最新首頁。</p><button class="mobile-refresh" onclick="forceRefresh()">清除並重新載入</button><div class="update-status-box" data-update-status="manual-complete-time"><div class="label">更新狀態</div><p class="status-main" id="mobileUpdateStatus">版本 20261007174132</p><p class="status-sub" id="lastManualUpdateStatus">最後手動更新完成：尚未在本手機執行</p></div></section></main>
     <script>
-    window.GHANA39_BUILD_VERSION = '20261007090454';
+    window.GHANA39_BUILD_VERSION = '20261007174132';
     window.GHANA39_HOME_PAGE = 'home.html';
     window.GHANA39_GITHUB_LIVE_BASE = 'https://pingshen670822.github.io/ghana-daywa39-mobile';
     window.GHANA39_REPAIR_WORKFLOW_URL = 'https://github.com/pingshen670822/ghana-daywa39-mobile/actions/workflows/ghana39-cloud-self-repair.yml';
@@ -185,7 +185,7 @@
     async function forceRefresh() {
       setMobileStatus('更新中 ' + new Date().toLocaleTimeString());
       await clearMobileCaches();
-      location.replace(currentMobilePage() + '?v=20261007090454&force=' + Date.now());
+      location.replace(currentMobilePage() + '?v=20261007174132&force=' + Date.now());
     }
     function versionStamp(data) {
       return String((data && (data.version || data.generated_at_taiwan)) || '').replace(/\D/g, '').slice(0, 14);
@@ -236,7 +236,7 @@
       location.replace(currentMobilePage() + '?v=' + nextVersion + '&manual=' + Date.now());
     }
     function openRepairPanel() {
-      location.href = 'repair.html?v=20261007090454&from=' + encodeURIComponent(currentMobilePage());
+      location.href = 'repair.html?v=20261007174132&from=' + encodeURIComponent(currentMobilePage());
     }
     async function openCloudRepair() {
       setMobileStatus('當機修復啟動 ' + new Date().toLocaleTimeString());
@@ -268,7 +268,7 @@
     window.addEventListener('pageshow', function() { finalizeManualUpdateIfNeeded(); autoRefreshIfStale(); });
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('service-worker.js?v=20261007090454', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
+        navigator.serviceWorker.register('service-worker.js?v=20261007174132', { updateViaCache: 'none' }).then(function(reg){ reg.update(); }).catch(function(){});
         autoRefreshIfStale();
         setInterval(autoRefreshIfStale, 30000);
       });

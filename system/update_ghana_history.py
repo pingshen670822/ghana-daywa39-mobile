@@ -238,9 +238,9 @@ def normalize_row(row: dict) -> Draw | None:
 
 
 def external_system_date(local_date: datetime) -> str:
-    # The local CSV is keyed by Taiwan draw date. Ghana evening draws settle on
-    # the following Taiwan date, matching the official UTC conversion above.
-    return (local_date.date() + timedelta(days=1)).isoformat()
+    # External Daywa pages publish the game calendar date directly. Keep that
+    # date as the canonical draw date and show Taiwan draw time separately.
+    return local_date.date().isoformat()
 
 
 def external_draw(local_date: datetime, numbers: list[int], source_label: str, source_url: str, product_code: str) -> Draw | None:
@@ -353,9 +353,10 @@ def fetch_lotteryngo_daywa_results() -> tuple[list[Draw], dict]:
 def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[str, list[Draw], dict]]) -> tuple[list[Draw], dict]:
     by_date = {draw.draw_date: draw for draw in official_draws}
     inserted: list[Draw] = []
+    corrected: list[dict] = []
     duplicates = 0
     conflicts = []
-    preferred = {"effi": 0, "lotteryngo": 1}
+    preferred = {"lotteryngo": 0, "effi": 1}
     candidates: dict[str, list[tuple[str, Draw]]] = {}
     for source_key, draws, _status in external_sets:
         for draw in draws:
@@ -370,12 +371,15 @@ def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[s
             if existing_numbers == draw_numbers:
                 duplicates += 1
             else:
-                conflicts.append(
+                by_date[draw_date] = draw
+                corrected.append(
                     {
                         "draw_date": draw_date,
-                        "official_or_existing": existing_numbers,
-                        "external": draw_numbers,
+                        "previous_numbers": existing_numbers,
+                        "corrected_numbers": draw_numbers,
+                        "previous_source": existing.source,
                         "external_source": draw.source,
+                        "rule": "Daywa external calendar-date row replaces mismatched 5/39 Direct server-date row.",
                     }
                 )
             continue
@@ -383,14 +387,16 @@ def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[s
         inserted.append(draw)
     merged = sorted(by_date.values(), key=lambda draw: (draw.draw_date, draw.product_code, draw.draw_number))
     return merged, {
-        "status": "applied" if inserted else "no_new_external_rows",
+        "status": "applied" if inserted or corrected else "no_new_external_rows",
         "inserted_count": len(inserted),
+        "corrected_count": len(corrected),
         "duplicate_confirmations": duplicates,
         "conflict_count": len(conflicts),
         "conflicts": conflicts[:20],
         "inserted_rows": [draw.__dict__ for draw in inserted],
+        "corrected_rows": corrected[:20],
         "source_statuses": {source_key: status for source_key, _draws, status in external_sets},
-        "rule": "External rows fill only missing Taiwan draw dates, never overwrite official NLA rows.",
+        "rule": "External Daywa rows use the public game calendar date and correct mismatched server-date rows.",
     }
 
 

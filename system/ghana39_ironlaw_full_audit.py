@@ -312,7 +312,13 @@ def main() -> int:
             invalid_rows.append(f"missing_source:{draw_date}")
     add(checks, "CSV開獎格式", "passed" if not invalid_rows and not duplicate_dates else "failed", "5顆號碼、1-39、日期排序、來源欄位", {"invalid": invalid_rows[:20], "duplicate": duplicate_dates[:20]})
     add(checks, "SQLite資料庫存在", "passed" if DB_PATH.exists() and db_latest else "failed", str(DB_PATH))
-    add(checks, "CSV與SQLite最新一致", "passed" if csv_latest and db_latest and csv_latest == db_latest else "failed", f"CSV {csv_latest.get('draw_date')} / DB {db_latest.get('draw_date')}")
+    csv_db_same = (
+        csv_latest
+        and db_latest
+        and csv_latest.get("draw_date") == db_latest.get("draw_date")
+        and csv_latest.get("numbers") == db_latest.get("numbers")
+    )
+    add(checks, "CSV與SQLite最新一致", "passed" if csv_db_same else "failed", f"CSV {csv_latest.get('draw_date')} / DB {db_latest.get('draw_date')}")
     add(checks, "SQLite重複日期", "passed" if not db_duplicate_dates() else "failed", "不得有重複開獎日期", db_duplicate_dates()[:20])
     add(checks, "最新分析存在", "passed" if analysis else "failed", str(ANALYSIS_PATH))
     add(checks, "最新開獎號碼合法", "passed" if valid_numbers(latest_numbers) else "failed", fmt(latest_numbers) if latest_numbers else "-")

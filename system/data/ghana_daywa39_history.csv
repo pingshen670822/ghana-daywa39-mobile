@@ -745,21 +745,22 @@ draw_date,n1,n2,n3,n4,n5,source,official_datetime_utc,product_code,draw_number
 2026-09-15,5,7,24,25,29,NLA official winning-numbers:5/39 Direct Monday:draw#524,2026-09-14T18:45:00Z,5/39 Direct Monday,524
 2026-09-16,2,10,18,26,39,NLA official winning-numbers:5/39 Direct Tuesday:draw#263,2026-09-15T18:45:00Z,5/39 Direct Tuesday,263
 2026-09-17,8,11,18,26,29,NLA official winning-numbers:5/39 Direct Wednesday:draw#264,2026-09-16T18:45:00Z,5/39 Direct Wednesday,264
-2026-09-18,1,10,25,28,38,NLA official winning-numbers:5/39 Direct Thursday:draw#264,2026-09-17T18:45:00Z,5/39 Direct Thursday,264
-2026-09-19,8,14,20,21,24,NLA official winning-numbers:5/39 Direct Friday:draw#255,2026-09-18T18:45:00Z,5/39 Direct Friday,255
+2026-09-18,8,14,20,21,24,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-18,2026-09-18T19:00:00Z,5/39 Direct Friday external,external_verified
+2026-09-19,4,13,14,18,26,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-19,2026-09-19T19:00:00Z,5/39 Direct Saturday external,external_verified
 2026-09-20,4,13,14,18,26,NLA official winning-numbers:5/39 Direct Saturday:draw#264,2026-09-19T18:45:00Z,5/39 Direct Saturday,264
-2026-09-22,9,15,20,30,35,NLA official winning-numbers:5/39 Direct Monday:draw#525,2026-09-21T18:45:00Z,5/39 Direct Monday,525
-2026-09-23,7,10,25,33,38,NLA official winning-numbers:5/39 Direct Tuesday:draw#264,2026-09-22T18:45:00Z,5/39 Direct Tuesday,264
-2026-09-24,14,19,26,37,38,NLA official winning-numbers:5/39 Direct Wednesday:draw#265,2026-09-23T18:45:00Z,5/39 Direct Wednesday,265
-2026-09-25,1,8,21,24,36,NLA official winning-numbers:5/39 Direct Thursday:draw#265,2026-09-24T18:45:00Z,5/39 Direct Thursday,265
-2026-09-26,2,8,25,31,32,NLA official winning-numbers:5/39 Direct Friday:draw#256,2026-09-25T18:45:00Z,5/39 Direct Friday,256
-2026-09-27,1,7,9,23,26,NLA official winning-numbers:5/39 Direct Saturday:draw#265,2026-09-26T18:45:00Z,5/39 Direct Saturday,265
-2026-09-28,4,14,16,33,38,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-27,2026-09-27T19:00:00Z,Daywa 5/39 supplemental external,external_verified
-2026-09-29,9,15,20,30,35,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-28,2026-09-28T19:00:00Z,Daywa 5/39 supplemental external,external_verified
-2026-09-30,3,20,24,32,33,NLA official winning-numbers:5/39 Direct Tuesday:draw#265,2026-09-29T18:45:00Z,5/39 Direct Tuesday,265
-2026-10-01,13,21,26,33,39,NLA official winning-numbers:5/39 Direct Wednesday:draw#266,2026-09-30T18:45:00Z,5/39 Direct Wednesday,266
-2026-10-02,4,9,19,26,33,NLA official winning-numbers:5/39 Direct Thursday:draw#266,2026-10-01T18:45:00Z,5/39 Direct Thursday,266
-2026-10-03,4,10,12,18,38,NLA official winning-numbers:5/39 Direct Friday:draw#257,2026-10-02T18:45:00Z,5/39 Direct Friday,257
-2026-10-04,14,26,29,32,35,NLA official winning-numbers:5/39 Direct Saturday:draw#266,2026-10-03T18:45:00Z,5/39 Direct Saturday,266
-2026-10-05,3,7,14,24,32,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-04,2026-10-04T19:00:00Z,Daywa 5/39 supplemental external,external_verified
-2026-10-06,3,11,18,23,32,NLA official winning-numbers:5/39 Direct Monday:draw#526,2026-10-05T18:45:00Z,5/39 Direct Monday,526
+2026-09-21,9,15,20,30,35,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-21,2026-09-21T19:00:00Z,5/39 Direct Monday external,external_verified
+2026-09-22,7,10,25,33,38,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-22,2026-09-22T19:00:00Z,5/39 Direct Tuesday external,external_verified
+2026-09-23,14,19,26,37,38,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-23,2026-09-23T19:00:00Z,5/39 Direct Wednesday external,external_verified
+2026-09-24,1,8,21,24,36,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-24,2026-09-24T19:00:00Z,5/39 Direct Thursday external,external_verified
+2026-09-25,2,8,25,31,32,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-25,2026-09-25T19:00:00Z,5/39 Direct Friday external,external_verified
+2026-09-26,1,7,9,23,26,external verified Effi Lotto 5/39 Direct:https://effi-lotto.com/ghana/results/:ghana_local_date=2026-09-26,2026-09-26T19:00:00Z,5/39 Direct Saturday external,external_verified
+2026-09-27,4,14,16,33,38,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-27,2026-09-27T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-09-28,9,15,20,30,35,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-28,2026-09-28T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-09-29,3,20,24,32,33,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-29,2026-09-29T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-09-30,13,21,26,33,39,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-09-30,2026-09-30T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-01,4,9,19,26,33,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-01,2026-10-01T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-02,4,10,12,18,38,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-02,2026-10-02T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-03,14,26,29,32,35,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-03,2026-10-03T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-04,3,7,14,24,32,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-04,2026-10-04T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-05,3,11,18,23,32,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-05,2026-10-05T19:00:00Z,Daywa 5/39 supplemental external,external_verified
+2026-10-06,6,17,20,24,35,external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-06,2026-10-06T19:00:00Z,Daywa 5/39 supplemental external,external_verified

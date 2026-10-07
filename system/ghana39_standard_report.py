@@ -1376,10 +1376,13 @@ def exact539_single_review_rows(analysis: dict) -> list[list]:
         hit_rate_text = "-"
     expected = review.get("random_single_expectation")
     expected_text = f"{float(expected) * 100:.1f}%" if isinstance(expected, (int, float)) else "-"
+    target = review.get("target_hit_rate", 0.9)
+    target_text = f"{float(target) * 100:.1f}%" if isinstance(target, (int, float)) else "90.0%"
     return [
         ["結算樣本", review.get("sample_size", 0), "只採已開獎可結算預測"],
         ["命中/落空", f"{review.get('hit_count', 0)} / {review.get('miss_count', 0)}", "獨隻1中1實戰紀錄"],
         ["命中率", hit_rate_text, f"隨機基準約 {expected_text}"],
+        ["90%目標", target_text, f"狀態 {review.get('target_status', '-')}；未達不得假標超高信心"],
         ["修正狀態", review.get("status", "-"), review.get("rule", "-")],
         ["近期落空獨隻", recent_missed or "-", "本期已加重降權，不再照抄"],
     ]
@@ -1466,6 +1469,7 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
     <p><b>{esc(guard_note)} 鐵律：監測器永久禁止事後換號或用開獎號回填。</b></p>
     <div class="grid">
       <div class="card"><div class="label">監測條件</div><div class="value">前9低命中與第10至15名外溢</div></div>
+      <div class="card"><div class="label">低命中修正</div><div class="value">漏抓回補與權重轉換</div></div>
       <div class="card"><div class="label">外溢拉回</div><div class="value">{esc(fmt_numbers(front9.get("promoted_numbers", [])) or "-")}</div></div>
       <div class="card"><div class="label">外溢降下</div><div class="value">{esc(fmt_numbers(front9.get("demoted_numbers", [])) or "-")}</div></div>
       <div class="card"><div class="label">正式前9</div><div class="value">{esc(fmt_numbers(top9))}</div></div>
