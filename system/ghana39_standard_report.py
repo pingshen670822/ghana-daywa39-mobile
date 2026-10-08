@@ -71,6 +71,7 @@ def compact_status(status: str) -> str:
         "watch_only": "觀察中",
         "official_watch": "研究守門通過",
         "official_public_partial": "官方公開資料不完整",
+        "public_verified_backfilled": "公開歷史已補齊",
         "partial": "資料不足",
         "seed_only": "資料過少",
     }.get(str(status or ""), str(status or "-"))

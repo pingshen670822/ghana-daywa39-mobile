@@ -40,6 +40,9 @@ SERVER_FN_URL = f"https://www.nla.com.gh/_serverFn/{SERVER_FN_ID}"
 SOURCE_URL = "https://www.nla.com.gh/winning-numbers"
 EFFI_RESULTS_URL = "https://effi-lotto.com/ghana/results/"
 LOTTERYNGO_RESULTS_URL = "https://lotteryngo.com/ro/results/ghana/daywa-5-39/"
+LOTTERYTEXTS_PAST_RESULTS_URL = "https://lotterytexts.com/ghana/daywa-5-39/past-results/"
+LOTTERYTEXTS_AJAX_URL = "https://lotterytexts.com/wp-admin/admin-ajax.php"
+LOTTERYTEXTS_LOTTERY_ID = "383"
 TAIWAN_TZ = ZoneInfo("Asia/Taipei")
 DEFAULT_START_DATE = "2024-04-01"
 FULL_SCAN_START_DATE = "2000-01-01"
@@ -358,13 +361,107 @@ def fetch_lotteryngo_daywa_results() -> tuple[list[Draw], dict]:
     return draws, status
 
 
+def fetch_lotterytexts_daywa_history(start_year: int = 2019, end_year: int | None = None) -> tuple[list[Draw], dict]:
+    end_year = end_year or datetime.now(TAIWAN_TZ).year
+    status = {
+        "source": LOTTERYTEXTS_PAST_RESULTS_URL,
+        "ajax": LOTTERYTEXTS_AJAX_URL,
+        "years": [],
+        "rows": 0,
+        "direct_rows": 0,
+        "status": "ok",
+        "errors": [],
+    }
+    try:
+        landing = request_text(LOTTERYTEXTS_PAST_RESULTS_URL)
+    except Exception as exc:
+        status["status"] = "error"
+        status["errors"].append(f"landing:{exc}")
+        return [], status
+    nonce_match = re.search(r"nonce:\s*'([^']+)'", landing)
+    if not nonce_match:
+        status["status"] = "error"
+        status["errors"].append("missing_lotterytexts_nonce")
+        return [], status
+    nonce = nonce_match.group(1)
+    years = sorted({int(year) for year in re.findall(r"<option[^>]+value=['\"](20\d{2})['\"]", landing)}, reverse=True)
+    years = [year for year in years if start_year <= year <= end_year] or list(range(end_year, start_year - 1, -1))
+    draws_by_date: dict[str, Draw] = {}
+    for year in years:
+        post_data = urllib.parse.urlencode(
+            {
+                "action": "past_results_all_ajax",
+                "lottery_id": LOTTERYTEXTS_LOTTERY_ID,
+                "year": str(year),
+                "nonce": nonce,
+            }
+        ).encode("utf-8")
+        request = urllib.request.Request(
+            LOTTERYTEXTS_AJAX_URL,
+            data=post_data,
+            headers={
+                "User-Agent": "Mozilla/5.0",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Referer": LOTTERYTEXTS_PAST_RESULTS_URL,
+            },
+        )
+        raw = ""
+        for attempt in range(1, 4):
+            try:
+                raw = urllib.request.urlopen(request, timeout=60).read().decode("utf-8", errors="replace")
+                break
+            except urllib.error.HTTPError as exc:
+                if exc.code == 429 and attempt < 3:
+                    time.sleep(8 * attempt)
+                    continue
+                status["errors"].append(f"{year}:HTTP {exc.code} {exc.reason}")
+            except Exception as exc:
+                status["errors"].append(f"{year}:{exc}")
+            break
+        if not raw:
+            time.sleep(1.25)
+            continue
+        year_rows = 0
+        for section in re.findall(r'<section class="lottery-section lottery-logo">[\s\S]*?</section>', raw):
+            date_match = re.search(r"lottery-date[^>]*>\s*([^,<]+),\s*<span>([^<]+)</span>", section)
+            numbers = [int(part) for part in re.findall(r"<li>(\d{1,2})</li>", section)]
+            if not date_match or len(numbers) != 5:
+                continue
+            date_text = html.unescape(date_match.group(2)).strip()
+            try:
+                local_date = datetime.strptime(date_text, "%b %d, %Y")
+            except ValueError:
+                status["errors"].append(f"unparsed_lotterytexts_date:{date_text}")
+                continue
+            draw = external_draw(
+                local_date,
+                numbers,
+                "external verified LotteryTexts Daywa 5/39 full history",
+                LOTTERYTEXTS_PAST_RESULTS_URL,
+                "Daywa 5/39 full-history external",
+            )
+            if draw:
+                draws_by_date[draw.draw_date] = draw
+                year_rows += 1
+        status["years"].append({"year": year, "rows": year_rows})
+        time.sleep(1.25)
+    draws = sorted(draws_by_date.values(), key=lambda draw: draw.draw_date)
+    status["rows"] = len(draws)
+    status["direct_rows"] = len(draws)
+    if status["errors"] and not draws:
+        status["status"] = "error"
+    elif status["errors"]:
+        status["status"] = "partial"
+    return draws, status
+
+
 def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[str, list[Draw], dict]]) -> tuple[list[Draw], dict]:
     by_date = {draw.draw_date: draw for draw in official_draws}
     inserted: list[Draw] = []
     corrected: list[dict] = []
     duplicates = 0
     conflicts = []
-    preferred = {"lotteryngo": 0, "effi": 1}
+    preferred = {"lotterytexts": 0, "lotteryngo": 1, "effi": 2}
     candidates: dict[str, list[tuple[str, Draw]]] = {}
     for source_key, draws, _status in external_sets:
         for draw in draws:
@@ -379,6 +476,18 @@ def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[s
             if existing_numbers == draw_numbers:
                 duplicates += 1
             else:
+                if "NLA official" in existing.source and "external" in draw.source.lower():
+                    conflicts.append(
+                        {
+                            "draw_date": draw_date,
+                            "kept_numbers": existing_numbers,
+                            "external_numbers": draw_numbers,
+                            "kept_source": existing.source,
+                            "external_source": draw.source,
+                            "rule": "Official NLA row is preserved; external conflicting row is recorded but not allowed to overwrite official data.",
+                        }
+                    )
+                    continue
                 by_date[draw_date] = draw
                 corrected.append(
                     {
@@ -404,7 +513,7 @@ def merge_external_draws(official_draws: list[Draw], external_sets: list[tuple[s
         "inserted_rows": [draw.__dict__ for draw in inserted],
         "corrected_rows": corrected[:20],
         "source_statuses": {source_key: status for source_key, _draws, status in external_sets},
-        "rule": "External Daywa rows use the public game calendar date and correct mismatched server-date rows.",
+        "rule": "External Daywa rows use the public game calendar date and fill gaps; official NLA rows are preserved when an external source conflicts.",
     }
 
 
@@ -643,9 +752,14 @@ def main(argv: list[str] | None = None) -> int:
     official_draws, batches = fetch_all(args.start, args.end, args.sleep)
     effi_draws, effi_status = fetch_effi_direct_results()
     lotteryngo_draws, lotteryngo_status = fetch_lotteryngo_daywa_results()
+    lotterytexts_draws, lotterytexts_status = fetch_lotterytexts_daywa_history(
+        start_year=2019,
+        end_year=datetime.strptime(args.end, "%Y-%m-%d").year,
+    )
     draws, external_backfill = merge_external_draws(
         official_draws,
         [
+            ("lotterytexts", lotterytexts_draws, lotterytexts_status),
             ("effi", effi_draws, effi_status),
             ("lotteryngo", lotteryngo_draws, lotteryngo_status),
         ],

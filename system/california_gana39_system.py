@@ -2201,16 +2201,21 @@ def history_completeness(draw_count: int, metadata: dict | None = None) -> dict:
     official_latest = fetch_summary.get("official_latest_draw_date") or latest
     external = fetch_summary.get("external_backfill") if isinstance(fetch_summary.get("external_backfill"), dict) else {}
     external_inserted = int(external.get("inserted_count") or 0)
+    source_statuses = external.get("source_statuses") if isinstance(external.get("source_statuses"), dict) else {}
+    lotterytexts = source_statuses.get("lotterytexts") if isinstance(source_statuses.get("lotterytexts"), dict) else {}
+    lotterytexts_rows = int(lotterytexts.get("rows") or 0)
     official_range = gap_audit.get("official_public_range") or (f"{earliest}..{latest}" if earliest and latest else "")
     draw_gap = gap_audit.get("draw_number_gap_summary") if isinstance(gap_audit.get("draw_number_gap_summary"), dict) else {}
     missing_before = int(draw_gap.get("minimum_missing_before_public_range") or 0)
     prehistory_status = gap_audit.get("prehistory_status") or "not_scanned"
-    status = "official_public_partial" if base_status != "complete" and official_range else base_status
+    status = "public_verified_backfilled" if lotterytexts_rows >= 1000 and draw_count >= 1000 else ("official_public_partial" if base_status != "complete" and official_range else base_status)
     note = "完整回測建議至少3000期；不足時只能列研究觀察。"
     if official_range:
         note = (
             f"NLA官方公開接口目前可驗證範圍：{official_range}；"
-            f"外部驗證補齊 {external_inserted} 期；"
+            f"LotteryTexts全量公開歷史 {lotterytexts_rows or '-'} 期，已合併補齊 {external_inserted} 期；"
+            f"目前資料庫公開可取得範圍：{earliest}..{latest}，共 {draw_count} 期；"
+            f"外部與官方衝突 {external.get('conflict_count', 0)} 筆已保留官方資料、不覆蓋；"
             f"2000-01-01..2024-03-31 掃描狀態：{prehistory_status}；"
             f"依官方期號序列推估公開起點前至少缺 {missing_before} 期。"
         )
@@ -2224,6 +2229,8 @@ def history_completeness(draw_count: int, metadata: dict | None = None) -> dict:
         "latest_official_draw_date": official_latest,
         "external_backfill_inserted_count": external_inserted,
         "external_backfill_status": external.get("status"),
+        "lotterytexts_full_history_rows": lotterytexts_rows,
+        "external_conflict_count": external.get("conflict_count", 0),
         "prehistory_audit_range": gap_audit.get("prehistory_audit_range"),
         "prehistory_status": prehistory_status,
         "prehistory_direct_rows": gap_audit.get("prehistory_direct_rows"),

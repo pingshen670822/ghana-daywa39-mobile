@@ -1,16 +1,16 @@
 {
   "status": "passed",
-  "generated_at_taiwan": "2026-10-08T12:14:40+08:00",
-  "latest_draw_date": "2026-10-06",
+  "generated_at_taiwan": "2026-10-08T13:21:25+08:00",
+  "latest_draw_date": "2026-10-07",
   "latest_numbers": [
-    6,
-    17,
-    20,
-    24,
-    35
+    5,
+    23,
+    25,
+    32,
+    37
   ],
   "target_draw_date": "2026-10-08",
-  "version": "20261008121005",
+  "version": "20261008131858",
   "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
   "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
   "passed_count": 40,
@@ -21,7 +21,7 @@
       "item": "CSV歷史資料存在",
       "status": "passed",
       "passed": true,
-      "message": "CSV rows=765",
+      "message": "CSV rows=2097",
       "detail": null
     },
     {
@@ -45,7 +45,7 @@
       "item": "CSV與SQLite最新一致",
       "status": "passed",
       "passed": true,
-      "message": "CSV 2026-10-06 / DB 2026-10-06",
+      "message": "CSV 2026-10-07 / DB 2026-10-07",
       "detail": null
     },
     {
@@ -66,14 +66,14 @@
       "item": "最新開獎號碼合法",
       "status": "passed",
       "passed": true,
-      "message": "06 17 20 24 35",
+      "message": "05 23 25 32 37",
       "detail": null
     },
     {
       "item": "分析與CSV最新一致",
       "status": "passed",
       "passed": true,
-      "message": "analysis 2026-10-06 06 17 20 24 35",
+      "message": "analysis 2026-10-07 05 23 25 32 37",
       "detail": null
     },
     {
@@ -87,42 +87,42 @@
       "item": "官方抓取摘要一致",
       "status": "passed",
       "passed": true,
-      "message": "fetch_summary=2026-10-06 analysis=2026-10-06",
+      "message": "fetch_summary=2026-10-07 analysis=2026-10-07",
       "detail": null
     },
     {
       "item": "官方公開資料更新時間",
       "status": "passed",
       "passed": true,
-      "message": "official_latest=2026-10-05 merged_latest=2026-10-06 external補齊=4 updated=2026-10-08T12:09:58+08:00",
+      "message": "official_latest=2026-10-05 merged_latest=2026-10-07 external補齊=1336 updated=2026-10-08T13:15:44+08:00",
       "detail": null
     },
     {
       "item": "候選前九完整",
       "status": "passed",
       "passed": true,
-      "message": "10 25 16 07 05 13 30 33 02",
+      "message": "16 05 21 09 12 28 27 13 03",
       "detail": null
     },
     {
       "item": "候選前十五完整",
       "status": "passed",
       "passed": true,
-      "message": "10 25 16 07 05 13 30 33 02 18 03 32 37 20 14",
+      "message": "16 05 21 09 12 28 27 13 03 30 33 18 04 10 14",
       "detail": null
     },
     {
       "item": "最強獨隻守門",
       "status": "passed",
       "passed": true,
-      "message": "single=10",
+      "message": "single=16",
       "detail": null
     },
     {
       "item": "終極獨隻日期標示",
       "status": "passed",
       "passed": true,
-      "message": "single=10; target=2026-10-08; basis=2026-10-06",
+      "message": "single=16; target=2026-10-08; basis=2026-10-07",
       "detail": null
     },
     {

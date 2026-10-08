@@ -1,38 +1,38 @@
 {
-  "version": "20261008121005",
-  "generated_at_taiwan": "2026-10-08T12:10:05+08:00",
-  "latest_draw_date": "2026-10-06",
+  "version": "20261008131858",
+  "generated_at_taiwan": "2026-10-08T13:18:58+08:00",
+  "latest_draw_date": "2026-10-07",
   "latest_numbers": [
-    6,
-    17,
-    20,
-    24,
-    35
+    5,
+    23,
+    25,
+    32,
+    37
   ],
-  "latest_source": "external supplemental Lottery n Go Daywa 5/39:https://lotteryngo.com/ro/results/ghana/daywa-5-39/:ghana_local_date=2026-10-06",
+  "latest_source": "external verified LotteryTexts Daywa 5/39 full history:https://lotterytexts.com/ghana/daywa-5-39/past-results/:ghana_local_date=2026-10-07",
   "official_latest_draw_date": "2026-10-05",
-  "external_backfill_inserted_count": 4,
+  "external_backfill_inserted_count": 1336,
   "target_draw_date": "2026-10-08",
   "ultimate_single_date_context": {
-    "ultimate_single_number": 10,
+    "ultimate_single_number": 16,
     "prediction_target_date": "2026-10-08",
     "prediction_taiwan_time": "2026-10-08 17:30",
-    "data_basis_draw_date": "2026-10-06",
+    "data_basis_draw_date": "2026-10-07",
     "data_basis_numbers": [
-      6,
-      17,
-      20,
-      24,
-      35
+      5,
+      23,
+      25,
+      32,
+      37
     ],
-    "data_basis_taiwan_time": "2026-10-06 17:30",
-    "generated_at_taiwan": "2026-10-08T12:10:05+08:00",
-    "module_pass_count": 7,
+    "data_basis_taiwan_time": "2026-10-07 17:30",
+    "generated_at_taiwan": "2026-10-08T13:18:58+08:00",
+    "module_pass_count": 6,
     "module_total_count": 9,
     "active_system_modules": [
       {
-        "key": "drag_chain",
-        "label": "拖牌鏈",
+        "key": "trajectory_resonance",
+        "label": "軌跡共振",
         "score": 1.0
       },
       {
@@ -41,54 +41,54 @@
         "score": 1.0
       },
       {
-        "key": "single_precision_memory",
-        "label": "獨隻精度記憶",
-        "score": 0.772
-      },
-      {
-        "key": "trajectory_resonance",
-        "label": "軌跡共振",
-        "score": 0.7667
-      },
-      {
         "key": "omission_phase",
         "label": "遺漏相位",
-        "score": 0.732
+        "score": 0.9489
+      },
+      {
+        "key": "drag_chain",
+        "label": "拖牌鏈",
+        "score": 0.8736
       },
       {
         "key": "pair_lift",
         "label": "拖牌關聯",
-        "score": 0.6334
-      },
-      {
-        "key": "multi_window_frequency",
-        "label": "多窗口頻率",
-        "score": 0.6272
-      },
-      {
-        "key": "weekday_regularity",
-        "label": "週期規律",
-        "score": 0.4737
-      },
-      {
-        "key": "shape_follow",
-        "label": "牌型跟隨",
-        "score": 0.4612
-      },
-      {
-        "key": "sum_band_neighbor",
-        "label": "和值鄰近",
-        "score": 0.4257
-      },
-      {
-        "key": "trend_break",
-        "label": "趨勢轉折",
-        "score": 0.2745
+        "score": 0.7537
       },
       {
         "key": "tail_zone_balance",
         "label": "尾數區間平衡",
-        "score": 0.0464
+        "score": 0.7469
+      },
+      {
+        "key": "single_precision_memory",
+        "label": "獨隻精度記憶",
+        "score": 0.7395
+      },
+      {
+        "key": "trend_break",
+        "label": "趨勢轉折",
+        "score": 0.5828
+      },
+      {
+        "key": "shape_follow",
+        "label": "牌型跟隨",
+        "score": 0.4911
+      },
+      {
+        "key": "weekday_regularity",
+        "label": "週期規律",
+        "score": 0.4211
+      },
+      {
+        "key": "multi_window_frequency",
+        "label": "多窗口頻率",
+        "score": 0.3794
+      },
+      {
+        "key": "sum_band_neighbor",
+        "label": "和值鄰近",
+        "score": 0.1664
       }
     ],
     "external_common_modules": [
@@ -99,37 +99,37 @@
       "區間平衡",
       "回測校準"
     ],
-    "selection_basis": "7/9 守門通過；全系統模型與外部通用分析法共同仲裁。",
+    "selection_basis": "6/9 守門通過；全系統模型與外部通用分析法共同仲裁。",
     "world_module_policy": "終極獨隻必須由全系統模組、配對共現、遺漏/熱冷、趨勢、日期與回測守門共同輸出；禁止手填號碼。",
     "rule": "每次輸出終極獨隻都必須標示預測目標日、台灣開獎時間、資料依據開獎日與模組通過狀態。"
   },
   "ultra_confidence_pick": {
     "status": "strongest_research_signal",
-    "number": 10,
+    "number": 16,
     "numbers": [
-      10
+      16
     ],
-    "score": 1.0,
+    "score": 0.8699,
     "label": "本期最強超高信心高機率號碼",
-    "gate_status": "passed",
+    "gate_status": "blocked",
     "selected_rank": 1,
     "selected_score": 1.0,
     "confidence_index": 99.0,
     "model_probability_index": 16.92,
     "support_models": 7,
-    "pair_lift_score": 0.6334,
+    "pair_lift_score": 0.7537,
     "single_accuracy_status": "critical_rebuild",
     "single_accuracy_penalty": 0.0,
     "logic_checks": [
       {
         "item": "高機率校準",
-        "status": "passed",
-        "value": "Top9 1.2167 / 隨機 1.1538"
+        "status": "blocked",
+        "value": "Top9 1.1542 / 隨機 1.1538"
       },
       {
         "item": "配對共現",
         "status": "passed",
-        "value": 0.6334
+        "value": 0.7537
       },
       {
         "item": "交叉模型",
@@ -149,7 +149,7 @@
       {
         "item": "整組命中率優化",
         "status": "passed",
-        "value": "reviewed_no_change / 組合分 0.554468"
+        "value": "reviewed_no_change / 組合分 0.481597"
       },
       {
         "item": "外溢修正",
@@ -159,7 +159,7 @@
       {
         "item": "獨隻實戰檢討",
         "status": "blocked",
-        "value": "0/8 / 命中率 0.0"
+        "value": "0/9 / 命中率 0.0"
       },
       {
         "item": "90%目標檢查",
@@ -169,25 +169,25 @@
     ],
     "rule": "必須同時通過高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、整組命中率、獨隻實戰檢討與90%目標檢查；未全數通過只列最強研究訊號。",
     "date_context": {
-      "ultimate_single_number": 10,
+      "ultimate_single_number": 16,
       "prediction_target_date": "2026-10-08",
       "prediction_taiwan_time": "2026-10-08 17:30",
-      "data_basis_draw_date": "2026-10-06",
+      "data_basis_draw_date": "2026-10-07",
       "data_basis_numbers": [
-        6,
-        17,
-        20,
-        24,
-        35
+        5,
+        23,
+        25,
+        32,
+        37
       ],
-      "data_basis_taiwan_time": "2026-10-06 17:30",
-      "generated_at_taiwan": "2026-10-08T12:10:05+08:00",
-      "module_pass_count": 7,
+      "data_basis_taiwan_time": "2026-10-07 17:30",
+      "generated_at_taiwan": "2026-10-08T13:18:58+08:00",
+      "module_pass_count": 6,
       "module_total_count": 9,
       "active_system_modules": [
         {
-          "key": "drag_chain",
-          "label": "拖牌鏈",
+          "key": "trajectory_resonance",
+          "label": "軌跡共振",
           "score": 1.0
         },
         {
@@ -196,54 +196,54 @@
           "score": 1.0
         },
         {
-          "key": "single_precision_memory",
-          "label": "獨隻精度記憶",
-          "score": 0.772
-        },
-        {
-          "key": "trajectory_resonance",
-          "label": "軌跡共振",
-          "score": 0.7667
-        },
-        {
           "key": "omission_phase",
           "label": "遺漏相位",
-          "score": 0.732
+          "score": 0.9489
+        },
+        {
+          "key": "drag_chain",
+          "label": "拖牌鏈",
+          "score": 0.8736
         },
         {
           "key": "pair_lift",
           "label": "拖牌關聯",
-          "score": 0.6334
-        },
-        {
-          "key": "multi_window_frequency",
-          "label": "多窗口頻率",
-          "score": 0.6272
-        },
-        {
-          "key": "weekday_regularity",
-          "label": "週期規律",
-          "score": 0.4737
-        },
-        {
-          "key": "shape_follow",
-          "label": "牌型跟隨",
-          "score": 0.4612
-        },
-        {
-          "key": "sum_band_neighbor",
-          "label": "和值鄰近",
-          "score": 0.4257
-        },
-        {
-          "key": "trend_break",
-          "label": "趨勢轉折",
-          "score": 0.2745
+          "score": 0.7537
         },
         {
           "key": "tail_zone_balance",
           "label": "尾數區間平衡",
-          "score": 0.0464
+          "score": 0.7469
+        },
+        {
+          "key": "single_precision_memory",
+          "label": "獨隻精度記憶",
+          "score": 0.7395
+        },
+        {
+          "key": "trend_break",
+          "label": "趨勢轉折",
+          "score": 0.5828
+        },
+        {
+          "key": "shape_follow",
+          "label": "牌型跟隨",
+          "score": 0.4911
+        },
+        {
+          "key": "weekday_regularity",
+          "label": "週期規律",
+          "score": 0.4211
+        },
+        {
+          "key": "multi_window_frequency",
+          "label": "多窗口頻率",
+          "score": 0.3794
+        },
+        {
+          "key": "sum_band_neighbor",
+          "label": "和值鄰近",
+          "score": 0.1664
         }
       ],
       "external_common_modules": [
@@ -254,14 +254,14 @@
         "區間平衡",
         "回測校準"
       ],
-      "selection_basis": "7/9 守門通過；全系統模型與外部通用分析法共同仲裁。",
+      "selection_basis": "6/9 守門通過；全系統模型與外部通用分析法共同仲裁。",
       "world_module_policy": "終極獨隻必須由全系統模組、配對共現、遺漏/熱冷、趨勢、日期與回測守門共同輸出；禁止手填號碼。",
       "rule": "每次輸出終極獨隻都必須標示預測目標日、台灣開獎時間、資料依據開獎日與模組通過狀態。"
     },
     "full_system_modules": [
       {
-        "key": "drag_chain",
-        "label": "拖牌鏈",
+        "key": "trajectory_resonance",
+        "label": "軌跡共振",
         "score": 1.0
       },
       {
@@ -270,54 +270,54 @@
         "score": 1.0
       },
       {
-        "key": "single_precision_memory",
-        "label": "獨隻精度記憶",
-        "score": 0.772
-      },
-      {
-        "key": "trajectory_resonance",
-        "label": "軌跡共振",
-        "score": 0.7667
-      },
-      {
         "key": "omission_phase",
         "label": "遺漏相位",
-        "score": 0.732
+        "score": 0.9489
+      },
+      {
+        "key": "drag_chain",
+        "label": "拖牌鏈",
+        "score": 0.8736
       },
       {
         "key": "pair_lift",
         "label": "拖牌關聯",
-        "score": 0.6334
-      },
-      {
-        "key": "multi_window_frequency",
-        "label": "多窗口頻率",
-        "score": 0.6272
-      },
-      {
-        "key": "weekday_regularity",
-        "label": "週期規律",
-        "score": 0.4737
-      },
-      {
-        "key": "shape_follow",
-        "label": "牌型跟隨",
-        "score": 0.4612
-      },
-      {
-        "key": "sum_band_neighbor",
-        "label": "和值鄰近",
-        "score": 0.4257
-      },
-      {
-        "key": "trend_break",
-        "label": "趨勢轉折",
-        "score": 0.2745
+        "score": 0.7537
       },
       {
         "key": "tail_zone_balance",
         "label": "尾數區間平衡",
-        "score": 0.0464
+        "score": 0.7469
+      },
+      {
+        "key": "single_precision_memory",
+        "label": "獨隻精度記憶",
+        "score": 0.7395
+      },
+      {
+        "key": "trend_break",
+        "label": "趨勢轉折",
+        "score": 0.5828
+      },
+      {
+        "key": "shape_follow",
+        "label": "牌型跟隨",
+        "score": 0.4911
+      },
+      {
+        "key": "weekday_regularity",
+        "label": "週期規律",
+        "score": 0.4211
+      },
+      {
+        "key": "multi_window_frequency",
+        "label": "多窗口頻率",
+        "score": 0.3794
+      },
+      {
+        "key": "sum_band_neighbor",
+        "label": "和值鄰近",
+        "score": 0.1664
       }
     ],
     "external_common_modules": [
@@ -332,14 +332,18 @@
   "strong_single_accuracy_review": {
     "status": "critical_rebuild",
     "mode": "strict_penalty",
-    "sample_size": 8,
+    "sample_size": 9,
     "hit_count": 0,
-    "miss_count": 8,
+    "miss_count": 9,
     "hit_rate": 0.0,
     "random_single_expectation": 0.1282,
     "target_hit_rate": 0.9,
     "target_status": "failed",
     "missed_single_numbers": [
+      {
+        "number": 10,
+        "misses": 1
+      },
       {
         "number": 22,
         "misses": 1
@@ -375,6 +379,21 @@
     ],
     "hit_single_numbers": [],
     "recent_rows": [
+      {
+        "based_on_date": "2026-10-06",
+        "actual_date": "2026-10-07",
+        "numbers": [
+          10
+        ],
+        "passed": false,
+        "actual_numbers": [
+          5,
+          23,
+          25,
+          32,
+          37
+        ]
+      },
       {
         "based_on_date": "2026-09-30",
         "actual_date": "2026-10-01",
@@ -499,13 +518,13 @@
     "rule": "獨隻結算低於隨機基準時，近期落空獨隻加重降權；本期必須通過配對、交叉模型、前九核心與實戰檢討才可強標。"
   },
   "high_confidence_gate": {
-    "status": "passed",
-    "top9_edge_vs_random": 0.0629,
-    "top9_avg_hits": 1.2167,
+    "status": "blocked",
+    "top9_edge_vs_random": 0.0004,
+    "top9_avg_hits": 1.1542,
     "random_top9_expectation": 1.1538,
-    "nine_pack_zero_rate": 0.2125,
+    "nine_pack_zero_rate": 0.2458,
     "low_hit_severity": 0.2865,
-    "portfolio_score": 0.5545,
+    "portfolio_score": 0.4816,
     "rule": "只有回測前九高於隨機基準、零命中率低於30%且整組優化分數通過時，才允許標成高機率；未通過只列強化候選。"
   },
   "hit_rate_optimizer": {
@@ -514,37 +533,37 @@
     "pool_size": 16,
     "target_size": 9,
     "previous_top9": [
-      10,
-      25,
-      32,
       16,
-      3,
-      7,
-      18,
+      30,
       5,
-      13
+      21,
+      9,
+      12,
+      18,
+      33,
+      28
     ],
     "selected_numbers": [
-      10,
-      25,
-      32,
-      7,
       16,
-      3,
+      21,
+      9,
+      30,
+      12,
       5,
-      18,
-      13
+      28,
+      33,
+      18
     ],
     "promoted_numbers": [],
     "demoted_numbers": [],
-    "portfolio_score": 0.554468,
-    "portfolio_score_before": 0.554468,
-    "portfolio_improvement": 0.0,
-    "avg_signal": 0.634271,
-    "floor_signal": 0.533988,
-    "pair_score": 0.309929,
-    "balance_score": 0.746111,
-    "latest_repeat_count": 0,
+    "portfolio_score": 0.481597,
+    "portfolio_score_before": 0.481597,
+    "portfolio_improvement": 0.009364,
+    "avg_signal": 0.566079,
+    "floor_signal": 0.45352,
+    "pair_score": 0.161641,
+    "balance_score": 0.927222,
+    "latest_repeat_count": 1,
     "adopted_external_modes": [
       "多窗口頻率",
       "遺漏/跳期",
@@ -589,11 +608,11 @@
   },
   "ironlaw_full_audit": {
     "status": "passed",
-    "generated_at_taiwan": "2026-10-08T12:14:40+08:00",
+    "generated_at_taiwan": "2026-10-08T13:21:25+08:00",
     "passed_count": 40,
     "failed_count": 0,
     "warning_count": 0,
-    "latest_draw_date": "2026-10-06",
+    "latest_draw_date": "2026-10-07",
     "target_draw_date": "2026-10-08",
     "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
     "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
