@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "generated_at_taiwan": "2026-10-07T17:41:44+08:00",
+  "generated_at_taiwan": "2026-10-08T12:14:40+08:00",
   "latest_draw_date": "2026-10-06",
   "latest_numbers": [
     6,
@@ -9,11 +9,11 @@
     24,
     35
   ],
-  "target_draw_date": "2026-10-07",
-  "version": "20261007174132",
+  "target_draw_date": "2026-10-08",
+  "version": "20261008121005",
   "public_cloud_url": "https://ghana-daywa39-ironlaw-mobile.ping-shen670888.chatgpt.site/full-report.html",
   "public_github_url": "https://pingshen670822.github.io/ghana-daywa39-mobile/full-report.html",
-  "passed_count": 39,
+  "passed_count": 40,
   "failed_count": 0,
   "warning_count": 0,
   "checks": [
@@ -80,7 +80,7 @@
       "item": "預測目標開獎日校正",
       "status": "passed",
       "passed": true,
-      "message": "target=2026-10-07 expected=2026-10-07; 官方最新日只作資料依據，預測目標依台灣當前17:30開獎日校正",
+      "message": "target=2026-10-08 expected=2026-10-08; 官方最新日只作資料依據，預測目標依台灣當前17:30開獎日校正",
       "detail": null
     },
     {
@@ -94,21 +94,21 @@
       "item": "官方公開資料更新時間",
       "status": "passed",
       "passed": true,
-      "message": "official_latest=2026-10-06 merged_latest=2026-10-06 external補齊=4 updated=2026-10-07T17:36:54+08:00",
+      "message": "official_latest=2026-10-05 merged_latest=2026-10-06 external補齊=4 updated=2026-10-08T12:09:58+08:00",
       "detail": null
     },
     {
       "item": "候選前九完整",
       "status": "passed",
       "passed": true,
-      "message": "10 07 25 16 03 13 30 33 39",
+      "message": "10 25 16 07 05 13 30 33 02",
       "detail": null
     },
     {
       "item": "候選前十五完整",
       "status": "passed",
       "passed": true,
-      "message": "10 07 25 16 03 13 30 33 39 05 02 32 37 14 15",
+      "message": "10 25 16 07 05 13 30 33 02 18 03 32 37 20 14",
       "detail": null
     },
     {
@@ -116,6 +116,13 @@
       "status": "passed",
       "passed": true,
       "message": "single=10",
+      "detail": null
+    },
+    {
+      "item": "終極獨隻日期標示",
+      "status": "passed",
+      "passed": true,
+      "message": "single=10; target=2026-10-08; basis=2026-10-06",
       "detail": null
     },
     {

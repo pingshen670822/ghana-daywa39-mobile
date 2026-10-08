@@ -325,6 +325,7 @@ def import_history_csv(conn: sqlite3.Connection, csv_path: Path) -> dict:
     added = 0
     read = 0
     skipped = 0
+    parsed_rows = []
     with csv_path.open("r", newline="", encoding="utf-8-sig") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -333,11 +334,15 @@ def import_history_csv(conn: sqlite3.Connection, csv_path: Path) -> dict:
             if not parsed:
                 skipped += 1
                 continue
-            draw_date, numbers, source = parsed
-            if upsert_draw(conn, draw_date, numbers, source):
-                added += 1
+            parsed_rows.append(parsed)
+    if not parsed_rows:
+        return {"path": str(csv_path), "status": "no_valid_rows", "added": 0, "read": read, "skipped": skipped}
+    conn.execute("DELETE FROM draws")
+    for draw_date, numbers, source in parsed_rows:
+        if upsert_draw(conn, draw_date, numbers, source):
+            added += 1
     conn.commit()
-    return {"path": str(csv_path), "status": "ok", "added": added, "read": read, "skipped": skipped}
+    return {"path": str(csv_path), "status": "rebuilt", "added": added, "read": read, "skipped": skipped}
 
 
 def fetch_draws(conn: sqlite3.Connection) -> list[dict]:
@@ -369,6 +374,47 @@ def prediction_target_draw_date(latest_draw_date: str) -> str:
 def target_taiwan_safe_time(target_date: str) -> str:
     target = datetime.strptime(target_date, "%Y-%m-%d").date()
     return f"{target.isoformat()} {SPEC.safe_taiwan_update_time}"
+
+
+def build_ultimate_single_date_context(
+    latest: dict,
+    target_date: str,
+    pick: dict,
+    selected_candidate: dict | None = None,
+    generated_at_taiwan: str | None = None,
+) -> dict:
+    checks = pick.get("logic_checks") or []
+    passed = sum(1 for check in checks if check.get("status") == "passed")
+    total = len(checks)
+    latest_numbers = [int(number) for number in (latest.get("numbers") or [])]
+    selected_candidate = selected_candidate or {}
+    active_scores = selected_candidate.get("model_scores") or {}
+    active_modules = [
+        {
+            "key": key,
+            "label": MODEL_LABELS.get(key, key),
+            "score": round(float(active_scores.get(key) or 0.0), 4),
+        }
+        for key in MODEL_LABELS
+        if key in active_scores
+    ]
+    active_modules.sort(key=lambda item: item["score"], reverse=True)
+    return {
+        "ultimate_single_number": int(pick["number"]) if pick.get("number") else None,
+        "prediction_target_date": target_date,
+        "prediction_taiwan_time": target_taiwan_safe_time(target_date),
+        "data_basis_draw_date": latest.get("draw_date"),
+        "data_basis_numbers": latest_numbers,
+        "data_basis_taiwan_time": f"{latest.get('draw_date', '-')} {SPEC.draw_time_taiwan}",
+        "generated_at_taiwan": generated_at_taiwan or stamp(now_taiwan()),
+        "module_pass_count": passed,
+        "module_total_count": total,
+        "active_system_modules": active_modules,
+        "external_common_modules": ["熱冷號", "遺漏期", "拖牌/同伴號", "配對共現", "區間平衡", "回測校準"],
+        "selection_basis": f"{passed}/{total} 守門通過；全系統模型與外部通用分析法共同仲裁。",
+        "world_module_policy": "終極獨隻必須由全系統模組、配對共現、遺漏/熱冷、趨勢、日期與回測守門共同輸出；禁止手填號碼。",
+        "rule": "每次輸出終極獨隻都必須標示預測目標日、台灣開獎時間、資料依據開獎日與模組通過狀態。",
+    }
 
 
 def frequency(draws: list[dict]) -> Counter:
@@ -1506,8 +1552,9 @@ def score_numbers(
     weights: dict[str, float] | None = None,
     failure_memory: dict | None = None,
     include_single_precision: bool = True,
+    target_date: str | None = None,
 ) -> dict:
-    target_date = next_draw_date(draws[-1]["draw_date"])
+    target_date = target_date or next_draw_date(draws[-1]["draw_date"])
     models = model_suite(draws, target_date) if include_single_precision else core_model_suite(draws, target_date)
     active_weights = weights or dict(BASE_WEIGHTS)
     ensemble = combine_models(models, active_weights)
@@ -2440,6 +2487,8 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         raise RuntimeError("No draw data is available.")
     latest = draws[-1]
     target_date = prediction_target_draw_date(latest["draw_date"])
+    generated_at_taiwan = stamp(now_taiwan())
+    generated_at_draw_timezone = stamp(now_draw_timezone())
     base_weights, model_backtest = model_backtest_weights(draws, rounds=min(rounds, 120))
     low_hit_review = low_hit_regime_review(settled_history_rows)
     single_accuracy_review = strong_single_accuracy_review(settled_history_rows)
@@ -2448,7 +2497,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
     weights, low_hit_review = apply_low_hit_regime_shift(weights, low_hit_review)
     weights, external_method_shift = apply_external_method_weight_shift(weights, model_backtest, rolling_adjustment)
     low_hit_review["failure_memory"] = failure_memory
-    scored = score_numbers(draws, weights, failure_memory)
+    scored = score_numbers(draws, weights, failure_memory, target_date=target_date)
     candidates, hit_rate_optimizer = optimize_hit_rate_portfolio(scored["candidates"], draws, failure_memory)
     candidates, front9_escape_correction = apply_front9_escape_correction(
         candidates,
@@ -2480,6 +2529,31 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
                 "rule": ultra_confidence_pick.get("rule"),
             }
         )
+    selected_candidate = next(
+        (
+            item
+            for item in candidates
+            if ultra_confidence_pick.get("number") and int(item.get("number")) == int(ultra_confidence_pick["number"])
+        ),
+        {},
+    )
+    ultimate_single_context = build_ultimate_single_date_context(
+        latest,
+        target_date,
+        ultra_confidence_pick,
+        selected_candidate,
+        generated_at_taiwan,
+    )
+    ultra_confidence_pick["date_context"] = ultimate_single_context
+    ultra_confidence_pick["full_system_modules"] = ultimate_single_context.get("active_system_modules", [])
+    ultra_confidence_pick["external_common_modules"] = ultimate_single_context.get("external_common_modules", [])
+    packs["strong_single"]["date_context"] = ultimate_single_context
+    packs["strong_single"].setdefault("selection_audit", {}).update(
+        {
+            "date_context": ultimate_single_context,
+            "full_system_module_rule": ultimate_single_context.get("world_module_policy"),
+        }
+    )
     metadata = history_metadata()
     completeness = history_completeness(len(draws), metadata)
     fresh = freshness(latest["draw_date"], target_date)
@@ -2497,9 +2571,9 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         if high_confidence_gate["status"] == "passed" and item["confidence_index"] >= 86 and item["support_models"] >= 3
     ]
     analysis = {
-        "engine_version": "ghana_daywa39_precision_spec_v5_hit_rate_portfolio_20260804",
-        "generated_at_taiwan": stamp(now_taiwan()),
-        "generated_at_draw_timezone": stamp(now_draw_timezone()),
+        "engine_version": "ghana_daywa39_precision_spec_v6_single_date_module_guard_20261008",
+        "generated_at_taiwan": generated_at_taiwan,
+        "generated_at_draw_timezone": generated_at_draw_timezone,
         "game_spec": asdict(SPEC),
         "latest_draw": latest,
         "target_draw_date": target_date,
@@ -2515,6 +2589,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
         "external_method_weight_shift": external_method_shift,
         "low_hit_regime_shift": low_hit_review,
         "strong_single_accuracy_review": single_accuracy_review,
+        "ultimate_single_date_context": ultimate_single_context,
         "hit_rate_optimizer": hit_rate_optimizer,
         "high_confidence_gate": high_confidence_gate,
         "ultra_confidence_pick": ultra_confidence_pick,
@@ -2537,7 +2612,7 @@ def analyze(draws: list[dict], rounds: int, settled_history_rows: list[dict] | N
             "low_hit_regime_shift": "近期實戰命中低於隨機基準或零命中偏高時，啟動漏抓回補、落空降權與模型權重轉換。",
             "external_method_shift": "參考外部預測系統常用的 companion/pair、hot/cold、overdue、balance、backtest，近期勝出模型自動升權。",
             "hit_rate_portfolio": "前九改用整組命中率優化：單號分數、共現配對、區間平衡、錯誤回饋與回測門檻共同決定。",
-            "ultra_confidence_pick": "每期必定輸出1顆最強單號；須由高機率校準、配對共現、交叉模型、非最新開獎號、前九核心與命中率優化共同審核。",
+            "ultra_confidence_pick": "每期必定輸出1顆最強單號；須由高機率校準、配對共現、交叉模型、非最新開獎號、前九核心、命中率優化、外部通用分析模式與日期目標守門共同審核。",
             "front9_escape_correction": "每期檢測命中是否掉到第10到15名；若有外溢，立即將第二層強訊號壓回前九。",
             "self_repair_after_draw": "每日17:30開獎後立即更新；19:30檢查未更新時啟動自主修復並重跑手機雲端同步。",
             "daily_ironlaw_schedule": "每日17:30開獎、17:31正式重算發布、19:30兩小時故障門檻、19:31自主修復。",

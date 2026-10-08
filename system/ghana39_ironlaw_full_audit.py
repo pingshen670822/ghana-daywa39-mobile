@@ -286,6 +286,11 @@ def main() -> int:
     top15 = [int(item["number"]) for item in (analysis.get("candidates") or [])[:15]]
     single = (((analysis.get("strong_packs") or {}).get("strong_single") or {}).get("numbers") or [None])[0]
     ultra = analysis.get("ultra_confidence_pick") or {}
+    single_date_context = (
+        analysis.get("ultimate_single_date_context")
+        or ultra.get("date_context")
+        or (((analysis.get("strong_packs") or {}).get("strong_single") or {}).get("date_context") or {})
+    )
     ironlaw = analysis.get("ironlaw_spec") or {}
     self_repair = analysis.get("self_repair_status") or {}
 
@@ -337,6 +342,14 @@ def main() -> int:
     add(checks, "候選前九完整", "passed" if len(top9) == 9 and valid_numbers(top9[:5]) and len(set(top9)) == 9 and all(1 <= n <= 39 for n in top9) else "failed", fmt(top9) if top9 else "-")
     add(checks, "候選前十五完整", "passed" if len(top15) == 15 and len(set(top15)) == 15 and all(1 <= n <= 39 for n in top15) else "failed", fmt(top15) if top15 else "-")
     add(checks, "最強獨隻守門", "passed" if single and int(single) not in latest_numbers and ultra.get("number") == single and len(ultra.get("logic_checks") or []) >= 6 else "failed", f"single={int(single):02d}" if single else "-")
+    single_date_ok = (
+        single_date_context.get("ultimate_single_number") == int(single)
+        and single_date_context.get("prediction_target_date") == analysis.get("target_draw_date")
+        and single_date_context.get("data_basis_draw_date") == latest_date
+        and single_date_context.get("data_basis_numbers") == latest_numbers
+        and single_date_context.get("module_total_count", 0) >= 6
+    )
+    add(checks, "終極獨隻日期標示", "passed" if single_date_ok and "終極獨隻日期" in report_html + site_html else "failed", f"single={int(single):02d}; target={single_date_context.get('prediction_target_date')}; basis={single_date_context.get('data_basis_draw_date')}" if single else "-")
     add(checks, "強牌組分層", "passed" if all(key in (analysis.get("strong_packs") or {}) for key in ("strong_single", "two_hit_one", "three_hit_one", "five_hit_two", "nine_hit_three")) else "failed", "獨隻、2中1、3中1、5中2、9中3")
     add(checks, "低機率三層", "passed" if all(key in (analysis.get("low_probability") or {}) for key in ("avoid_5", "avoid_10", "avoid_15")) else "failed", "5不中、10不中、15不中")
     add(checks, "資料真實性守門", "passed" if (analysis.get("data_integrity_gate") or {}).get("status") == "passed" else "failed", (analysis.get("data_integrity_gate") or {}).get("rule", "-"))
@@ -350,6 +363,7 @@ def main() -> int:
         "本期最強1顆",
         "最強號碼多邏輯總結",
         "本期資料",
+        "終極獨隻日期",
         "終極獨隻準確度檢討",
         "失準事件監測",
         "本期分級主選",

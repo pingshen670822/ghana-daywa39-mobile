@@ -190,6 +190,68 @@ def target_label(analysis: dict) -> str:
     return taiwan_time_label(fresh.get("target_taiwan_safe_update_time") or f"{target} {fresh.get('daily_draw_time_taiwan', '17:30')}")
 
 
+def single_date_context(analysis: dict) -> dict:
+    pick = analysis.get("ultra_confidence_pick") or {}
+    pack = ((analysis.get("strong_packs") or {}).get("strong_single") or {})
+    context = (
+        analysis.get("ultimate_single_date_context")
+        or pick.get("date_context")
+        or pack.get("date_context")
+        or {}
+    )
+    latest = analysis.get("latest_draw") or {}
+    fresh = analysis.get("freshness") or {}
+    draw_time = fresh.get("daily_draw_time_taiwan", "17:30")
+    single = ultra_numbers(analysis) or strong_single_numbers(analysis)
+    return {
+        "ultimate_single_number": context.get("ultimate_single_number") or (single[0] if single else None),
+        "prediction_target_date": context.get("prediction_target_date") or analysis.get("target_draw_date", "-"),
+        "prediction_taiwan_time": context.get("prediction_taiwan_time") or target_label(analysis),
+        "data_basis_draw_date": context.get("data_basis_draw_date") or latest.get("draw_date", "-"),
+        "data_basis_numbers": context.get("data_basis_numbers") or latest.get("numbers", []),
+        "data_basis_taiwan_time": context.get("data_basis_taiwan_time") or latest_label(analysis),
+        "generated_at_taiwan": context.get("generated_at_taiwan") or analysis.get("generated_at_taiwan", "-"),
+        "module_pass_count": context.get("module_pass_count", len([row for row in pick.get("logic_checks", []) if row.get("status") == "passed"])),
+        "module_total_count": context.get("module_total_count", len(pick.get("logic_checks", []) or [])),
+        "active_system_modules": context.get("active_system_modules") or [],
+        "external_common_modules": context.get("external_common_modules") or ["熱冷號", "遺漏期", "拖牌/同伴號", "配對共現", "區間平衡", "回測校準"],
+        "selection_basis": context.get("selection_basis") or "全系統模組共同仲裁。",
+        "world_module_policy": context.get("world_module_policy") or "終極獨隻必須由全系統模組共同輸出，禁止手填號碼。",
+        "rule": context.get("rule") or "終極獨隻必須標示預測目標日與資料依據日。",
+    }
+
+
+def single_date_summary(analysis: dict) -> str:
+    context = single_date_context(analysis)
+    number = context.get("ultimate_single_number")
+    number_text = f"{int(number):02d}" if number not in (None, "") else "-"
+    return f"{number_text} / 預測 {context.get('prediction_taiwan_time', '-')}"
+
+
+def single_basis_summary(analysis: dict) -> str:
+    context = single_date_context(analysis)
+    return f"{context.get('data_basis_draw_date', '-')} / {fmt_numbers(context.get('data_basis_numbers', [])) or '-'}"
+
+
+def single_module_summary(analysis: dict) -> str:
+    context = single_date_context(analysis)
+    active = context.get("active_system_modules") or []
+    labels = [str(item.get("label", "-")) for item in active[:6] if isinstance(item, dict)]
+    external = context.get("external_common_modules") or []
+    return f"{context.get('module_pass_count', 0)}/{context.get('module_total_count', 0)} 守門；系統 {', '.join(labels) or '-'}；外部通用 {', '.join(str(item) for item in external[:4])}"
+
+
+def ultimate_single_date_rows(analysis: dict) -> list[list]:
+    context = single_date_context(analysis)
+    return [
+        ["終極獨隻日期", single_date_summary(analysis), "本號碼只適用此預測目標日，不得拿舊期混用。"],
+        ["資料依據", single_basis_summary(analysis), f"資料依據台灣時間 {context.get('data_basis_taiwan_time', '-')}"],
+        ["產生時間", display_time(context.get("generated_at_taiwan", "-")), "每次重算會重新蓋時間與版本。"],
+        ["全系統/外部模組", single_module_summary(analysis), context.get("selection_basis", "-")],
+        ["守門規則", context.get("rule", "-"), context.get("world_module_policy", "-")],
+    ]
+
+
 def official_gap_label(analysis: dict) -> str:
     fresh = analysis.get("freshness") or {}
     dates = fresh.get("official_missing_draw_dates") or []
@@ -694,7 +756,7 @@ def interface_539_panel_html(analysis: dict, embedded: bool = False) -> str:
     cards = [
         ("開獎依據", f"{latest.get('draw_date', '-')} / {fmt_numbers(latest.get('numbers', [])) or '-'}", latest_label(analysis)),
         ("預測目標", f"{analysis.get('target_draw_date', '-')} 17:30", "台灣時間"),
-        ("最強獨隻", fmt_numbers(ultra_numbers(analysis)) or fmt_numbers(strong_single_numbers(analysis)) or "-", ultra_pick(analysis).get("status", "-")),
+        ("最強獨隻", fmt_numbers(ultra_numbers(analysis)) or fmt_numbers(strong_single_numbers(analysis)) or "-", single_date_summary(analysis)),
         ("前九核心", fmt_numbers(top_numbers(analysis, 9)) or "-", "主攻層"),
         ("低機率防守", fmt_numbers(low.get("avoid_10") or []) or "-", "10碼暫避"),
         ("系統狀態", audit.get("status", "pending"), f"失敗 {audit.get('failed_count', 0)} / 警示 {audit.get('warning_count', 0)}"),
@@ -766,7 +828,7 @@ def decisive_battle_answer_html(analysis: dict) -> str:
     low = analysis.get("low_probability") or {}
     pick = ultra_pick(analysis)
     pack_map = [
-        ("明確獨支 / 獨隻1中1", "strong_single", "超高信心高機率推薦", "必須通過多模型、配對共現、前九核心、非最新開獎號與命中率優化守門。"),
+        ("明確獨支 / 獨隻1中1", "strong_single", "超高信心高機率推薦", "必須通過多模型、配對共現、前九核心、非最新開獎號、命中率優化與日期目標守門。"),
         ("明確2中1", "two_hit_one", "強牌短包", "以單號強度與拖牌關聯壓縮，列為短包命中觀察。"),
         ("明確3中1", "three_hit_one", "強牌短包", "多模型交叉與區間平衡共同篩選，避免單一條件主導。"),
         ("明確5中2", "five_hit_two", "強牌中包", "依回測、近況、漏抓回補與落空降權重排。"),
@@ -776,6 +838,8 @@ def decisive_battle_answer_html(analysis: dict) -> str:
     for label, key, status, rule in pack_map:
         pack = packs.get(key) or {}
         numbers = ultra_numbers(analysis) if key == "strong_single" else pack.get("numbers", [])
+        if key == "strong_single":
+            rule = f"{rule} 終極獨隻日期：{single_date_summary(analysis)}；資料依據：{single_basis_summary(analysis)}。"
         rows.append([label, fmt_numbers(numbers) or "-", status, pack.get("rule") or rule])
     rows.append(["防守避開", fmt_numbers(low.get("avoid_10") or []) or "-", "低機率10不中", "獨立風控層；低機率不等於絕對不開，誤中會回灌檢討。"])
     card_rows = [
@@ -881,6 +945,9 @@ def ultra_confidence_html(analysis: dict) -> str:
     checks = pick.get("logic_checks") or []
     rows = [
         ["強烈推薦單號", number],
+        ["終極獨隻日期", single_date_summary(analysis)],
+        ["資料依據", single_basis_summary(analysis)],
+        ["全系統/外部模組", single_module_summary(analysis)],
         ["推薦標籤", pick.get("label", "本期最強超高信心高機率號碼")],
         ["推薦狀態", pick.get("status", "-")],
         ["綜合分", pick.get("score", "-")],
@@ -914,6 +981,8 @@ def core_decision_html(analysis: dict) -> str:
         ["檢查", "已重算"],
         ["下期預測台灣時間", target_label(analysis)],
         ["最強超高信心高機率", fmt_numbers(ultra_numbers(analysis)) or "-"],
+        ["終極獨隻日期", single_date_summary(analysis)],
+        ["獨隻資料依據", single_basis_summary(analysis)],
         ["強烈推薦狀態", f"{pick.get('status', '-')} / 守門 {pick.get('gate_status', '-')}"],
         ["獨隻", fmt_numbers(strong_single_numbers(analysis)) or "-"],
         ["九碼核心", fmt_numbers(top_numbers(analysis, 9)) or "-"],
@@ -1379,6 +1448,7 @@ def exact539_single_review_rows(analysis: dict) -> list[list]:
     target = review.get("target_hit_rate", 0.9)
     target_text = f"{float(target) * 100:.1f}%" if isinstance(target, (int, float)) else "90.0%"
     return [
+        ["終極獨隻日期", single_date_summary(analysis), f"資料依據 {single_basis_summary(analysis)}"],
         ["結算樣本", review.get("sample_size", 0), "只採已開獎可結算預測"],
         ["命中/落空", f"{review.get('hit_count', 0)} / {review.get('miss_count', 0)}", "獨隻1中1實戰紀錄"],
         ["命中率", hit_rate_text, f"隨機基準約 {expected_text}"],
@@ -1419,6 +1489,8 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
     ]
     status_cards = [
         ["預測目標日", analysis.get("target_draw_date", "-")],
+        ["終極獨隻日期", single_date_summary(analysis)],
+        ["獨隻資料依據", single_basis_summary(analysis)],
         ["歷史資料截止日", latest.get("draw_date", "-")],
         ["最新開獎號碼", latest_numbers],
         ["使用歷史期數", f"{analysis.get('draw_count', '-')}期"],
@@ -1442,6 +1514,7 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
     <div class="badge">{esc(confidence_label)}</div>
     <h2>本期最強1顆</h2>
     <div class="number">{esc(fmt_numbers(single) or "-")}</div>
+    <p class="note"><b>終極獨隻日期：</b>{esc(single_date_summary(analysis))}；<b>資料依據：</b>{esc(single_basis_summary(analysis))}</p>
     <p><b>{esc(pick.get("rule", "最強號碼依多邏輯守門輸出。"))} 每期未中檢討已回灌下一次完整運算。</b></p>
     <p class="note">已產出本期綜合最強號碼；未通過高信心守門時不偽造保證標籤。</p>
   </section>
@@ -1452,7 +1525,10 @@ def exact539_report_body(analysis: dict, settled: dict, history: list[dict]) -> 
       <div class="card"><div class="label">高機率校準</div><div class="value">{esc(gate.get("status", "-"))}</div></div>
       <div class="card"><div class="label">整組命中率</div><div class="value">{esc(optimizer.get("status", "-"))}</div></div>
       <div class="card"><div class="label">外部模式</div><div class="value">{esc(external.get("status", "-"))}</div></div>
+      <div class="card"><div class="label">終極獨隻日期</div><div class="value">{esc(single_date_summary(analysis))}</div></div>
     </div>
+    <h3>終極獨隻日期與資料依據</h3>
+    {table(["項目", "結果", "說明"], ultimate_single_date_rows(analysis))}
     <h3>強烈推薦守門</h3>
     {table(["必要條件", "結果"], exact539_logic_rows(analysis))}
     <h3>正式模組共識</h3>
@@ -1783,7 +1859,10 @@ def super_single_html(analysis: dict) -> str:
         <div class="card"><div class="label">獨隻總分</div><div class="value">{esc(score_percent(item))}</div></div>
         <div class="card"><div class="label">模型機率</div><div class="value">{esc(probability_percent(item))}</div></div>
         <div class="card"><div class="label">交叉層數</div><div class="value">{esc(support)}</div></div>
+        <div class="card"><div class="label">終極獨隻日期</div><div class="value">{esc(single_date_summary(analysis))}</div></div>
+        <div class="card"><div class="label">資料依據</div><div class="value">{esc(single_basis_summary(analysis))}</div></div>
       </div>
+      <p><strong>全系統/外部模組：</strong>{esc(single_module_summary(analysis))}</p>
       <p><strong>運算邏輯：</strong>官方歷史資料庫、多模型交叉驗算、前九名核心壓縮、配對共現、命中率優化、12/30/90期錯誤模組滾動修正。</p>
       <p><strong>來源模型：</strong>{esc("、".join((item.get("reasons") or [])[:8]))}</p>
       <p><strong>獨隻守門：</strong>{esc(audit.get("rule", "禁止直接用最新開獎號混充"))}；狀態 {esc(audit.get("status", "-"))}；候選排名 {esc(audit.get("selected_rank", "-"))}</p>
@@ -2002,7 +2081,7 @@ def build_markdown(analysis: dict, settled: dict, history: list[dict]) -> str:
         f"- 資料狀態：{compact_status((analysis.get('freshness') or {}).get('status'))}",
         "- 檢查：已重算",
         f"- 超高信心高機率推薦：{fmt_numbers(ultra_numbers(analysis)) or '-'}（{ultra_pick(analysis).get('status', '-')}）",
-        f"- 獨隻：{fmt_numbers(strong_single_numbers(analysis))}",
+        f"- 獨隻：{fmt_numbers(strong_single_numbers(analysis))}（{single_date_summary(analysis)}；資料依據 {single_basis_summary(analysis)}）",
         f"- 九碼核心：{fmt_numbers(top_numbers(analysis, 9))}",
         f"- 高機率信心牌：{fmt_numbers([item.get('number') for item in (analysis.get('latest_ironlaw') or {}).get('high_confidence_numbers', [])]) or '本期未過正式高信心守門'}",
         "",
@@ -2407,6 +2486,8 @@ def mobile_prediction_body(analysis: dict, history: list[dict]) -> str:
         <div class="card hot-card"><div class="label">最強超高信心</div><div class="value">{esc(fmt_numbers(ultra_numbers(analysis)) or "-")}</div></div>
         <div class="card"><div class="label">推薦狀態</div><div class="value">{esc(pick.get("status", "-"))}</div></div>
         <div class="card"><div class="label">獨隻</div><div class="value">{esc(fmt_numbers(strong_single_numbers(analysis)))}</div></div>
+        <div class="card"><div class="label">終極獨隻日期</div><div class="value">{esc(single_date_summary(analysis))}</div></div>
+        <div class="card"><div class="label">獨隻資料依據</div><div class="value">{esc(single_basis_summary(analysis))}</div></div>
         <div class="card"><div class="label">九碼核心</div><div class="value">{esc(fmt_numbers(top_numbers(analysis, 9)))}</div></div>
         <div class="card"><div class="label">資料依據台灣時間</div><div class="value">{esc(latest_tw)}</div></div>
         <div class="card"><div class="label">預測台灣時間</div><div class="value">{esc(target_tw)}</div></div>
@@ -2574,6 +2655,7 @@ def version_payload(analysis: dict) -> dict:
         "official_latest_draw_date": summary.get("official_latest_draw_date") or summary.get("latest_draw_date"),
         "external_backfill_inserted_count": external.get("inserted_count"),
         "target_draw_date": analysis.get("target_draw_date"),
+        "ultimate_single_date_context": single_date_context(analysis),
         "ultra_confidence_pick": analysis.get("ultra_confidence_pick"),
         "strong_single_accuracy_review": analysis.get("strong_single_accuracy_review"),
         "high_confidence_gate": analysis.get("high_confidence_gate"),

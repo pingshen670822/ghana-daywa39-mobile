@@ -211,6 +211,14 @@ def taiwan_date(official_datetime: str) -> str:
     return dt_utc.astimezone(TAIWAN_TZ).date().isoformat()
 
 
+def official_game_date(official_datetime: str) -> str:
+    cleaned = official_datetime.replace("Z", "+00:00")
+    dt_utc = datetime.fromisoformat(cleaned)
+    if dt_utc.tzinfo is None:
+        dt_utc = dt_utc.replace(tzinfo=timezone.utc)
+    return dt_utc.date().isoformat()
+
+
 def normalize_row(row: dict) -> Draw | None:
     product_code = str(row.get("product_code", "")).strip()
     if "5/39 Direct" not in product_code:
@@ -224,7 +232,7 @@ def normalize_row(row: dict) -> Draw | None:
     draw_number = str(row.get("draw_number", "")).strip()
     source = f"NLA official winning-numbers:{product_code}:draw#{draw_number}"
     return Draw(
-        draw_date=taiwan_date(official_datetime),
+        draw_date=official_game_date(official_datetime),
         n1=numbers[0],
         n2=numbers[1],
         n3=numbers[2],

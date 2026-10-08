@@ -42,6 +42,7 @@ def main() -> int:
     high_gate = analysis.get("high_confidence_gate") or {}
     external = analysis.get("external_method_weight_shift") or {}
     ultra = analysis.get("ultra_confidence_pick") or {}
+    single_context = analysis.get("ultimate_single_date_context") or ultra.get("date_context") or {}
     repair = analysis.get("self_repair_status") or {}
     audit = analysis.get("ironlaw_full_audit") or {}
     mobile_html_path = ROOT / "site" / "full-report.html"
@@ -89,6 +90,9 @@ def main() -> int:
         "UltraConfidenceStatus": ultra.get("status"),
         "UltraConfidenceSingle": f"{int(ultra.get('number')):02d}" if ultra.get("number") else "-",
         "UltraLogicChecks": len(ultra.get("logic_checks") or []),
+        "UltimateSingleTargetDate": single_context.get("prediction_target_date"),
+        "UltimateSingleBasisDate": single_context.get("data_basis_draw_date"),
+        "UltimateSingleModuleGate": f"{single_context.get('module_pass_count')}/{single_context.get('module_total_count')}",
         "ExternalMethodShift": external.get("status"),
         "SelfRepairDeadline": repair.get("self_repair_deadline_taiwan"),
         "SelfRepairMobileRefresh": repair.get("mobile_refresh_seconds"),
@@ -105,6 +109,7 @@ def main() -> int:
         "HasFront9Escape": (("9名後" in html) or ("第10到15" in html) or ("第10至15" in html)) and (("外溢" in html) or ("拉回" in html)),
         "HasHitRateOptimizer": (("命中率強化" in html) or ("整組命中率" in html)) and ("高機率校準" in html),
         "HasUltraConfidence": ("超高信心高機率推薦" in html) or ("本期綜合最強" in html),
+        "HasUltimateSingleDate": ("終極獨隻日期" in html) and (analysis["target_draw_date"] in html) and (latest_date in html),
         "HasExternalMethodShift": ("外部模式" in html) and (("配對" in html) or ("companion" in html)),
         "HasSelfRepair": ("自主修復" in html) and ("19:30" in html),
         "HasDailyIronlawSchedule": ("17:30" in html) and ("19:30" in html),
@@ -144,6 +149,11 @@ def main() -> int:
     assert ultra.get("number") == single
     assert ultra.get("status") in {"ultra_high_confidence_recommendation", "strongest_research_signal"}
     assert len(ultra.get("logic_checks") or []) >= 6
+    assert single_context.get("ultimate_single_number") == single
+    assert single_context.get("prediction_target_date") == analysis["target_draw_date"]
+    assert single_context.get("data_basis_draw_date") == latest_date
+    assert single_context.get("data_basis_numbers") == latest_numbers
+    assert int(single_context.get("module_total_count") or 0) >= 6
     assert external.get("status") in {"applied", "not_applied"}
     assert repair.get("self_repair_deadline_taiwan") == "19:30"
     assert int(repair.get("mobile_refresh_seconds") or 0) <= 30
@@ -158,6 +168,7 @@ def main() -> int:
     assert checks["HasFront9Escape"]
     assert checks["HasHitRateOptimizer"]
     assert checks["HasUltraConfidence"]
+    assert checks["HasUltimateSingleDate"]
     assert checks["HasExternalMethodShift"]
     assert checks["HasSelfRepair"]
     assert checks["HasDailyIronlawSchedule"]
